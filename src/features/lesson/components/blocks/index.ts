@@ -14,4 +14,6 @@ export { QuizBlock } from "@/features/lesson/components/blocks/QuizBlock";
 export { LearningGoalBlock } from "@/features/lesson/components/blocks/LearningGoalBlock";
 export { KeyTakeawaysBlock } from "@/features/lesson/components/blocks/KeyTakeawaysBlock";
 export { PracticeBlock } from "@/features/lesson/components/blocks/PracticeBlock";
+export { StoryBoardBlock } from "@/features/lesson/components/blocks/StoryBoardBlock";
+export { GitVsGithubBlock } from "@/features/lesson/components/blocks/GitVsGithubBlock";
 export { SpacerBlock } from "@/features/lesson/components/blocks/SpacerBlock";

@@ -11,6 +11,7 @@ import {
   DividerBlock,
   EditorBlock,
   GitGraphBlock,
+  GitVsGithubBlock,
   HeadingBlock,
   ImageBlock,
   KeyTakeawaysBlock,
@@ -19,6 +20,7 @@ import {
   PracticeBlock,
   QuizBlock,
   SpacerBlock,
+  StoryBoardBlock,
   TerminalStepsBlock,
   TipBlock,
   WarningBlock,
@@ -51,6 +53,8 @@ const registry: {
   learningGoal: (block) => <LearningGoalBlock block={block} />,
   keyTakeaways: (block) => <KeyTakeawaysBlock block={block} />,
   practice: (block) => <PracticeBlock block={block} />,
+  storyboard: (block) => <StoryBoardBlock block={block} />,
+  gitVsGithub: (block) => <GitVsGithubBlock block={block} />,
   spacer: (block) => <SpacerBlock block={block} />,
 };
 

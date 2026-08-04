@@ -263,6 +263,9 @@ export function DirectoryTree({
         caption={base}
         icon={FolderGit2}
         className={className}
+        footer={
+          <VizChrome mode={mode} player={player} label="Step" started={started} />
+        }
       >
         <ul className="space-y-[3px] pb-1 font-mono text-sm">
           {nodes.map((node) => (
@@ -278,7 +281,6 @@ export function DirectoryTree({
             />
           ))}
         </ul>
-        <VizChrome mode={mode} player={player} label="Step" started={started} />
       </DiagramContainer>
     </div>
   );

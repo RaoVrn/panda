@@ -8,6 +8,8 @@ export interface DiagramContainerProps
   caption?: string;
   /** Optional icon shown next to the title for consistent viz headers. */
   icon?: LucideIcon;
+  /** Full-bleed footer strip (e.g. playback controls) under the content. */
+  footer?: ReactNode;
   children: ReactNode;
 }
 
@@ -19,6 +21,7 @@ export function DiagramContainer({
   title,
   caption,
   icon: Icon,
+  footer,
   children,
   className,
   ...props
@@ -43,6 +46,7 @@ export function DiagramContainer({
         </figcaption>
       )}
       <div className="p-5">{children}</div>
+      {footer && <div className="bg-base-subtle/30">{footer}</div>}
     </figure>
   );
 }

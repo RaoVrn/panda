@@ -52,6 +52,11 @@ export function QuizCard({ quiz }: QuizCardProps) {
 
   const letter = (i: number) => String.fromCharCode(65 + i);
 
+  const PRAISE = ["Nice!", "Correct!", "Great pick!", "You got it!"];
+  const praise = PRAISE[
+    [...question.id].reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % PRAISE.length
+  ]!;
+
   return (
     <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
       <div className="flex items-center gap-3 border-b border-border-subtle px-5 py-4">
@@ -144,8 +149,8 @@ export function QuizCard({ quiz }: QuizCardProps) {
             {answered && (
               <motion.div
                 key="result"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 8, scale: correct ? 0.97 : 1 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25, ease: [0.2, 0.8, 0.2, 1] }}
                 className={cn(
@@ -170,9 +175,14 @@ export function QuizCard({ quiz }: QuizCardProps) {
                 </span>
                 <div className="text-sm leading-relaxed text-text-secondary">
                   <span className={cn("font-semibold", correct ? "text-accent-hover" : "text-danger")}>
-                    {correct ? "Correct." : "Not quite."}
-                  </span>{" "}
+                    {correct ? `${praise} ` : "Not yet — here’s why: "}
+                  </span>
                   {question.explanation}
+                  {!correct && (
+                    <span className="mt-1 block text-xs text-text-muted">
+                      The green option is the one that Git matches.
+                    </span>
+                  )}
                 </div>
               </motion.div>
             )}

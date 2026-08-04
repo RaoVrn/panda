@@ -151,6 +151,27 @@ export interface ContentLearningGoalBlock {
   text: string;
 }
 
+/** One beat in a step-by-step storyboard animation. */
+export interface ContentStoryboardNode {
+  id: string;
+  text: string;
+  /** Optional key into the storyboard's icon set (e.g. "save", "sword"). */
+  icon?: string;
+}
+
+export interface ContentStoryboardBlock {
+  type: "storyboard";
+  id: string;
+  title?: string;
+  nodes: ContentStoryboardNode[];
+}
+
+export interface ContentGitVsGithubBlock {
+  type: "gitVsGithub";
+  id: string;
+  title?: string;
+}
+
 export interface ContentKeyTakeawaysBlock {
   type: "keyTakeaways";
   id: string;
@@ -183,6 +204,8 @@ export type ContentBlock =
   | ContentLearningGoalBlock
   | ContentKeyTakeawaysBlock
   | ContentPracticeBlock
+  | ContentStoryboardBlock
+  | ContentGitVsGithubBlock
   | ContentSpacerBlock;
 
 export type ContentBlockType = ContentBlock["type"];
