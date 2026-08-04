@@ -1,0 +1,14 @@
+export { HeadingBlock } from "@/features/lesson/components/blocks/HeadingBlock";
+export { ParagraphBlock } from "@/features/lesson/components/blocks/ParagraphBlock";
+export { DividerBlock } from "@/features/lesson/components/blocks/DividerBlock";
+export { CalloutBlock } from "@/features/lesson/components/blocks/CalloutBlock";
+export { TipBlock } from "@/features/lesson/components/blocks/TipBlock";
+export { WarningBlock } from "@/features/lesson/components/blocks/WarningBlock";
+export { CodeBlock } from "@/features/lesson/components/blocks/CodeBlock";
+export { ImageBlock } from "@/features/lesson/components/blocks/ImageBlock";
+export { TerminalBlock } from "@/features/lesson/components/blocks/TerminalBlock";
+export { EditorBlock } from "@/features/lesson/components/blocks/EditorBlock";
+export { DirectoryTreeBlock } from "@/features/lesson/components/blocks/DirectoryTreeBlock";
+export { GitGraphBlock } from "@/features/lesson/components/blocks/GitGraphBlock";
+export { QuizBlock } from "@/features/lesson/components/blocks/QuizBlock";
+export { SpacerBlock } from "@/features/lesson/components/blocks/SpacerBlock";
