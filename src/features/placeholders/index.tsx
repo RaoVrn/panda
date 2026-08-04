@@ -1,31 +1,5 @@
-import {
-  BookOpen,
-  Compass,
-  Search,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { Search, Settings, Sparkles } from "lucide-react";
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
-
-export function CoursePage() {
-  return (
-    <PlaceholderPage
-      icon={BookOpen}
-      title="Course overview"
-      description="The full Git, GitHub and Version Control path from absolute beginner to advanced is being curated right now."
-    />
-  );
-}
-
-export function LessonPage() {
-  return (
-    <PlaceholderPage
-      icon={Compass}
-      title="Lesson workspace"
-      description="Interactive lessons with visualizers, a terminal and AI guidance are being built."
-    />
-  );
-}
 
 export function SearchPage() {
   return (

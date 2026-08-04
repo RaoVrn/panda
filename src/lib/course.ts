@@ -42,3 +42,18 @@ export function nextLesson(course: Course, currentId: string): Lesson | undefine
   const index = lessons.findIndex((lesson) => lesson.meta.id === currentId)
   return index >= 0 ? lessons[index + 1] : undefined
 }
+
+export function previousLesson(course: Course, currentId: string): Lesson | undefined {
+  const lessons = allLessons(course)
+  const index = lessons.findIndex((lesson) => lesson.meta.id === currentId)
+  return index > 0 ? lessons[index - 1] : undefined
+}
+
+export function isLessonUnlocked(
+  lesson: Lesson,
+  completedLessonIds: string[],
+): boolean {
+  return (lesson.meta.prerequisites ?? []).every((id) =>
+    completedLessonIds.includes(id),
+  )
+}
