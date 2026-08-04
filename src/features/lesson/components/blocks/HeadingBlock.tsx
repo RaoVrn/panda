@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 
 const levelClass: Record<ContentHeadingBlock["level"], string> = {
   1: "text-2xl font-semibold tracking-tight sm:text-3xl",
-  2: "text-xl font-semibold tracking-tight sm:text-2xl",
-  3: "text-lg font-semibold tracking-tight",
+  2: "text-2xl font-semibold tracking-tight sm:text-[1.7rem]",
+  3: "text-lg font-semibold tracking-tight sm:text-xl",
 };
 
 export function HeadingBlock({ block }: { block: ContentHeadingBlock }): ReactNode {

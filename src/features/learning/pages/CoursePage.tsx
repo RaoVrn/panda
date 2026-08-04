@@ -1,7 +1,7 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { course } from "@/content/roadmap";
-import { allLessons, modulesOf } from "@/lib/course";
+import { modules } from "@/content/roadmap";
+import { allLessons, moduleLessons } from "@/content/lessons";
 import { percentComplete } from "@/lib/utils";
 import { useProgressStore } from "@/stores/progressStore";
 import { LearningWorkspace } from "@/features/learning/layout/LearningWorkspace";
@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/Button";
 
 export function CoursePage() {
   const { completedLessonIds } = useProgressStore();
-  const lessons = allLessons(course);
+  const lessons = allLessons();
   const pct = percentComplete(completedLessonIds.length, lessons.length);
   const next = lessons.find(
-    (l) => !completedLessonIds.includes(l.meta.id),
+    (l) => !completedLessonIds.includes(l.id),
   ) ?? lessons[0];
 
   return (
@@ -31,9 +31,9 @@ export function CoursePage() {
               this device and unlocks lessons as you complete them.
             </p>
             {next && (
-              <Link to={`/lesson/${next.meta.slug}`} className="mt-6 inline-block">
+              <Link to={`/lesson/${next.slug}`} className="mt-6 inline-block">
                 <Button rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}>
-                  Continue · {next.meta.title}
+                  Continue · {next.title}
                 </Button>
               </Link>
             )}
@@ -63,14 +63,14 @@ export function CoursePage() {
               {completedLessonIds.length} of {lessons.length} lessons completed
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {modulesOf(course).map((m) => (
+              {modules.map((m) => (
                 <div
                   key={m.id}
                   className="rounded-xl border border-border-subtle bg-base-subtle px-4 py-3"
                 >
                   <p className="text-sm font-medium text-text">{m.title}</p>
                   <p className="mt-0.5 text-xs text-text-muted">
-                    {m.lessons.length} lessons
+                    {moduleLessons(m.id).length} lessons
                   </p>
                 </div>
               ))}

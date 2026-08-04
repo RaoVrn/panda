@@ -27,7 +27,7 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-text-inverse font-medium hover:bg-accent-hover active:brightness-95 shadow-[0_0_0_1px_rgba(62,207,142,0.2),0_1px_3px_rgba(0,0,0,0.3)]",
+    "bg-accent text-text-inverse font-medium shadow-[0_1px_2px_rgba(0,0,0,0.3)] hover:bg-accent-hover active:bg-accent-hover/85 ring-1 ring-inset ring-white/10",
   secondary:
     "bg-base-subtle text-text border border-border-subtle hover:border-border-strong hover:bg-base-elevated",
   ghost: "bg-transparent text-text-secondary hover:bg-base-subtle hover:text-text",

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUp, Bot, User } from "lucide-react";
+import { ArrowUp, Bot, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface Message {
   id: number;
@@ -18,7 +19,11 @@ const suggestions = [
   "What is staging?",
 ];
 
-export function AiPanel() {
+export interface AiPanelProps {
+  onClose?: () => void;
+}
+
+export function AiPanel({ onClose }: AiPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
@@ -51,6 +56,11 @@ export function AiPanel() {
           <span className="size-1.5 animate-pulse rounded-full bg-accent" />
           demo
         </span>
+        {onClose && (
+          <IconButton label="Close Panda AI" onClick={onClose} className="size-8">
+            <X className="size-4" aria-hidden="true" />
+          </IconButton>
+        )}
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5">

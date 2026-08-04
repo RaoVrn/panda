@@ -26,10 +26,10 @@
   --color-text-muted: #6b6b74;
   --color-text-inverse: #0a0a0b;
 
-  --color-accent: #3ecf8e;
-  --color-accent-hover: #57dc9e;
-  --color-accent-soft: rgba(62, 207, 142, 0.12);
-  --color-accent-glow: rgba(62, 207, 142, 0.25);
+  --color-accent: #2bb09b;
+  --color-accent-hover: #3cc2ad;
+  --color-accent-soft: rgba(43, 176, 155, 0.12);
+  --color-accent-glow: rgba(43, 176, 155, 0.22);
 
   --color-danger: #f04438;
   --color-danger-soft: rgba(240, 68, 56, 0.12);
@@ -37,8 +37,8 @@
   --color-warning-soft: rgba(245, 165, 36, 0.12);
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.24);
-  --shadow-glow: 0 0 0 1px rgba(62, 207, 142, 0.2),
-    0 8px 32px rgba(62, 207, 142, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(43, 176, 155, 0.18),
+    0 8px 32px rgba(43, 176, 155, 0.1);
   --shadow-topbar: 0 1px 0 rgba(255, 255, 255, 0.04);
 
   --font-weight-semibold: 600;
@@ -54,7 +54,7 @@
   --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
 
   /* Layout */
-  --container-content: 46rem;
+  --container-content: 62rem;
 
   @keyframes fade-in {
     from {
@@ -140,7 +140,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid rgba(62, 207, 142, 0.7);
+    outline: 2px solid rgba(43, 176, 155, 0.7);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -152,13 +152,13 @@
   h5,
   h6 {
     font-weight: 600;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     color: var(--color-text);
     text-wrap: balance;
   }
 
   p {
-    line-height: 1.625;
+    line-height: 1.7;
     color: var(--color-text-secondary);
     text-wrap: pretty;
   }
@@ -187,10 +187,10 @@
   --color-text-muted: #a1a1aa;
   --color-text-inverse: #ffffff;
 
-  --color-accent: #059669;
-  --color-accent-hover: #047857;
-  --color-accent-soft: rgba(5, 150, 105, 0.1);
-  --color-accent-glow: rgba(5, 150, 105, 0.16);
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
+  --color-accent-soft: rgba(13, 148, 136, 0.1);
+  --color-accent-glow: rgba(13, 148, 136, 0.16);
 
   --color-danger: #e11d48;
   --color-danger-soft: rgba(225, 29, 72, 0.1);
@@ -198,7 +198,7 @@
   --color-warning-soft: rgba(217, 119, 6, 0.1);
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-glow: 0 0 0 1px rgba(5, 150, 105, 0.18),
-    0 8px 32px rgba(5, 150, 105, 0.1);
+  --shadow-glow: 0 0 0 1px rgba(13, 148, 136, 0.18),
+    0 8px 32px rgba(13, 148, 136, 0.1);
   --shadow-topbar: 0 1px 0 rgba(0, 0, 0, 0.04);
 }

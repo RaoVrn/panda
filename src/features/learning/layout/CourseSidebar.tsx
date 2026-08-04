@@ -1,14 +1,25 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type JSX } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Check, Lock, Search, X } from "lucide-react";
-import type { Lesson, Module } from "@/types/lesson";
-import { course } from "@/content/roadmap";
+import {
+  BookMarked,
+  Check,
+  Globe,
+  Layers,
+  Lock,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Rocket,
+  Search,
+  Sparkles,
+  X,
+} from "lucide-react";
+import type { ContentLesson, CourseModule } from "@/content/schema";
+import { modules } from "@/content/roadmap";
 import {
   allLessons,
   isLessonUnlocked,
   moduleLessons,
-  modulesOf,
-} from "@/lib/course";
+} from "@/content/lessons";
 import { cn, percentComplete } from "@/lib/utils";
 import { useProgressStore } from "@/stores/progressStore";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -17,14 +28,23 @@ import { IconButton } from "@/components/ui/IconButton";
 export interface CourseSidebarProps {
   currentSlug?: string;
   onClose?: () => void;
+  collapsed?: boolean;
+  onToggle?: () => void;
 }
+
+const moduleIcons: Record<string, JSX.Element> = {
+  sparkles: <Sparkles className="size-4" aria-hidden="true" />,
+  layers: <Layers className="size-4" aria-hidden="true" />,
+  globe: <Globe className="size-4" aria-hidden="true" />,
+  rocket: <Rocket className="size-4" aria-hidden="true" />,
+};
 
 function LessonItem({
   lesson,
   completed,
   locked,
 }: {
-  lesson: Lesson;
+  lesson: ContentLesson;
   completed: boolean;
   locked: boolean;
 }) {
@@ -56,7 +76,7 @@ function LessonItem({
       >
         {statusIcon}
       </span>
-      <span className="truncate">{lesson.meta.title}</span>
+      <span className="truncate">{lesson.title}</span>
     </span>
   );
 
@@ -70,7 +90,7 @@ function LessonItem({
 
   return (
     <li>
-      <NavLink to={`/lesson/${lesson.meta.slug}`} className="block">
+      <NavLink to={`/lesson/${lesson.slug}`} className="block">
         {({ isActive }) => inner(isActive)}
       </NavLink>
     </li>
@@ -82,15 +102,15 @@ function ModuleGroup({
   completedIds,
   query,
 }: {
-  module: Module;
+  module: CourseModule;
   completedIds: string[];
   query: string;
 }) {
-  const lessons = moduleLessons(course, module.id);
+  const lessons = moduleLessons(module.id);
   const visible = lessons.filter(
     (l) =>
       query === "" ||
-      l.meta.title.toLowerCase().includes(query.toLowerCase()),
+      l.title.toLowerCase().includes(query.toLowerCase()),
   );
 
   if (visible.length === 0) return null;
@@ -103,9 +123,9 @@ function ModuleGroup({
       <ul className="flex flex-col gap-0.5">
         {visible.map((lesson) => (
           <LessonItem
-            key={lesson.meta.id}
+            key={lesson.id}
             lesson={lesson}
-            completed={completedIds.includes(lesson.meta.id)}
+            completed={completedIds.includes(lesson.id)}
             locked={!isLessonUnlocked(lesson, completedIds)}
           />
         ))}
@@ -114,15 +134,86 @@ function ModuleGroup({
   );
 }
 
-export function CourseSidebar({ onClose }: CourseSidebarProps) {
+/**
+ * Collapsed rail: shows only icons for each module and the collapse control.
+ * Each icon links to the course overview so navigation stays possible.
+ */
+function CollapsedRail({
+  completedIds,
+  onToggle,
+}: {
+  completedIds: string[];
+  onToggle?: () => void;
+}) {
+  return (
+    <div className="flex h-full flex-col items-center bg-base-elevated">
+      <div className="flex flex-col items-center gap-1 pt-5">
+        <Link
+          to="/course"
+          className="flex size-9 items-center justify-center rounded-lg text-xl transition-colors hover:bg-base-subtle"
+          aria-label="Panda home"
+          title="Panda"
+        >
+          🐼
+        </Link>
+      </div>
+
+      <nav aria-label="Course" className="mt-4 flex-1 overflow-y-auto px-2">
+        <ul className="flex flex-col items-center gap-1">
+          {modules.map((module) => {
+            const done = moduleLessons(module.id).filter((l) =>
+              completedIds.includes(l.id),
+            ).length;
+            const total = moduleLessons(module.id).length;
+            const complete = total > 0 && done === total;
+            return (
+              <li key={module.id}>
+                <Link
+                  to="/course"
+                  title={`${module.title} (${done}/${total})`}
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded-lg transition-colors",
+                    complete
+                      ? "text-accent-hover"
+                      : "text-text-muted hover:bg-base-subtle hover:text-text",
+                  )}
+                >
+                  {moduleIcons[module.icon ?? ""] ?? (
+                    <BookMarked className="size-4" aria-hidden="true" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="px-2 py-3">
+        <IconButton label="Expand sidebar" onClick={onToggle}>
+          <PanelLeftOpen className="size-4" aria-hidden="true" />
+        </IconButton>
+      </div>
+    </div>
+  );
+}
+
+export function CourseSidebar({
+  onClose,
+  collapsed = false,
+  onToggle,
+}: CourseSidebarProps) {
   const { completedLessonIds } = useProgressStore();
   const [query, setQuery] = useState("");
 
-  const total = allLessons(course);
+  const total = allLessons();
   const pct = useMemo(
     () => percentComplete(completedLessonIds.length, total.length),
     [completedLessonIds.length, total.length],
   );
+
+  if (collapsed) {
+    return <CollapsedRail completedIds={completedLessonIds} onToggle={onToggle} />;
+  }
 
   return (
     <div className="flex h-full flex-col bg-base-elevated">
@@ -135,11 +226,18 @@ export function CourseSidebar({ onClose }: CourseSidebarProps) {
           <span aria-hidden="true">🐼</span>
           <span className="tracking-tight">Panda</span>
         </Link>
-        {onClose && (
-          <IconButton label="Close navigation" onClick={onClose}>
-            <X className="size-4" aria-hidden="true" />
-          </IconButton>
-        )}
+        <div className="flex items-center gap-1">
+          {onToggle && (
+            <IconButton label="Collapse sidebar" onClick={onToggle}>
+              <PanelLeftClose className="size-4" aria-hidden="true" />
+            </IconButton>
+          )}
+          {onClose && (
+            <IconButton label="Close navigation" onClick={onClose}>
+              <X className="size-4" aria-hidden="true" />
+            </IconButton>
+          )}
+        </div>
       </div>
 
       <div className="px-4 pb-4">
@@ -171,7 +269,7 @@ export function CourseSidebar({ onClose }: CourseSidebarProps) {
 
       <nav aria-label="Course" className="flex-1 overflow-y-auto px-2 pb-6">
         <ul className="flex flex-col">
-          {modulesOf(course).map((module) => (
+          {modules.map((module) => (
             <ModuleGroup
               key={module.id}
               module={module}

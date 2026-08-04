@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export function LearningCanvas({ children }: { children: ReactNode }) {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10 sm:px-8">
+    <main className="mx-auto w-full max-w-[60rem] flex-1 px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
       {children}
     </main>
   );

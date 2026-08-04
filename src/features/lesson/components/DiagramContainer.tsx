@@ -1,10 +1,13 @@
 import type { HTMLAttributes, ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface DiagramContainerProps
   extends HTMLAttributes<HTMLDivElement> {
   title?: string;
   caption?: string;
+  /** Optional icon shown next to the title for consistent viz headers. */
+  icon?: LucideIcon;
   children: ReactNode;
 }
 
@@ -15,6 +18,7 @@ export interface DiagramContainerProps
 export function DiagramContainer({
   title,
   caption,
+  icon: Icon,
   children,
   className,
   ...props
@@ -28,10 +32,13 @@ export function DiagramContainer({
       {...props}
     >
       {title && (
-        <figcaption className="border-b border-border-subtle px-5 py-3.5">
+        <figcaption className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
+          {Icon && <Icon className="size-3.5 text-accent-hover" aria-hidden="true" />}
           <p className="text-sm font-medium text-text">{title}</p>
           {caption && (
-            <p className="mt-0.5 text-xs text-text-muted">{caption}</p>
+            <span className="ml-auto hidden text-xs text-text-muted sm:inline">
+              {caption}
+            </span>
           )}
         </figcaption>
       )}

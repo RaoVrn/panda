@@ -1,5 +1,3 @@
-import type { FolderTreeNode, Quiz } from "@/types/lesson";
-
 /**
  * Panda content schema.
  *
@@ -72,19 +70,22 @@ export interface ContentImageBlock {
   caption?: string;
 }
 
-export type TerminalLineKind = "output" | "command" | "error" | "success" | "muted";
+export type TerminalLineKind = "output" | "command" | "error" | "success" | "warning" | "muted";
 
-export interface ContentTerminalLine {
-  text: string;
-  kind?: TerminalLineKind;
+/** One command + its output inside an interactive terminal run. */
+export interface TerminalStep {
+  command: string;
+  output?: string;
+  outputKind?: TerminalLineKind;
+  note?: string;
 }
 
-export interface ContentTerminalBlock {
-  type: "terminal";
+export interface ContentTerminalStepsBlock {
+  type: "terminalSteps";
   id: string;
   title?: string;
   prompt?: string;
-  lines: ContentTerminalLine[];
+  steps: TerminalStep[];
 }
 
 export interface ContentEditorBlock {
@@ -109,6 +110,10 @@ export interface ContentGitGraphCommit {
   y: number;
   lane: number;
   label?: string;
+  message?: string;
+  branch?: string;
+  timestamp?: string;
+  filesChanged?: string[];
   accent?: boolean;
 }
 
@@ -140,6 +145,27 @@ export interface ContentSpacerBlock {
   height?: number;
 }
 
+export interface ContentLearningGoalBlock {
+  type: "learningGoal";
+  id: string;
+  text: string;
+}
+
+export interface ContentKeyTakeawaysBlock {
+  type: "keyTakeaways";
+  id: string;
+  items: string[];
+}
+
+export interface ContentPracticeBlock {
+  type: "practice";
+  id: string;
+  title?: string;
+  description: string;
+  hint?: string;
+  exampleAnswer?: string;
+}
+
 export type ContentBlock =
   | ContentHeadingBlock
   | ContentParagraphBlock
@@ -149,11 +175,14 @@ export type ContentBlock =
   | ContentWarningBlock
   | ContentCodeBlock
   | ContentImageBlock
-  | ContentTerminalBlock
+  | ContentTerminalStepsBlock
   | ContentEditorBlock
   | ContentDirectoryTreeBlock
   | ContentGitGraphBlock
   | ContentQuizBlock
+  | ContentLearningGoalBlock
+  | ContentKeyTakeawaysBlock
+  | ContentPracticeBlock
   | ContentSpacerBlock;
 
 export type ContentBlockType = ContentBlock["type"];
@@ -164,14 +193,47 @@ export type BlockOfType<T extends ContentBlockType> = Extract<
   { type: T }
 >;
 
-export type { FolderTreeNode, Quiz };
+/** A node in a directory tree. */
+export interface FolderTreeNode {
+  name: string;
+  type: "file" | "directory";
+  children?: FolderTreeNode[];
+  tracked?: boolean;
+  ignored?: boolean;
+  /** Lesson-driven attention: paint this node with the accent highlight. */
+  highlight?: boolean;
+  note?: string;
+}
+
+/** One question inside a quiz. */
+export interface QuizQuestion {
+  id: string;
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+/** A quiz as authored in a lesson. */
+export interface Quiz {
+  id: string;
+  title: string;
+  questions: QuizQuestion[];
+}
 
 export interface ContentLessonMeta {
   module: string;
   order: number;
   difficulty?: "beginner" | "intermediate" | "advanced";
   durationMinutes?: number;
+  prerequisites?: string[];
   tags?: string[];
+  /** Short "you learned" bullets shown in the lesson-complete summary. */
+  summary?: string[];
+  /** "Why this matters" line shown in the lesson-complete summary. */
+  whyItMatters?: string;
+  /** A tiny motivational line shown near the end of the lesson. */
+  motivation?: string;
 }
 
 export interface ContentLesson {
@@ -181,4 +243,14 @@ export interface ContentLesson {
   description: string;
   meta: ContentLessonMeta;
   blocks: ContentBlock[];
+}
+
+/** A module in the course roadmap. `lessons` lists lesson ids in order. */
+export interface CourseModule {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  icon?: string;
+  lessons: string[];
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -58,7 +59,11 @@ export function ToneBox({ tone, title, children, className }: ToneBoxProps) {
   const style = tones[tone];
   const Icon = style.icon;
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
       className={cn(
         "flex items-start gap-3 rounded-2xl border p-5",
         style.border,
@@ -66,11 +71,20 @@ export function ToneBox({ tone, title, children, className }: ToneBoxProps) {
         className,
       )}
     >
-      <Icon className={cn("mt-0.5 size-5 shrink-0", style.iconColor)} aria-hidden="true" />
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-base/40">
+        <Icon className={cn("size-4", style.iconColor)} aria-hidden="true" />
+      </span>
       <div className="min-w-0 flex-1">
         {title && <p className="text-sm font-semibold text-text">{title}</p>}
-        <div className="text-sm leading-relaxed text-text-secondary">{children}</div>
+        <div
+          className={cn(
+            "text-sm leading-relaxed text-text-secondary",
+            title && "mt-0.5",
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
