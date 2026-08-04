@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+ * Panda design tokens (dark-first).
+ * Tailwind v4 is CSS-first: these tokens generate the utilities
+ * used across the app (bg-base, text-text, border-subtle, accent…).
+ * ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+
+  --color-base: #0a0a0b;
+  --color-base-elevated: #121214;
+  --color-base-subtle: #1a1a1d;
+
+  --color-card: #141417;
+  --color-card-hover: #1a1a1f;
+
+  --color-border-subtle: #26262b;
+  --color-border: #2e2e35;
+  --color-border-strong: #3a3a42;
+
+  --color-text: #f7f7f8;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #6b6b74;
+  --color-text-inverse: #0a0a0b;
+
+  --color-accent: #3ecf8e;
+  --color-accent-hover: #57dc9e;
+  --color-accent-soft: rgba(62, 207, 142, 0.12);
+  --color-accent-glow: rgba(62, 207, 142, 0.25);
+
+  --color-danger: #f04438;
+  --color-danger-soft: rgba(240, 68, 56, 0.12);
+  --color-warning: #f5a524;
+  --color-warning-soft: rgba(245, 165, 36, 0.12);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.24);
+  --shadow-glow: 0 0 0 1px rgba(62, 207, 142, 0.2),
+    0 8px 32px rgba(62, 207, 142, 0.12);
+  --shadow-topbar: 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  --font-weight-semibold: 600;
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  --animate-fade-in: fade-in 0.4s var(--ease-smooth) both;
+  --animate-scale-in: scale-in 0.2s ease-out both;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+
+  /* Layout */
+  --container-content: 46rem;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-base);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    transition:
+      background-color var(--duration-base) var(--ease-smooth),
+      color var(--duration-base) var(--ease-smooth);
+  }
+
+  /* Smooth theme transition on themed surfaces. Components may override with
+     their own duration, but this keeps the global theme switch calm. */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-smooth);
+  }
+
+  ::selection {
+    background: var(--color-accent-soft);
+    color: var(--color-text);
+  }
+
+  /* Calm, unobtrusive scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 8px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(62, 207, 142, 0.7);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+
+  p {
+    line-height: 1.625;
+    color: var(--color-text-secondary);
+    text-wrap: pretty;
+  }
+}
+/* ------------------------------------------------------------------
+ * Light theme.
+ * @theme tokens live on :root (dark by default). Override the same
+ * variables under [data-theme="light"] so every utility reacts at once.
+ * ------------------------------------------------------------------ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --color-base: #fafafa;
+  --color-base-elevated: #f4f4f5;
+  --color-base-subtle: #ececee;
+
+  --color-card: #ffffff;
+  --color-card-hover: #f8f8fa;
+
+  --color-border-subtle: #e4e4e7;
+  --color-border: #d4d4d8;
+  --color-border-strong: #a1a1aa;
+
+  --color-text: #18181b;
+  --color-text-secondary: #52525b;
+  --color-text-muted: #a1a1aa;
+  --color-text-inverse: #ffffff;
+
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
+  --color-accent-soft: rgba(5, 150, 105, 0.1);
+  --color-accent-glow: rgba(5, 150, 105, 0.16);
+
+  --color-danger: #e11d48;
+  --color-danger-soft: rgba(225, 29, 72, 0.1);
+  --color-warning: #d97706;
+  --color-warning-soft: rgba(217, 119, 6, 0.1);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 0 1px rgba(5, 150, 105, 0.18),
+    0 8px 32px rgba(5, 150, 105, 0.1);
+  --shadow-topbar: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
