@@ -19,7 +19,7 @@ import {
 } from "./achievements";
 import { localStorageAdapter, toZustandStorage } from "./localStorage";
 import { recordActivity, readStreak, todayKey } from "./streak";
-import { levelInfo, XP_REWARDS } from "./xp";
+import { levelInfo, lessonXp, XP_REWARDS } from "./xp";
 import type {
   ProgressToast,
   QuizAwardState,
@@ -45,6 +45,8 @@ interface ProgressState {
   quizAwards: Record<string, QuizAwardState>;
   practiceDone: Record<string, boolean>;
   lessonStartTimes: Record<string, number>;
+  /** Lessons the learner has explored in Interactive mode (completion gate). */
+  interactiveTouched: Record<string, boolean>;
   aiQuestions: number;
   practiceCount: number;
   totalQuizCorrect: number;
@@ -54,6 +56,7 @@ interface ProgressState {
   startLesson: (lessonId: string) => void;
   completeLesson: (lessonId: string, xpReward?: number) => void;
   toggleCompleted: (lessonId: string) => void;
+  markInteractive: (lessonId: string) => void;
   recordQuizResult: (lessonId: string, correct: number, total: number) => void;
   recordPractice: (lessonId: string) => void;
   recordAiQuestion: () => void;
@@ -171,6 +174,7 @@ export const useProgressStore = create<ProgressState>()(
         quizAwards: {},
         practiceDone: {},
         lessonStartTimes: {},
+        interactiveTouched: {},
         aiQuestions: 0,
         practiceCount: 0,
         totalQuizCorrect: 0,
@@ -225,6 +229,18 @@ export const useProgressStore = create<ProgressState>()(
           }));
           if (!done) unlockAchievements();
         },
+
+        markInteractive: (lessonId) =>
+          set((state) =>
+            state.interactiveTouched[lessonId]
+              ? state
+              : {
+                  interactiveTouched: {
+                    ...state.interactiveTouched,
+                    [lessonId]: true,
+                  },
+                },
+          ),
 
         recordQuizResult: (lessonId, correct, total) => {
           if (total <= 0) return;
@@ -295,6 +311,7 @@ export const useProgressStore = create<ProgressState>()(
             quizAwards: {},
             practiceDone: {},
             lessonStartTimes: {},
+            interactiveTouched: {},
             aiQuestions: 0,
             practiceCount: 0,
             totalQuizCorrect: 0,
@@ -321,6 +338,7 @@ export const useProgressStore = create<ProgressState>()(
         quizAwards: state.quizAwards,
         practiceDone: state.practiceDone,
         lessonStartTimes: state.lessonStartTimes,
+        interactiveTouched: state.interactiveTouched,
         aiQuestions: state.aiQuestions,
         practiceCount: state.practiceCount,
         totalQuizCorrect: state.totalQuizCorrect,
@@ -337,13 +355,15 @@ export const useProgressStore = create<ProgressState>()(
 
 /**
  * One-time repair so "lessons completed" never disagrees with XP. Learners who
- * completed lessons before XP existed keep their earned XP (read + finish per
- * completed lesson). Runs after hydration settles; silent, no toasts.
+ * completed lessons before XP existed keep their earned XP (difficulty-based
+ * reward per completed lesson). Runs after hydration settles; silent, no toasts.
  */
 window.setTimeout(() => {
   const state = useProgressStore.getState();
   if (state.completedLessonIds.length > 0 && state.xp === 0) {
-    const reward = XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
-    useProgressStore.setState({ xp: state.completedLessonIds.length * reward });
+    const reward = allLessons()
+      .filter((lesson) => state.completedLessonIds.includes(lesson.id))
+      .reduce((sum, lesson) => sum + lessonXp(lesson), 0);
+    useProgressStore.setState({ xp: reward });
   }
 }, 0);

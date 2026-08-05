@@ -103,13 +103,13 @@ export function GitGraph({ commits, title, player, mode }: GitGraphProps) {
       className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card"
     >
       {title && (
-        <div className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
+        <div className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
           <GitCommit className="size-3.5 text-accent-hover" aria-hidden="true" />
           <p className="text-sm font-medium text-text">{title}</p>
         </div>
       )}
 
-      <div className="px-5 py-5">
+      <div className="px-4 py-4">
         <ul className="relative">
           <motion.div
             aria-hidden="true"

@@ -197,7 +197,7 @@ export const lesson15: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Your project keeps creating .log files and a cache folder. Write the .gitignore lines that would keep both out of Git.",
+        "Write .gitignore lines to ignore .log files and a cache folder.",
       hint: "One pattern ends in *.log. The other is a folder name with a slash.",
       exampleAnswer:
         "I'd write:\n*.log\ncache/\n\nThe first ignores every log file; the second ignores the whole cache folder. Git will never track either.",

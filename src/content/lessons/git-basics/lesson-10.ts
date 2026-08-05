@@ -178,7 +178,7 @@ export const lesson10: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "A friend says: \"I just run git add . and never think about it.\" What's one reason that's risky, and what would you tell them?",
+        "Why is always running git add . risky?",
       hint: "Think about secrets, or about clean, one-idea snapshots.",
       exampleAnswer:
         "git add . grabs everything, including files you didn't intend — like secrets that would live in history forever. I'd tell them to check git status first and stage by name when anything looks private.",

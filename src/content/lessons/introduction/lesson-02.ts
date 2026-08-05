@@ -212,7 +212,7 @@ export const lesson02: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Your friend emails you the \"latest\" version of a group project — but your version has changes they don't. In your own words, what problem is this, and which of the three Git problems does it match?",
+        "Two copies of a project don't match. Which of Git's three problems is this?",
       hint: "Two people changed the same file at the same time. That's the working-together problem — the same one Git solves.",
       exampleAnswer:
         "This is the sharing problem. We both edited our own copies and now they don't match. Git solves it by letting everyone work on their own copy and then carefully merging the changes together.",

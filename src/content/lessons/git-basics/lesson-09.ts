@@ -188,7 +188,7 @@ export const lesson09: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "git status shows: one file under \"Changes to be committed\", one under \"Changes not staged for commit\", and one under \"Untracked files\". In your own words, what do the three files have in common, and what's different?",
+        "git status groups files into three sections. What are they?",
       hint: "Think about which room each file is in — staging area, working tree with an old snapshot, or brand new.",
       exampleAnswer:
         "All three are files I've edited or created. The staged one is waiting in the staging area for a commit. The unstaged one has changes Git sees but I haven't picked. The untracked one is brand new with no history yet.",

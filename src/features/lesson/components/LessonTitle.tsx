@@ -10,7 +10,7 @@ export function LessonTitle({ lesson }: { lesson: ContentLesson }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
-      className="flex flex-col gap-5 border-b border-border-subtle pb-10"
+      className="flex flex-col gap-4 border-b border-border-subtle pb-8"
     >
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="neutral">{titleCase(lesson.meta.module)}</Badge>
@@ -20,10 +20,10 @@ export function LessonTitle({ lesson }: { lesson: ContentLesson }) {
           {formatDuration(lesson.meta.durationMinutes ?? 0)} read
         </span>
       </div>
-      <h1 className="text-4xl font-semibold tracking-tight text-text sm:text-5xl">
+      <h1 className="text-3xl font-semibold tracking-tight text-text sm:text-4xl">
         {lesson.title}
       </h1>
-      <p className="max-w-2xl text-lg leading-relaxed text-text-secondary">
+      <p className="max-w-2xl text-base leading-relaxed text-text-secondary">
         {lesson.description}
       </p>
     </motion.header>

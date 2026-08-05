@@ -24,7 +24,7 @@ function Stat({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-border-subtle bg-base-subtle/40 px-3 py-2.5">
+    <div className="flex items-center gap-2.5 rounded-xl border border-border-subtle bg-base-subtle/40 px-3 py-2">
       <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-base-subtle text-text-muted">
         {icon}
       </span>
@@ -56,7 +56,7 @@ export function ProfileCard({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="flex items-center gap-3 border-b border-border-subtle bg-base-subtle/50 px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
         <span
           className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-2xl"
           aria-hidden="true"
@@ -89,7 +89,7 @@ export function ProfileCard({ className }: { className?: string }) {
         </span>
       </div>
 
-      <div className="grid gap-2.5 p-5 sm:grid-cols-2">
+      <div className="grid gap-2 p-4 sm:grid-cols-2">
         <Stat
           icon={<Flame className="size-3.5" aria-hidden="true" />}
           label="Current streak"

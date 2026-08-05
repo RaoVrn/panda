@@ -21,6 +21,7 @@ import {
 import type { ContentLesson, CourseModule } from "@/content/schema";
 import { isModuleUnlocked, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
+import { estimateMinutes } from "@/content/duration";
 import { cn, formatDuration, percentComplete } from "@/lib/utils";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { lessonStatus, moduleProgress, type LessonProgressState } from "@/features/progress/lessonProgress";
@@ -48,11 +49,13 @@ const LessonItem = memo(function LessonItem({
   status,
   current,
   onNavigate,
+  lockHint,
 }: {
   lesson: ContentLesson;
   status: ReturnType<typeof lessonStatus>;
   current: boolean;
   onNavigate?: () => void;
+  lockHint?: string;
 }) {
   const statusIcon =
     status === "completed" ? (
@@ -70,7 +73,7 @@ const LessonItem = memo(function LessonItem({
   const inner = (isActive: boolean) => (
     <span
       className={cn(
-        "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors",
         isActive || current
           ? "bg-accent-soft font-medium text-text ring-1 ring-inset ring-accent/20"
           : "text-text-secondary hover:bg-base-subtle hover:text-text",
@@ -98,8 +101,12 @@ const LessonItem = memo(function LessonItem({
 
   if (status === "locked") {
     return (
-      <li aria-disabled="true" title="Locked">
-        <span className="cursor-not-allowed">{inner(false)}</span>
+      <li
+        aria-disabled="true"
+        title={lockHint ?? "Complete previous lesson first."}
+        className="cursor-not-allowed"
+      >
+        <span>{inner(false)}</span>
       </li>
     );
   }
@@ -136,7 +143,7 @@ function ModuleGroup({
   const remaining = progress.total - progress.completed;
   const estMin = lessons
     .filter((l) => !state.completedLessonIds.includes(l.id))
-    .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0);
+    .reduce((sum, l) => sum + estimateMinutes(l), 0);
   const locked = isModuleUnlocked(module.id, state.completedLessonIds) === false;
   const comingSoon = lessons.length === 0;
 
@@ -204,6 +211,11 @@ function ModuleGroup({
               status={lessonStatus(lesson, state)}
               current={lesson.id === currentLessonId}
               onNavigate={onNavigate}
+              lockHint={
+                locked
+                  ? "Complete the previous section first."
+                  : "Complete previous lesson first."
+              }
             />
           ))}
         </ul>
@@ -310,7 +322,7 @@ export function CourseSidebar({
 
   return (
     <div className="flex h-full flex-col bg-base-elevated">
-      <div className="flex items-center justify-between gap-2 px-4 pb-3 pt-5">
+      <div className="flex items-center justify-between gap-2 px-4 pb-3 pt-4">
         <Link
           to="/course"
           className="flex items-center gap-2 font-semibold"
@@ -335,7 +347,7 @@ export function CourseSidebar({
 
       {/* Level + streak summary */}
       <div className="px-4 pb-3">
-        <div className="rounded-xl border border-border-subtle bg-base-subtle/50 px-3 py-2.5">
+        <div className="rounded-xl border border-border-subtle bg-base-subtle/50 px-3 py-2">
           <div className="flex items-baseline gap-2">
             <span className="text-sm font-semibold text-text">Level {level.level}</span>
             <span className="ml-auto text-xs tabular-nums text-text-muted">{level.xp} XP</span>

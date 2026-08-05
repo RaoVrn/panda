@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
   Eye,
   EyeOff,
   Lightbulb,
+  RotateCcw,
   ShieldCheck,
-  Sparkles,
   Target,
 } from "lucide-react";
 import type { ContentPracticeBlock } from "@/content/schema";
+import { Button } from "@/components/ui/Button";
 import { useReportAi } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { cn } from "@/lib/utils";
@@ -25,12 +26,12 @@ function Disclosure({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="overflow-hidden rounded-xl border border-border-subtle bg-base-subtle/40">
+    <div className="overflow-hidden rounded-lg border border-border-subtle bg-base-subtle/30">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center gap-2 px-4 py-3 text-xs font-medium text-text-muted transition-colors hover:text-text"
+        className="flex w-full items-center gap-1.5 px-3 py-2 text-xs font-medium text-text-muted transition-colors hover:text-text"
       >
         {icon}
         {label}
@@ -39,7 +40,7 @@ function Disclosure({
           transition={{ duration: 0.15 }}
           className="ml-auto flex"
         >
-          <ChevronDown className="size-3.5" aria-hidden="true" />
+          <ChevronDown className="size-3" aria-hidden="true" />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -49,10 +50,10 @@ function Disclosure({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 text-xs leading-relaxed text-text-secondary">
+            <div className="px-3 pb-3 text-xs leading-relaxed text-text-secondary">
               {children}
             </div>
           </motion.div>
@@ -81,31 +82,42 @@ function feedbackFor(answer: string): { tone: "great" | "good" | "nudge"; messag
   if (hits.length >= 2) {
     return {
       tone: "great",
-      message: `Nice. You said it yourself: ${hits.slice(0, 2).join(" and ")}. That’s exactly the superpower Git gives you.`,
+      message: `Nice. You said it: ${hits.slice(0, 2).join(" + ")}.`,
     };
   }
   if (hits.length === 1) {
     return {
       tone: "good",
-      message: `You mentioned “${hits[0]}”. You’re right there. Compare your answer with the sample below.`,
+      message: `Good. You mentioned “${hits[0]}”. Compare with the sample answer.`,
     };
   }
   return {
     tone: "nudge",
-    message:
-      "You’re thinking about it. Need a nudge? Press “Stuck? Reveal a hint” below, then try again.",
+    message: "Close. Tap “Need a hint?” and try again.",
   };
 }
 
+export interface PracticeBlockProps {
+  block: ContentPracticeBlock;
+  /**
+   * Feature flag so mini challenges can later be hidden via user preferences.
+   * When false the component renders nothing.
+   */
+  showMiniChallenge?: boolean;
+}
+
 /**
- * Mini challenge: a tiny mission the learner answers in their own words. An
- * instant, friendly check responds naturally based on what they wrote, then
- * invites them to compare with a sample answer. No real AI here. Just clear,
- * encouraging feedback that never says "wrong".
+ * Mini challenge: a 30-second checkpoint, not an assignment. Question → answer
+ * → check, all in one glance. Hints and sample answers stay collapsed. No
+ * exam vibes — just a quick nudge to think before moving on.
  */
-export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
+export function PracticeBlock({
+  block,
+  showMiniChallenge = true,
+}: PracticeBlockProps) {
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+  const taRef = useRef<HTMLTextAreaElement>(null);
 
   const recordPractice = useProgressStore((state) => state.recordPractice);
 
@@ -121,6 +133,16 @@ export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
     [block.description, checked],
   );
 
+  // Auto-grow the answer box only as the learner types.
+  useEffect(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 128) + "px";
+  }, [answer]);
+
+  if (!showMiniChallenge) return null;
+
   const trimmed = answer.trim();
   const feedback = feedbackFor(trimmed);
 
@@ -129,136 +151,112 @@ export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
     setChecked(true);
   };
 
+  const reset = () => {
+    setAnswer("");
+    setChecked(false);
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-      className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card"
-    >
-      <div className="flex items-center gap-2.5 border-b border-border-subtle bg-base-subtle/50 px-5 py-4">
-        <Target className="size-4 text-accent-hover" aria-hidden="true" />
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
-          {block.title ?? "Mini challenge"}
-        </p>
+    <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
+      {/* Question */}
+      <div className="flex items-start gap-2.5 px-4 py-3">
+        <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md bg-accent-soft">
+          <Target className="size-3.5 text-accent-hover" aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-accent-hover">
+            {block.title ?? "Mini challenge"}
+          </p>
+          <p className="mt-0.5 text-sm leading-snug text-text">{block.description}</p>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-5 p-5">
-        <div className="rounded-xl border border-border-subtle bg-base-subtle/50 p-4">
-          <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-text-muted">
-            <Sparkles className="size-3.5 text-accent-hover" aria-hidden="true" />
-            Your mission
-          </p>
-          <p className="text-sm leading-relaxed text-text">{block.description}</p>
-        </div>
+      {/* Answer + check */}
+      <div className="border-t border-border-subtle px-4 py-3">
+        <textarea
+          ref={taRef}
+          value={answer}
+          onChange={(event) => {
+            setAnswer(event.target.value);
+            setChecked(false);
+          }}
+          rows={2}
+          placeholder="Write your answer…"
+          aria-label="Your answer"
+          className="block w-full resize-none rounded-lg border border-border-subtle bg-base-subtle/40 px-3 py-2 text-sm leading-relaxed text-text placeholder:text-text-muted transition-colors focus:border-border-strong focus:bg-base-subtle focus:outline-none"
+        />
 
-        <div>
-          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-text-muted">
-            Your answer
-          </p>
-          <textarea
-            value={answer}
-            onChange={(event) => {
-              setAnswer(event.target.value);
-              setChecked(false);
-            }}
-            rows={4}
-            placeholder="Write it in your own words…"
-            aria-label="Your answer"
-            className="w-full resize-y rounded-xl border border-border-subtle bg-base-subtle/40 px-4 py-3 text-sm leading-relaxed text-text placeholder:text-text-muted transition-colors focus:border-border-strong focus:bg-base-subtle focus:outline-none"
-          />
-          <div className="mt-1.5 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setAnswer("");
-                setChecked(false);
-              }}
-              disabled={!trimmed}
-              className="text-xs text-text-muted transition-colors hover:text-text disabled:pointer-events-none disabled:opacity-40"
-            >
-              Reset answer
-            </button>
-            <span className="text-xs tabular-nums text-text-muted">
-              {answer.length} characters
-            </span>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={check}
-          disabled={!trimmed || checked}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-text-inverse ring-1 ring-inset ring-white/10 transition-colors hover:bg-accent-hover active:bg-accent-hover/85 disabled:pointer-events-none disabled:opacity-50"
-        >
-          <ShieldCheck className="size-4" aria-hidden="true" />
-          Check my answer
-        </button>
-
-        <AnimatePresence>
-          {checked && (
-            <motion.div
-              key="feedback"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-              className={cn(
-                "flex items-start gap-3 rounded-xl border px-4 py-3",
-                feedback.tone === "great"
-                  ? "border-accent/30 bg-accent-soft/50"
-                  : "border-warning/30 bg-warning-soft/50",
-              )}
-              aria-live="polite"
-            >
-              <span
+        <div className="mt-2 flex items-center gap-2">
+          <AnimatePresence>
+            {checked && (
+              <motion.p
+                key="feedback"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                aria-live="polite"
                 className={cn(
-                  "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full",
-                  feedback.tone === "great" ? "bg-accent text-base" : "bg-warning text-base",
+                  "mr-auto flex items-center gap-1.5 text-xs font-medium",
+                  feedback.tone === "great" ? "text-accent-hover" : "text-warning",
                 )}
               >
-                {feedback.tone === "great" ? (
-                  <ShieldCheck className="size-3.5" aria-hidden="true" />
-                ) : (
-                  <Sparkles className="size-3.5" aria-hidden="true" />
-                )}
-              </span>
-              <p className="text-sm leading-relaxed text-text-secondary">{feedback.message}</p>
-            </motion.div>
+                <ShieldCheck className="size-3.5" aria-hidden="true" />
+                {feedback.message}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {trimmed && !checked && (
+            <button
+              type="button"
+              onClick={reset}
+              aria-label="Reset answer"
+              className="flex size-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-base-subtle hover:text-text"
+            >
+              <RotateCcw className="size-3.5" aria-hidden="true" />
+            </button>
           )}
-        </AnimatePresence>
 
-        {block.hint && (
-          <Disclosure
-            label="Stuck? Reveal a hint"
-            icon={<Lightbulb className="size-3.5 text-warning" aria-hidden="true" />}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={check}
+            disabled={!trimmed || checked}
+            leftIcon={<ShieldCheck className="size-3.5" aria-hidden="true" />}
           >
-            {block.hint}
-          </Disclosure>
-        )}
-
-        {block.exampleAnswer && (
-          <Disclosure
-            label="Reveal a sample answer"
-            icon={
-              trimmed ? (
-                <Eye className="size-3.5 text-accent-hover" aria-hidden="true" />
-              ) : (
-                <EyeOff className="size-3.5 text-text-muted" aria-hidden="true" />
-              )
-            }
-          >
-            {block.exampleAnswer}
-          </Disclosure>
-        )}
-
-        {checked && block.exampleAnswer && (
-          <p className="text-xs text-text-muted">
-            Compare your idea with the sample above. A perfect answer never has to be word-for-word.
-          </p>
-        )}
+            {checked ? "Checked" : "Check answer"}
+          </Button>
+        </div>
       </div>
-    </motion.div>
+
+      {/* Hints — always collapsed */}
+      {(block.hint || block.exampleAnswer) && (
+        <div className="flex flex-wrap gap-2 border-t border-border-subtle bg-base-subtle/30 px-4 py-2.5">
+          {block.hint && (
+            <Disclosure
+              label="Need a hint?"
+              icon={<Lightbulb className="size-3 text-warning" aria-hidden="true" />}
+            >
+              {block.hint}
+            </Disclosure>
+          )}
+          {block.exampleAnswer && (
+            <Disclosure
+              label="Show sample answer"
+              icon={
+                trimmed ? (
+                  <Eye className="size-3 text-accent-hover" aria-hidden="true" />
+                ) : (
+                  <EyeOff className="size-3 text-text-muted" aria-hidden="true" />
+                )
+              }
+            >
+              {block.exampleAnswer}
+            </Disclosure>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

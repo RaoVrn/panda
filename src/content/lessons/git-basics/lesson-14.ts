@@ -157,7 +157,7 @@ export const lesson14: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "You accidentally broke a file you had already staged (git add'd). Will git restore <file> undo it? Why or why not?",
+        "Will git restore undo changes to a file you already staged?",
       hint: "Which room does plain git restore act on? What protects a staged file?",
       exampleAnswer:
         "No — plain git restore only undoes unstaged working-tree changes. Since I staged the file, it's in the staging area. I'd need git restore --staged first to unstage, then git restore to get the original back.",

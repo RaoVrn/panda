@@ -9,7 +9,7 @@ import type { ContentKeyTakeawaysBlock } from "@/content/schema";
 export function KeyTakeawaysBlock({ block }: { block: ContentKeyTakeawaysBlock }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
-      <div className="border-b border-border-subtle bg-base-subtle/50 px-5 py-4">
+      <div className="border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
           Key takeaways
         </p>
@@ -22,7 +22,7 @@ export function KeyTakeawaysBlock({ block }: { block: ContentKeyTakeawaysBlock }
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.25, delay: index * 0.05, ease: [0.2, 0.8, 0.2, 1] }}
-            className="flex items-start gap-3 px-5 py-3.5"
+            className="flex items-start gap-2.5 px-4 py-2.5"
           >
             <CheckCircle2
               className="mt-0.5 size-4 shrink-0 text-accent-hover"

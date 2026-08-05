@@ -201,7 +201,7 @@ export const lesson04: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "You just ran git init and git status says \"No commits yet\". In your own words: what does Git's filing cabinet look like right now?",
+        "You run git init and status says \"No commits yet\". What's inside Git's cabinet right now?",
       hint: "Think about what's in the cabinet when the notebook is brand new.",
       exampleAnswer:
         "The cabinet exists (the .git folder) but it's empty — there are no snapshots in it yet. Git has promised to protect the folder, but hasn't saved any versions because I haven't told it to save.",

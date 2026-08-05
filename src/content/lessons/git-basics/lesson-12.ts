@@ -207,7 +207,7 @@ export const lesson12: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "git log --oneline shows you five commits, newest first. In your own words, what does the top line's \"HEAD -> main\" badge mean?",
+        "What does the \"HEAD -> main\" badge mean in git log?",
       hint: "Remember the red dot on a map — where are you standing right now?",
       exampleAnswer:
         "The top line is the newest snapshot, and the badge means my current position is on the main branch at this exact commit. It's Git saying 'you are here'.",

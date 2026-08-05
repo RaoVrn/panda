@@ -12,6 +12,10 @@ import type { Quiz } from "@/content/schema";
 import { useStepPlayer } from "@/features/lesson/components/interactive/useStepPlayer";
 import { useReportAi } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
+import {
+  PASSING_SCORE,
+  maybeCompleteLessonById,
+} from "@/features/progress/progressService";
 import { Confetti } from "@/features/progress/components/Confetti";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +26,8 @@ interface AnswerState {
 
 export interface QuizCardProps {
   quiz: Quiz;
+  /** Lesson this quiz belongs to (for the completion gate). */
+  lessonId?: string;
 }
 
 /**
@@ -29,7 +35,7 @@ export interface QuizCardProps {
  * Picking an answer highlights the correct option, dims the rest (disabling
  * further clicks), and explains both the right and wrong choices.
  */
-export function QuizCard({ quiz }: QuizCardProps) {
+export function QuizCard({ quiz, lessonId }: QuizCardProps) {
   const player = useStepPlayer(quiz.questions.length);
   const [states, setStates] = useState<Record<string, AnswerState>>({});
   const [score, setScore] = useState(0);
@@ -48,6 +54,13 @@ export function QuizCard({ quiz }: QuizCardProps) {
       recordQuizResult(quiz.id, score, quiz.questions.length);
     }
   }, [quizComplete, quiz.id, score, quiz.questions.length, recordQuizResult]);
+
+  // Passing the quiz is the last completion gate — complete the lesson if the
+  // other gates (read + interactive) already passed.
+  const passed = quizComplete && score / quiz.questions.length >= PASSING_SCORE;
+  useEffect(() => {
+    if (passed && lessonId) maybeCompleteLessonById(lessonId);
+  }, [passed, lessonId]);
 
   const question = quiz.questions[player.step];
 
@@ -105,7 +118,7 @@ export function QuizCard({ quiz }: QuizCardProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
       {quizComplete && score === quiz.questions.length && <Confetti />}
-      <div className="flex items-center gap-3 border-b border-border-subtle px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-border-subtle px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
           Quiz
         </p>
@@ -138,7 +151,7 @@ export function QuizCard({ quiz }: QuizCardProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.25, ease: [0.2, 0.8, 0.2, 1] }}
-          className="flex flex-col gap-4 p-5"
+          className="flex flex-col gap-4 p-4"
         >
           <p className="text-base font-medium leading-snug text-text">
             {question.prompt}
@@ -236,7 +249,32 @@ export function QuizCard({ quiz }: QuizCardProps) {
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex items-center gap-2 border-t border-border-subtle bg-base-subtle/30 px-4 py-3">
+      <AnimatePresence initial={false}>
+        {quizComplete && !passed && (
+          <motion.div
+            key="fail"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="flex items-start gap-2.5 border-t border-warning/30 bg-warning-soft/40 px-5 py-3.5">
+              <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-warning/20">
+                <RotateCcw className="size-3 text-warning" aria-hidden="true" />
+              </span>
+              <p className="text-sm leading-relaxed text-text-secondary">
+                <span className="font-semibold text-text">Almost there.</span>{" "}
+                Review the lesson and try again. You need 80% ({" "}
+                {Math.ceil(quiz.questions.length * PASSING_SCORE)} of{" "}
+                {quiz.questions.length}) to pass.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex items-center gap-2 border-t border-border-subtle bg-base-subtle/30 px-3 py-2.5">
         <button
           type="button"
           disabled={player.isFirst}

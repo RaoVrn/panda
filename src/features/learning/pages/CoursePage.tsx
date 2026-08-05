@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import type { JSX } from "react";
 import { isModuleUnlocked, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
+import { estimateMinutes } from "@/content/duration";
 import { cn, percentComplete, formatDuration } from "@/lib/utils";
 import { useProgressStore } from "@/features/progress/progressStore";
 import {
@@ -23,6 +24,7 @@ import {
   useTodayXp,
 } from "@/features/progress/hooks";
 import { currentLesson } from "@/features/progress/lessonProgress";
+import { lessonXp } from "@/features/progress/xp";
 import { rankForXp, nextRank } from "@/features/progress/ranks";
 import { AchievementsGrid } from "@/features/progress/components/AchievementsGrid";
 import { ProfileCard } from "@/features/progress/components/ProfileCard";
@@ -61,7 +63,7 @@ export function CoursePage() {
     () =>
       lessons
         .filter((l) => !completedLessonIds.includes(l.id))
-        .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0),
+        .reduce((sum, l) => sum + estimateMinutes(l), 0),
     [lessons, completedLessonIds],
   );
 
@@ -96,7 +98,7 @@ export function CoursePage() {
       <LearningCanvas>
         <div className="flex flex-col gap-6">
           {/* Hero */}
-          <Card className="overflow-hidden p-8">
+          <Card className="overflow-hidden p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-xl">
                 <p className="flex items-center gap-2 text-sm font-medium text-accent-hover">
@@ -116,12 +118,11 @@ export function CoursePage() {
                         : "Let's keep the momentum going."}
                 </p>
 
-                <div className="mt-6 flex flex-col gap-4">
+                <div className="mt-5">
                   {/* One clear CTA */}
                   {next ? (
                     <Link to={`/lesson/${next.slug}`} className="inline-block">
                       <Button
-                        size="lg"
                         rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
                       >
                         Continue Learning
@@ -129,20 +130,14 @@ export function CoursePage() {
                     </Link>
                   ) : (
                     <Link to={`/lesson/${lessons[0]?.slug ?? "/course"}`} className="inline-block">
-                      <Button size="lg">Review a lesson</Button>
+                      <Button>Review a lesson</Button>
                     </Link>
                   )}
-
-                  <p className="text-xs text-text-muted">
-                    {next
-                      ? `Up next: ${next.title}`
-                      : "Every lesson is ready to revisit whenever you like."}
-                  </p>
                 </div>
               </div>
 
               {/* Level + XP + daily goal */}
-              <div className="w-full max-w-xs shrink-0 rounded-2xl border border-border-subtle bg-base-subtle/40 p-5">
+              <div className="w-full max-w-xs shrink-0 rounded-2xl border border-border-subtle bg-base-subtle/40 p-4">
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm font-semibold text-text">
                     Level {level.level}
@@ -168,7 +163,7 @@ export function CoursePage() {
                   {level.remaining} XP to level {level.level + 1}
                 </p>
 
-                <div className="mt-4 border-t border-border-subtle pt-4">
+                <div className="mt-3 border-t border-border-subtle pt-3">
                   <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                     <Target className="size-3.5 text-accent-hover" aria-hidden="true" />
                     Today's goal
@@ -180,7 +175,7 @@ export function CoursePage() {
                     >
                       <p className="mt-1.5 text-sm leading-relaxed text-text-secondary transition-colors group-hover:text-text">
                         Finish “{next.title}” to earn{" "}
-                        {next.xpReward ?? 50} XP and keep your streak alive.
+                        {lessonXp(next)} XP and keep your streak alive.
                       </p>
                     </Link>
                   ) : (
@@ -196,10 +191,10 @@ export function CoursePage() {
             </div>
 
             {/* Quick stats row */}
-            <div className="mt-8 grid gap-3 border-t border-border-subtle pt-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-6 grid gap-3 border-t border-border-subtle pt-5 sm:grid-cols-2 lg:grid-cols-4">
               {milestones.map((m) => (
                 <div key={m.label} className="flex items-center gap-2.5">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-subtle text-text-muted">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-base-subtle text-text-muted">
                     {m.icon}
                   </span>
                   <div className="min-w-0">
@@ -214,7 +209,7 @@ export function CoursePage() {
           <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
             <div className="flex flex-col gap-6">
               {/* Course journey */}
-              <Card className="p-6">
+              <Card className="p-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-text-secondary">
                     Your journey
@@ -233,12 +228,12 @@ export function CoursePage() {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted">
+                <p className="mt-2.5 flex items-center gap-1.5 text-xs text-text-muted">
                   <CheckCircle2 className="size-3.5" aria-hidden="true" />
                   {completedLessonIds.length} of {lessons.length} lessons completed
                 </p>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
                   {modules.map((m) => {
                     const moduleLessons_ = moduleLessons(m.id);
                     const firstLesson = moduleLessons_[0];
@@ -250,7 +245,7 @@ export function CoursePage() {
                     const modulePct = percentComplete(done, total);
                     const estMin = moduleLessons_
                       .filter((l) => !completedLessonIds.includes(l.id))
-                      .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0);
+                      .reduce((sum, l) => sum + estimateMinutes(l), 0);
                     const locked =
                       moduleLessons_.length > 0 &&
                       !isModuleUnlocked(m.id, completedLessonIds);
@@ -300,7 +295,7 @@ export function CoursePage() {
                       <div
                         key={m.id}
                         className={cn(
-                          "flex flex-col gap-2.5 rounded-xl border border-border-subtle bg-base-subtle px-4 py-3",
+                          "flex flex-col gap-2 rounded-xl border border-border-subtle bg-base-subtle px-3.5 py-3",
                           clickable &&
                             "transition-[color,background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-border hover:bg-base-subtle",
                         )}
@@ -308,7 +303,7 @@ export function CoursePage() {
                         {clickable ? (
                           <Link
                             to={`/lesson/${firstLesson!.slug}`}
-                            className="flex flex-col gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                            className="flex flex-col gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                             aria-label={`Open ${m.title}: ${firstLesson!.title}`}
                           >
                             {inner}
@@ -323,15 +318,15 @@ export function CoursePage() {
               </Card>
 
               {/* Badges */}
-              <Card className="p-6">
+              <Card className="p-5">
                 <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
                   <Sparkles className="size-4 text-accent-hover" aria-hidden="true" />
                   Your Panda Badges
                 </h2>
-                <p className="mt-2 text-xs leading-relaxed text-text-muted">
+                <p className="mt-1.5 text-xs leading-relaxed text-text-muted">
                   Complete lessons, ace quizzes and ask Panda AI to earn your first badge.
                 </p>
-                <AchievementsGrid className="mt-4" />
+                <AchievementsGrid className="mt-3" />
               </Card>
             </div>
 

@@ -65,13 +65,13 @@ export function ToneBox({ tone, title, children, className }: ToneBoxProps) {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
       className={cn(
-        "flex items-start gap-3 rounded-2xl border p-5",
+        "flex items-start gap-2.5 rounded-2xl border p-4",
         style.border,
         style.bg,
         className,
       )}
     >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-base/40">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-base/40">
         <Icon className={cn("size-4", style.iconColor)} aria-hidden="true" />
       </span>
       <div className="min-w-0 flex-1">

@@ -170,7 +170,7 @@ export const lesson13: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "A diff shows one red line and one green line. In your own words, what happened to that file?",
+        "A diff shows one red line and one green line. What happened?",
       hint: "Red = what left, green = what arrived.",
       exampleAnswer:
         "One line was removed (the red one) and a different line was added (the green one). Something in the file was replaced with something new.",

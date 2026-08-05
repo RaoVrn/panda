@@ -1,22 +1,24 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
-  Clock,
+  CheckCircle2,
   Flag,
+  RotateCcw,
   Trophy,
-  Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import type { ContentLesson } from "@/content/schema";
-import { allLessons } from "@/content/lessons";
 import { Button } from "@/components/ui/Button";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { useReadingStore } from "@/stores/readingStore";
+import {
+  completionCheck,
+  maybeCompleteLesson,
+} from "@/features/progress/progressService";
+import { lessonXp } from "@/features/progress/xp";
+import { estimateMinutes } from "@/content/duration";
 import { Confetti } from "@/features/progress/components/Confetti";
-import { XP_REWARDS } from "@/features/progress/xp";
-import { cn } from "@/lib/utils";
 
 const fadeUp = {
   initial: { opacity: 0, y: 10 },
@@ -25,19 +27,14 @@ const fadeUp = {
   transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] },
 } as const;
 
-function Stat({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
-  return (
-    <span
-      className={cn(
-        "flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium",
-        accent
-          ? "bg-accent-soft text-accent-hover"
-          : "bg-base-subtle text-text-secondary",
-      )}
-    >
-      {children}
-    </span>
-  );
+function scrollToBlock(blockId: string) {
+  document
+    .querySelector(`[data-block-id="${blockId}"]`)
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export interface LessonSummaryProps {
@@ -47,37 +44,38 @@ export interface LessonSummaryProps {
 }
 
 /**
- * A compact, satisfying finish. Teach deeply during the lesson; finish
- * quickly. Celebration, reward, takeaways and the next-lesson call to action
- * fit within one screen — no walls of text.
+ * A quick, rewarding finish — one panel, no stacked cards.
+ *
+ * Complete: Great job → reward line → key takeaways → next lesson CTA.
+ * Not complete yet: a short, honest gate listing what's left.
  */
-export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
-  const { completeLesson, completedLessonIds } = useProgressStore();
+export function LessonSummary({ lesson, next }: LessonSummaryProps) {
+  const isComplete = useProgressStore((state) =>
+    state.completedLessonIds.includes(lesson.id),
+  );
 
-  const startedAt = useProgressStore((s) => s.lessonStartTimes[lesson.id]);
-  const quizRecord = useProgressStore((s) => s.quizStats[lesson.id]);
+  const reading = useReadingStore((s) => s.readings[lesson.id]);
+  const interactiveTouched = useProgressStore(
+    (s) => s.interactiveTouched[lesson.id] === true,
+  );
+  const quiz = useProgressStore((s) => s.quizStats[lesson.id]);
 
+  // Keep the completion transition alive from the summary itself.
   useEffect(() => {
-    completeLesson(lesson.id, lesson.xpReward);
-  }, [lesson.id, lesson.xpReward, completeLesson]);
+    maybeCompleteLesson(lesson);
+  }, [lesson, isComplete, reading?.visited.length, interactiveTouched, quiz]);
 
-  const lessons = allLessons();
-  const index = lessons.findIndex((l) => l.id === lesson.id);
-  const number = index >= 0 ? index + 1 : 1;
-  const total = lessons.length;
-  const completedCount = lessons.filter((l) =>
-    completedLessonIds.includes(l.id),
-  ).length;
-  const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+  const check = completionCheck(lesson, {
+    visited: reading?.visited,
+    interactiveTouched,
+    quiz,
+  });
 
-  const lessonXp =
-    lesson.xpReward ?? XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
-  const timeSpentMin = startedAt
-    ? Math.max(1, Math.round((Date.now() - startedAt) / 60000))
-    : null;
-
+  const xp = lessonXp(lesson);
+  const minutes = estimateMinutes(lesson);
   const youLearned = lesson.meta.summary ?? [];
-  const why = lesson.meta.whyItMatters;
+  const quizBlock = lesson.blocks.find((b) => b.type === "quiz");
+  const quizFailed = quiz !== undefined && !check.quizPassed;
 
   return (
     <section aria-label="Lesson complete" className="pt-12">
@@ -88,151 +86,153 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
-        {/* 1 · Celebration + reward */}
-        <motion.div
-          {...fadeUp}
-          className="relative border-b border-border-subtle px-6 py-7 text-center"
-        >
-          <Confetti />
-          <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
-            Great job!
-          </h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            You finished “{lesson.title}”.
-          </p>
-          <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2">
-            <Stat accent>
-              <Zap className="size-3.5" aria-hidden="true" />
-              +{lessonXp} XP
-            </Stat>
-            {timeSpentMin !== null && (
-              <Stat>
-                <Clock className="size-3.5" aria-hidden="true" />
-                {timeSpentMin} min
-              </Stat>
-            )}
-            <Stat>
-              <Check className="size-3.5" aria-hidden="true" />
-              {youLearned.length} concepts
-            </Stat>
-            {quizRecord && (
-              <Stat>
-                <Trophy className="size-3.5" aria-hidden="true" />
-                Quiz {quizRecord.correct}/{quizRecord.total}
-              </Stat>
-            )}
-          </div>
-        </motion.div>
+        {isComplete ? (
+          <>
+            {/* Celebration + reward */}
+            <motion.div
+              {...fadeUp}
+              className="relative px-6 pb-1 pt-6 text-center"
+            >
+              <Confetti />
+              <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
+                Great job!
+              </h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                You finished “{lesson.title}”.
+              </p>
+              <p className="mt-3 text-sm">
+                <span className="font-semibold text-accent-hover">+{xp} XP</span>
+                <span className="mx-2 text-border-strong" aria-hidden="true">
+                  ·
+                </span>
+                {minutes} min
+                <span className="mx-2 text-border-strong" aria-hidden="true">
+                  ·
+                </span>
+                {youLearned.length} concepts
+              </p>
+            </motion.div>
 
-        {/* 2 · Takeaways */}
-        {youLearned.length > 0 && (
-          <motion.div
-            {...fadeUp}
-            className="border-b border-border-subtle px-6 py-4"
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-hover">
-              What you learned
-            </p>
-            <ul className="mt-2 grid gap-x-8 gap-y-1.5 sm:grid-cols-2">
-              {youLearned.map((item) => (
+            {/* Key takeaways */}
+            {youLearned.length > 0 && (
+              <motion.div {...fadeUp} className="px-6 pt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-hover">
+                  Key takeaways
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {youLearned.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-sm leading-snug text-text-secondary"
+                    >
+                      <Check
+                        className="mt-0.5 size-3.5 shrink-0 text-accent-hover"
+                        aria-hidden="true"
+                      />
+                      <span className="min-w-0">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+
+            {/* Next lesson CTA */}
+            <motion.div
+              {...fadeUp}
+              className="flex flex-col gap-4 px-6 pb-6 pt-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
+                  Next lesson
+                </p>
+                {next ? (
+                  <>
+                    <h3 className="mt-0.5 truncate text-lg font-semibold text-text">
+                      {next.title}
+                    </h3>
+                    <p className="mt-0.5 line-clamp-1 text-sm leading-snug text-text-secondary">
+                      {next.description}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-0.5 text-sm leading-snug text-text-secondary">
+                    The course is complete. Amazing work!
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="primary"
+                className="shrink-0"
+                href={next ? `/lesson/${next.slug}` : "/course"}
+                rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
+              >
+                {next ? "Continue" : "Done"}
+              </Button>
+            </motion.div>
+          </>
+        ) : (
+          /* ---------- Gate: not complete yet ---------- */
+          <motion.div {...fadeUp} className="px-6 py-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
+                Almost there!
+              </h2>
+              <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-text-secondary">
+                You've reached the end of “{lesson.title}”. Finish the last
+                steps to earn {xp} XP and unlock the next lesson.
+              </p>
+            </div>
+
+            <ul className="mx-auto mt-5 max-w-sm space-y-1.5">
+              {check.missing.map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-2 text-sm leading-snug text-text-secondary"
+                  className="flex items-center gap-2.5 rounded-lg border border-warning/30 bg-warning-soft/30 px-3.5 py-2 text-sm text-text-secondary"
                 >
-                  <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-                    <Check className="size-2.5 text-accent-hover" aria-hidden="true" />
+                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-warning/20">
+                    <RotateCcw className="size-2.5 text-warning" aria-hidden="true" />
                   </span>
-                  <span className="min-w-0">{item}</span>
+                  {item}
                 </li>
               ))}
             </ul>
-          </motion.div>
-        )}
 
-        {/* 3 · Why it matters — one or two sentences, no card */}
-        {why && (
-          <motion.p
-            {...fadeUp}
-            className="border-b border-border-subtle px-6 py-3.5 text-sm leading-relaxed text-text-secondary"
-          >
-            <span className="font-semibold text-text">Why it matters: </span>
-            {why}
-            {lesson.meta.motivation && (
-              <span className="mt-1 block text-text">{lesson.meta.motivation}</span>
-            )}
-          </motion.p>
-        )}
-
-        {/* 4 · Next lesson CTA */}
-        <motion.div
-          {...fadeUp}
-          className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
-        >
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
-              Next lesson
-            </p>
-            {next ? (
-              <>
-                <p className="mt-1 truncate text-lg font-semibold text-text">
-                  {next.title}
-                </p>
-                <p className="mt-0.5 line-clamp-2 text-sm leading-snug text-text-secondary">
-                  {next.description}
-                </p>
-              </>
-            ) : (
-              <p className="mt-1 text-sm leading-snug text-text-secondary">
-                The course is complete. Amazing work!
+            {quizFailed && (
+              <p className="mx-auto mt-3 max-w-sm text-center text-sm font-medium text-text-secondary">
+                <span className="text-text">Almost there. </span>Review the
+                lesson and try again. You need 80% on the quiz to pass.
               </p>
             )}
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {previous && (
-              <Button
-                variant="secondary"
-                href={`/lesson/${previous.slug}`}
-                leftIcon={<ArrowLeft className="size-4" aria-hidden="true" />}
-              >
-                Back
-              </Button>
-            )}
-            <Button
-              variant="primary"
-              href={next ? `/lesson/${next.slug}` : "/course"}
-              rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
-            >
-              {next ? "Continue" : "Done"}
-            </Button>
-          </div>
-        </motion.div>
 
-        {/* 5 · Progress — secondary */}
-        <div className="border-t border-border-subtle bg-base-subtle/40 px-6 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/course"
-              className="flex items-center gap-1.5 text-[11px] font-medium text-text-muted transition-colors hover:text-accent-hover"
-            >
-              <Flag className="size-3" aria-hidden="true" />
-              Module overview
-            </Link>
-            <span className="ml-auto text-[11px] tabular-nums text-text-muted">
-              {number} of {total} lessons · {percent}%
-            </span>
-          </div>
-          <div className="mt-2 flex gap-1" aria-hidden="true">
-            {lessons.map((l, i) => (
-              <span
-                key={l.id}
-                className={cn(
-                  "h-1 flex-1 rounded-full transition-colors",
-                  i <= index ? "bg-accent" : "bg-base-subtle",
-                )}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              {quizBlock && !check.quizPassed && (
+                <Button
+                  variant="secondary"
+                  onClick={() => scrollToBlock(quizBlock.id)}
+                  leftIcon={<Trophy className="size-4" aria-hidden="true" />}
+                >
+                  Jump to quiz
+                </Button>
+              )}
+              {!check.readDone && (
+                <Button
+                  variant="secondary"
+                  onClick={scrollToTop}
+                  leftIcon={<CheckCircle2 className="size-4" aria-hidden="true" />}
+                >
+                  Back to top
+                </Button>
+              )}
+              <Button
+                variant="primary"
+                href="/course"
+                leftIcon={<Flag className="size-4" aria-hidden="true" />}
+              >
+                Course overview
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

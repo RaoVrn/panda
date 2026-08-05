@@ -390,7 +390,7 @@ export const lesson01: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Your homework is almost finished. You reach to delete one bad paragraph and accidentally delete everything. How would Git help you survive this? Answer in your own words.",
+        "You accidentally delete your whole homework. How does Git help you survive?",
       hint: "Remember the save point. Git kept a snapshot of your work a little while ago. What can you do with it?",
       exampleAnswer:
         "I wouldn’t panic, because Git saved snapshots as I worked. I’d jump back to the snapshot from a while ago, get my work back, and only lose the last tiny bit, not everything.",

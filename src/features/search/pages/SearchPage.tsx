@@ -87,7 +87,7 @@ export function SearchPage() {
           </ul>
         </div>
       ) : groups && (groups.moduleHits.length > 0 || orderedSlugs.length > 0) ? (
-        <div className="mt-10 flex flex-col gap-8">
+        <div className="mt-8 flex flex-col gap-6">
           {groups.moduleHits.length > 0 && (
             <section>
               <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -160,7 +160,7 @@ export function SearchPage() {
           )}
         </div>
       ) : (
-        <Card className="mt-10 flex flex-col items-center p-10 text-center">
+        <Card className="mt-8 flex flex-col items-center p-8 text-center">
           <span className="flex size-12 items-center justify-center rounded-2xl bg-base-subtle">
             <Search className="size-5 text-text-muted" aria-hidden="true" />
           </span>

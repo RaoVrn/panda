@@ -29,7 +29,7 @@ export function AchievementsGrid({ className }: { className?: string }) {
 
   return (
     <>
-      <div className={cn("grid gap-3 sm:grid-cols-2", className)}>
+      <div className={cn("grid gap-2.5 sm:grid-cols-2", className)}>
         {ACHIEVEMENTS.map((achievement, index) => {
           const unlocked = Boolean(achievements[achievement.id]);
           return (
@@ -42,7 +42,7 @@ export function AchievementsGrid({ className }: { className?: string }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.04, ease: [0.2, 0.8, 0.2, 1] }}
               className={cn(
-                "relative flex items-start gap-3 overflow-hidden rounded-xl border px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                "relative flex items-start gap-2.5 overflow-hidden rounded-xl border px-3.5 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                 unlocked
                   ? "border-accent/30 bg-accent-soft/40"
                   : "border-border-subtle bg-base-subtle/40 opacity-70",
@@ -60,7 +60,7 @@ export function AchievementsGrid({ className }: { className?: string }) {
               )}
               <span
                 className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-xl border text-xl",
+                  "flex size-9 shrink-0 items-center justify-center rounded-xl border text-xl",
                   unlocked
                     ? "border-accent/40 bg-card"
                     : "border-border-subtle bg-card grayscale",

@@ -168,7 +168,7 @@ export const lesson07: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "You drop a brand-new file onto your project's counter. Git says it's \"untracked\". In your own words, what does untracked mean, and how does the file become tracked?",
+        "What does it mean when Git calls a brand-new file \"untracked\"?",
       hint: "Untracked = Git sees it but has no memory of it. What command makes it part of a snapshot?",
       exampleAnswer:
         "Untracked means Git notices the file but has never saved it, so it has no history of it. I'd git add it and commit it once — after that, Git tracks every change to it.",

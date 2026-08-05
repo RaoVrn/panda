@@ -184,7 +184,7 @@ export const lesson06: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Explain to a friend what HEAD is — without using the word \"pointer\" if you can avoid it.",
+        "Explain HEAD to a friend without the word \"pointer\".",
       hint: "Remember the red dot on a map that says 'you are here'.",
       exampleAnswer:
         "HEAD is Git's 'you are here' marker. It tells Git which branch I'm working on right now, so new snapshots get added to that branch.",

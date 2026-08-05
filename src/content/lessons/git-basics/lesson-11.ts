@@ -178,7 +178,7 @@ export const lesson11: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Write a good commit message for this change: you fixed a bug where the search box crashed when the page was empty.",
+        "Write a commit message for: you fixed the search box crashing on empty pages.",
       hint: "Present tense, one line, what + why.",
       exampleAnswer:
         'git commit -m "Fix search crash when there is no content" — it says what changed and why, in one clear line.',

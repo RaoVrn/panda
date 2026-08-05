@@ -204,7 +204,7 @@ export const lesson03: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "A friend says the terminal is only for hackers. How would you explain, in one sentence, what a terminal really is?",
+        "Explain what a terminal is, in one sentence.",
       hint: "Think about the word “conversation”. What are you doing when you type a command?",
       exampleAnswer:
         "The terminal is just a text window where you talk to your computer. You type a short command, press Enter, and it answers — it's how developers tell their computer what to do.",

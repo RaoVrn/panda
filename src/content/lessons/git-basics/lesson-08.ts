@@ -180,7 +180,7 @@ export const lesson08: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "You edited three files but only want two in this snapshot. You already ran git add on all three by mistake. What do you do?",
+        "You accidentally staged three files but only want two. What do you do?",
       hint: "There's an --staged command that takes a file back out of the staging area.",
       exampleAnswer:
         "I'd run git restore --staged on the file I don't want in this snapshot. It leaves the staging area and goes back to the working tree, keeping its changes, so I can commit the other two cleanly.",

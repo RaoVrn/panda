@@ -232,7 +232,7 @@ export const lesson05: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "You have three files. You want only two of them in your next snapshot. In your own words, what do you type, and why is the third file left out?",
+        "You have three files but want only two in the next snapshot. What do you type?",
       hint: "git add only the two you want. The staging area is where you decide.",
       exampleAnswer:
         "I'd type `git add` with the names of the two files I want. The third one stays out because git add only stages the files I tell it to — that's the point of the staging area, it's my filter.",

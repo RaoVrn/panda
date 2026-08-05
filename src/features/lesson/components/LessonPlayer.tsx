@@ -9,6 +9,7 @@ import {
 } from "@/features/lesson/lessonModeContext";
 import { LessonModeToggle } from "@/features/lesson/components/LessonModeToggle";
 import { useReadingStore } from "@/stores/readingStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 
 function getScrollParent(node: Element | null): Element | null {
   let el = node;
@@ -39,6 +40,13 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
   const { readings, setScroll, markVisited } = useReadingStore();
   const reading = readings[lessonId];
   const { mode, setMode } = useLessonModeStore();
+
+  // Interactive mode is one of the lesson's completion gates, so record that
+  // the learner explored it.
+  const markInteractive = useProgressStore((state) => state.markInteractive);
+  useEffect(() => {
+    if (mode === "interactive") markInteractive(lessonId);
+  }, [mode, lessonId, markInteractive]);
 
   const modeValue = useMemo<LessonModeValue>(
     () => ({ mode, setMode }),

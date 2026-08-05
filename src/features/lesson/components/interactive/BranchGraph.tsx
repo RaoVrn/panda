@@ -262,7 +262,7 @@ export function BranchGraph({
       ref={ref}
       className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card"
     >
-      <div className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
+      <div className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
         <GitBranch className="size-3.5 text-accent-hover" aria-hidden="true" />
         <p className="text-sm font-medium text-text">{title ?? "Branch graph"}</p>
       </div>

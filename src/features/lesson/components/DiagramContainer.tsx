@@ -35,7 +35,7 @@ export function DiagramContainer({
       {...props}
     >
       {title && (
-        <figcaption className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
+        <figcaption className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
           {Icon && <Icon className="size-3.5 text-accent-hover" aria-hidden="true" />}
           <p className="text-sm font-medium text-text">{title}</p>
           {caption && (
@@ -45,7 +45,7 @@ export function DiagramContainer({
           )}
         </figcaption>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
       {footer && <div className="bg-base-subtle/30">{footer}</div>}
     </figure>
   );
