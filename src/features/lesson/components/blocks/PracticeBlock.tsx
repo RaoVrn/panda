@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { ContentPracticeBlock } from "@/content/schema";
 import { useReportAi } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 import { cn } from "@/lib/utils";
 
 function Disclosure({
@@ -105,6 +106,13 @@ function feedbackFor(answer: string): { tone: "great" | "good" | "nudge"; messag
 export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+
+  const recordPractice = useProgressStore((state) => state.recordPractice);
+
+  // Award practice XP the moment the learner checks their answer.
+  useEffect(() => {
+    if (checked) recordPractice(block.id);
+  }, [checked, block.id, recordPractice]);
 
   useReportAi(
     {

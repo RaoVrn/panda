@@ -10,6 +10,7 @@ import { LearningCanvas } from "@/features/learning/layout/LearningCanvas";
 import { LessonRenderer } from "@/features/lesson/LessonRenderer";
 import { ScrollToTop } from "@/app/ScrollToTop";
 import { useAiContextStore } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 
 export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -20,10 +21,13 @@ export function LessonPage() {
   // Panda AI context is lesson-scoped: clear it when moving between lessons
   // (and when leaving the lesson for the course page).
   const resetAiContext = useAiContextStore((state) => state.reset);
+  const startLesson = useProgressStore((state) => state.startLesson);
+
   useEffect(() => {
     resetAiContext();
+    if (lesson) startLesson(lesson.id);
     return resetAiContext;
-  }, [slug, resetAiContext]);
+  }, [slug, lesson, resetAiContext, startLesson]);
 
   if (!lesson) {
     return (

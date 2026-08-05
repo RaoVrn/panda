@@ -133,15 +133,15 @@ export function FakeEditor({
         </span>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex items-end gap-1 overflow-x-auto bg-[#0d1117] px-2 pt-2">
+      {/* Tab bar (decorative preview, not interactive) */}
+      <div className="flex items-end gap-1 overflow-x-auto bg-[#0d1117] px-2 pt-2" role="tablist" aria-label="Open files">
         {defaultTabs.map((tab) => (
-          <button
+          <span
             key={tab.name}
-            type="button"
-            tabIndex={-1}
+            role="tab"
+            aria-selected={tab.active}
             className={cn(
-              "flex shrink-0 cursor-default items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-1.5 font-mono text-xs",
+              "flex shrink-0 cursor-default items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-1.5 font-mono text-xs select-none",
               tab.active
                 ? "border-[#30363d] bg-[#010409] text-[#e6edf3]"
                 : "border-transparent text-[#8b949e]",
@@ -150,7 +150,7 @@ export function FakeEditor({
             <span className="text-[10px] text-[#58a6ff]">{tab.icon}</span>
             {tab.name}
             {tab.modified && <span className="text-[#f0883e]">●</span>}
-          </button>
+          </span>
         ))}
       </div>
 

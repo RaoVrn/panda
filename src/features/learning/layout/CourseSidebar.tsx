@@ -1,13 +1,17 @@
-import { useMemo, useState, type JSX } from "react";
+import { memo, useMemo, useState, type JSX } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
   BookMarked,
   Check,
+  ChevronRight,
+  Clock,
+  Flame,
   Globe,
   Layers,
   Lock,
   PanelLeftClose,
   PanelLeftOpen,
+  Play,
   Rocket,
   Search,
   Sparkles,
@@ -15,13 +19,11 @@ import {
 } from "lucide-react";
 import type { ContentLesson, CourseModule } from "@/content/schema";
 import { modules } from "@/content/roadmap";
-import {
-  allLessons,
-  isLessonUnlocked,
-  moduleLessons,
-} from "@/content/lessons";
-import { cn, percentComplete } from "@/lib/utils";
-import { useProgressStore } from "@/stores/progressStore";
+import { allLessons, moduleLessons } from "@/content/lessons";
+import { cn, formatDuration, percentComplete } from "@/lib/utils";
+import { useProgressStore } from "@/features/progress/progressStore";
+import { lessonStatus, moduleProgress, type LessonProgressState } from "@/features/progress/lessonProgress";
+import { useLevel, useStreak } from "@/features/progress/hooks";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { IconButton } from "@/components/ui/IconButton";
 
@@ -39,50 +41,62 @@ const moduleIcons: Record<string, JSX.Element> = {
   rocket: <Rocket className="size-4" aria-hidden="true" />,
 };
 
-function LessonItem({
+const LessonItem = memo(function LessonItem({
   lesson,
-  completed,
-  locked,
+  status,
+  current,
+  onNavigate,
 }: {
   lesson: ContentLesson;
-  completed: boolean;
-  locked: boolean;
+  status: ReturnType<typeof lessonStatus>;
+  current: boolean;
+  onNavigate?: () => void;
 }) {
-  const statusIcon = completed ? (
-    <Check className="size-3.5 text-accent-hover" aria-hidden="true" />
-  ) : locked ? (
-    <Lock className="size-3.5 text-text-muted" aria-hidden="true" />
-  ) : (
-    <span className="font-mono text-[10px] text-text-muted">
-      {String(lesson.meta.order).padStart(2, "0")}
-    </span>
-  );
+  const statusIcon =
+    status === "completed" ? (
+      <Check className="size-3.5 text-accent-hover" aria-hidden="true" />
+    ) : status === "started" ? (
+      <Play className="size-3 text-accent-hover" aria-hidden="true" />
+    ) : status === "locked" ? (
+      <Lock className="size-3.5 text-text-muted" aria-hidden="true" />
+    ) : (
+      <span className="font-mono text-[10px] text-text-muted">
+        {String(lesson.meta.order).padStart(2, "0")}
+      </span>
+    );
 
   const inner = (isActive: boolean) => (
     <span
       className={cn(
         "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-        isActive
-          ? "bg-accent-soft font-medium text-text"
+        isActive || current
+          ? "bg-accent-soft font-medium text-text ring-1 ring-inset ring-accent/20"
           : "text-text-secondary hover:bg-base-subtle hover:text-text",
-        locked && "text-text-muted",
+        status === "locked" && "text-text-muted",
       )}
     >
       <span
         className={cn(
           "flex size-5 shrink-0 items-center justify-center",
-          completed && "text-accent-hover",
+          (status === "completed" || status === "started") && "text-accent-hover",
         )}
       >
         {statusIcon}
       </span>
       <span className="truncate">{lesson.title}</span>
+      {current && (
+        <span
+          aria-hidden="true"
+          className="ml-auto size-1.5 rounded-full bg-accent"
+          title="Continue here"
+        />
+      )}
     </span>
   );
 
-  if (locked) {
+  if (status === "locked") {
     return (
-      <li aria-disabled="true">
+      <li aria-disabled="true" title="Locked">
         <span className="cursor-not-allowed">{inner(false)}</span>
       </li>
     );
@@ -90,60 +104,122 @@ function LessonItem({
 
   return (
     <li>
-      <NavLink to={`/lesson/${lesson.slug}`} className="block">
+      <NavLink to={`/lesson/${lesson.slug}`} className="block" onClick={onNavigate}>
         {({ isActive }) => inner(isActive)}
       </NavLink>
     </li>
   );
-}
+});
 
 function ModuleGroup({
   module,
-  completedIds,
+  state,
   query,
+  currentLessonId,
+  onNavigate,
 }: {
   module: CourseModule;
-  completedIds: string[];
+  state: LessonProgressState;
   query: string;
+  currentLessonId?: string;
+  onNavigate?: () => void;
 }) {
   const lessons = moduleLessons(module.id);
   const visible = lessons.filter(
-    (l) =>
-      query === "" ||
-      l.title.toLowerCase().includes(query.toLowerCase()),
+    (l) => query === "" || l.title.toLowerCase().includes(query.toLowerCase()),
   );
+  const progress = moduleProgress(module.id, state);
+  const [open, setOpen] = useState(true);
+
+  const remaining = progress.total - progress.completed;
+  const estMin = lessons
+    .filter((l) => !state.completedLessonIds.includes(l.id))
+    .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0);
+  const locked =
+    lessons.length > 0 &&
+    !(lessons[0]!.meta.prerequisites ?? []).every((id) =>
+      state.completedLessonIds.includes(id),
+    );
 
   if (visible.length === 0) return null;
 
   return (
     <li className="flex flex-col gap-0.5">
-      <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-text-muted">
-        {module.title}
-      </p>
-      <ul className="flex flex-col gap-0.5">
-        {visible.map((lesson) => (
-          <LessonItem
-            key={lesson.id}
-            lesson={lesson}
-            completed={completedIds.includes(lesson.id)}
-            locked={!isLessonUnlocked(lesson, completedIds)}
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className="group flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-base-subtle"
+      >
+        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted group-hover:text-text">
+          {moduleIcons[module.icon ?? ""] ?? (
+            <BookMarked className="size-3.5" aria-hidden="true" />
+          )}
+          {module.title}
+        </span>
+        <span className="ml-auto flex items-center gap-1.5">
+          {progress.total > 0 && (
+            <span className="text-[10px] tabular-nums text-text-muted">
+              {progress.completed}/{progress.total}
+            </span>
+          )}
+          <ChevronRight
+            className={cn("size-3 text-text-muted transition-transform", open && "rotate-90")}
+            aria-hidden="true"
           />
-        ))}
-      </ul>
+        </span>
+      </button>
+
+      <div className="flex items-center justify-between gap-2 px-2 pb-1">
+        <div
+          role="progressbar"
+          aria-label={`${module.title} progress`}
+          aria-valuenow={progress.percent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          className="h-1 flex-1 overflow-hidden rounded-full bg-base-subtle"
+        >
+          <div
+            className="h-full rounded-full bg-accent transition-[width] duration-500"
+            style={{ width: `${progress.percent}%` }}
+          />
+        </div>
+        <span className="flex shrink-0 items-center gap-1 text-[10px] text-text-muted">
+          {locked ? (
+            <Lock className="size-2.5" aria-hidden="true" />
+          ) : (
+            <Clock className="size-2.5" aria-hidden="true" />
+          )}
+          {locked ? "Locked" : remaining > 0 ? `${formatDuration(estMin)} left` : "Done"}
+        </span>
+      </div>
+
+      {open && (
+        <ul className="flex flex-col gap-0.5">
+          {visible.map((lesson) => (
+            <LessonItem
+              key={lesson.id}
+              lesson={lesson}
+              status={lessonStatus(lesson, state)}
+              current={lesson.id === currentLessonId}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </ul>
+      )}
     </li>
   );
 }
 
-/**
- * Collapsed rail: shows only icons for each module and the collapse control.
- * Each icon links to the course overview so navigation stays possible.
- */
+/** Collapsed rail: module icons plus a level/streak summary. */
 function CollapsedRail({
-  completedIds,
   onToggle,
+  level,
+  streak,
 }: {
-  completedIds: string[];
   onToggle?: () => void;
+  level: number;
+  streak: number;
 }) {
   return (
     <div className="flex h-full flex-col items-center bg-base-elevated">
@@ -160,35 +236,35 @@ function CollapsedRail({
 
       <nav aria-label="Course" className="mt-4 flex-1 overflow-y-auto px-2">
         <ul className="flex flex-col items-center gap-1">
-          {modules.map((module) => {
-            const done = moduleLessons(module.id).filter((l) =>
-              completedIds.includes(l.id),
-            ).length;
-            const total = moduleLessons(module.id).length;
-            const complete = total > 0 && done === total;
-            return (
-              <li key={module.id}>
-                <Link
-                  to="/course"
-                  title={`${module.title} (${done}/${total})`}
-                  className={cn(
-                    "flex size-9 items-center justify-center rounded-lg transition-colors",
-                    complete
-                      ? "text-accent-hover"
-                      : "text-text-muted hover:bg-base-subtle hover:text-text",
-                  )}
-                >
-                  {moduleIcons[module.icon ?? ""] ?? (
-                    <BookMarked className="size-4" aria-hidden="true" />
-                  )}
-                </Link>
-              </li>
-            );
-          })}
+          {modules.map((module) => (
+            <li key={module.id}>
+              <Link
+                to="/course"
+                title={module.title}
+                className="flex size-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-base-subtle hover:text-text"
+              >
+                {moduleIcons[module.icon ?? ""] ?? (
+                  <BookMarked className="size-4" aria-hidden="true" />
+                )}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
 
-      <div className="px-2 py-3">
+      <div className="flex flex-col items-center gap-3 px-2 py-3">
+        <span
+          className="flex flex-col items-center gap-0.5 text-[10px] font-semibold text-accent-hover"
+          title={`Level ${level} · ${streak} day streak`}
+        >
+          Lv {level}
+        </span>
+        {streak > 0 && (
+          <span className="flex flex-col items-center gap-0.5 text-[10px] font-medium text-warning">
+            <Flame className="size-3.5" aria-hidden="true" />
+            {streak}
+          </span>
+        )}
         <IconButton label="Expand sidebar" onClick={onToggle}>
           <PanelLeftOpen className="size-4" aria-hidden="true" />
         </IconButton>
@@ -198,12 +274,17 @@ function CollapsedRail({
 }
 
 export function CourseSidebar({
+  currentSlug,
   onClose,
   collapsed = false,
   onToggle,
 }: CourseSidebarProps) {
-  const { completedLessonIds } = useProgressStore();
+  const { completedLessonIds, startedLessonIds } = useProgressStore();
+  const level = useLevel();
+  const streak = useStreak();
   const [query, setQuery] = useState("");
+
+  const state: LessonProgressState = { completedLessonIds, startedLessonIds };
 
   const total = allLessons();
   const pct = useMemo(
@@ -211,13 +292,24 @@ export function CourseSidebar({
     [completedLessonIds.length, total.length],
   );
 
+  const currentLessonId = useMemo(() => {
+    const next = total.find(
+      (lesson) =>
+        !completedLessonIds.includes(lesson.id) &&
+        !(lesson.meta.prerequisites ?? []).some((id) => !completedLessonIds.includes(id)),
+    );
+    return next?.id;
+  }, [total, completedLessonIds]);
+
   if (collapsed) {
-    return <CollapsedRail completedIds={completedLessonIds} onToggle={onToggle} />;
+    return (
+      <CollapsedRail onToggle={onToggle} level={level.level} streak={streak.current} />
+    );
   }
 
   return (
     <div className="flex h-full flex-col bg-base-elevated">
-      <div className="flex items-center justify-between gap-2 px-4 pb-4 pt-5">
+      <div className="flex items-center justify-between gap-2 px-4 pb-3 pt-5">
         <Link
           to="/course"
           className="flex items-center gap-2 font-semibold"
@@ -240,22 +332,59 @@ export function CourseSidebar({
         </div>
       </div>
 
-      <div className="px-4 pb-4">
-        <div className="mb-1.5 flex items-center justify-between text-xs">
-          <span className="text-text-secondary">Course progress</span>
-          <span className="font-medium text-accent-hover">{pct}%</span>
-        </div>
-        <div
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          className="h-1.5 overflow-hidden rounded-full bg-base-subtle"
-        >
-          <div
-            className="h-full rounded-full bg-accent transition-[width] duration-500"
-            style={{ width: `${pct}%` }}
-          />
+      {/* Level + streak summary */}
+      <div className="px-4 pb-3">
+        <div className="rounded-xl border border-border-subtle bg-base-subtle/50 px-3 py-2.5">
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-semibold text-text">Level {level.level}</span>
+            <span className="ml-auto text-xs tabular-nums text-text-muted">{level.xp} XP</span>
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <div
+              role="progressbar"
+              aria-label="Progress to next level"
+              aria-valuenow={Math.round(level.progress * 100)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="h-1.5 flex-1 overflow-hidden rounded-full bg-base-subtle"
+            >
+              <div
+                className="h-full rounded-full bg-accent transition-[width] duration-500"
+                style={{ width: `${level.progress * 100}%` }}
+              />
+            </div>
+            <span className="text-[10px] tabular-nums text-text-muted">
+              {level.remaining} XP
+            </span>
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted">
+            <span>
+              <span className="tabular-nums">{completedLessonIds.length}</span>/{total.length}{" "}
+              lessons
+            </span>
+            {streak.current > 0 && (
+              <span className="flex items-center gap-1 font-medium text-warning">
+                <Flame className="size-3" aria-hidden="true" />
+                {streak.current} day streak
+              </span>
+            )}
+          </div>
+          <div className="mt-2.5 flex items-center gap-2">
+            <div
+              role="progressbar"
+              aria-label="Course progress"
+              aria-valuenow={pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="h-1 flex-1 overflow-hidden rounded-full bg-base-subtle"
+            >
+              <div
+                className="h-full rounded-full bg-accent transition-[width] duration-500"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="text-[10px] tabular-nums text-text-muted">{pct}%</span>
+          </div>
         </div>
       </div>
 
@@ -273,8 +402,10 @@ export function CourseSidebar({
             <ModuleGroup
               key={module.id}
               module={module}
-              completedIds={completedLessonIds}
+              state={state}
               query={query}
+              currentLessonId={currentSlug ? undefined : currentLessonId}
+              onNavigate={onClose}
             />
           ))}
         </ul>

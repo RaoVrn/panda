@@ -25,6 +25,7 @@ export function FinalCta() {
         <Button
           size="lg"
           className="mt-8"
+          href="/course"
           rightIcon={<ArrowRight className="size-4" />}
         >
           Start Learning

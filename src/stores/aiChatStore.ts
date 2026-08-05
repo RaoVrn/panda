@@ -8,6 +8,7 @@ import type {
   StyleAction,
 } from "@/lib/ai/types";
 import { useAiContextStore } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -94,6 +95,9 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
     // Same prompt + style already in flight → ignore (no duplicate API calls).
     const pendingKey = `${promptText}|${action ?? ""}`;
     if (state.pendingKey === pendingKey) return;
+
+    // A fresh question earns XP (regenerations are not new questions).
+    if (!replaceId) useProgressStore.getState().recordAiQuestion();
 
     const placeholder: ChatMessage = {
       id: assistantId,

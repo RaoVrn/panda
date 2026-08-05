@@ -8,13 +8,17 @@ import {
   Flag,
   Sparkles,
   PartyPopper,
+  Zap,
+  Trophy,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ContentLesson } from "@/content/schema";
 import { allLessons } from "@/content/lessons";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { useProgressStore } from "@/stores/progressStore";
+import { useProgressStore } from "@/features/progress/progressStore";
+import { Confetti } from "@/features/progress/components/Confetti";
+import { XP_REWARDS } from "@/features/progress/xp";
 import { formatDuration, titleCase } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +42,9 @@ export interface LessonSummaryProps {
 export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
   const { completeLesson, completedLessonIds } = useProgressStore();
 
+  const startedAt = useProgressStore((s) => s.lessonStartTimes[lesson.id]);
+  const quizRecord = useProgressStore((s) => s.quizStats[lesson.id]);
+
   useEffect(() => {
     completeLesson(lesson.id);
   }, [lesson.id, completeLesson]);
@@ -50,6 +57,12 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
     completedLessonIds.includes(l.id),
   ).length;
   const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+
+  // This lesson's guaranteed XP (reading + finishing).
+  const lessonXp = XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
+  const timeSpentMin = startedAt
+    ? Math.max(1, Math.round((Date.now() - startedAt) / 60000))
+    : null;
 
   const youLearned = lesson.meta.summary ?? [];
   const whyItMatters =
@@ -73,14 +86,21 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
 
       <div className="flex flex-col gap-9">
         {/* 1 · Celebration */}
-        <motion.div {...fadeUp} className="flex flex-col items-center gap-5 text-center">
+        <motion.div {...fadeUp} className="relative flex flex-col items-center gap-5 text-center">
+          <Confetti />
           <motion.span
-            className="flex size-14 items-center justify-center rounded-full bg-accent-soft ring-1 ring-accent/20"
-            initial={{ scale: 0.7, opacity: 0 }}
+            className="relative flex size-14 items-center justify-center rounded-full bg-accent-soft ring-1 ring-accent/20"
+            initial={{ scale: 0.6, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ type: "spring", stiffness: 220, damping: 16 }}
           >
+            <motion.span
+              className="absolute inset-0 rounded-full bg-accent/20"
+              animate={{ scale: [1, 1.6], opacity: [0.5, 0] }}
+              transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
+              aria-hidden="true"
+            />
             <PartyPopper className="size-6 text-accent-hover" aria-hidden="true" />
           </motion.span>
           <div className="flex flex-col gap-2">
@@ -90,6 +110,30 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
             <p className="max-w-md text-sm leading-relaxed text-text-muted">
               That’s the end of “{lesson.title}”. Here’s a quick recap.
             </p>
+          </div>
+
+          {/* Lesson stats */}
+          <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+            <span className="flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1.5 text-xs font-semibold text-accent-hover">
+              <Zap className="size-3.5" aria-hidden="true" />
+              +{lessonXp} XP
+            </span>
+            {timeSpentMin !== null && (
+              <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
+                <Clock className="size-3.5" aria-hidden="true" />
+                {timeSpentMin} min
+              </span>
+            )}
+            {quizRecord && (
+              <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
+                <Trophy className="size-3.5" aria-hidden="true" />
+                Quiz {quizRecord.correct}/{quizRecord.total}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
+              <Check className="size-3.5" aria-hidden="true" />
+              {youLearned.length} concepts
+            </span>
           </div>
         </motion.div>
 
@@ -188,7 +232,7 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
             rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
             className="flex-1"
           >
-            {next ? `Start ${next.title}` : "Course complete"}
+            {next ? `Start ${next.title}` : "Amazing work! Ready for your next challenge?"}
           </Button>
         </motion.div>
 

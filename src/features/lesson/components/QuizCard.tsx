@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -11,6 +11,8 @@ import {
 import type { Quiz } from "@/content/schema";
 import { useStepPlayer } from "@/features/lesson/components/interactive/useStepPlayer";
 import { useReportAi } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
+import { Confetti } from "@/features/progress/components/Confetti";
 import { cn } from "@/lib/utils";
 
 interface AnswerState {
@@ -32,6 +34,20 @@ export function QuizCard({ quiz }: QuizCardProps) {
   const [states, setStates] = useState<Record<string, AnswerState>>({});
   const [score, setScore] = useState(0);
   const [scored, setScored] = useState<Record<string, boolean>>({});
+
+  const recordQuizResult = useProgressStore((s) => s.recordQuizResult);
+  const reportedRef = useRef(false);
+
+  // Award quiz XP once, when every question has been answered.
+  const completedCount = quiz.questions.filter((q) => states[q.id]?.revealed).length;
+  const quizComplete =
+    quiz.questions.length > 0 && completedCount === quiz.questions.length;
+  useEffect(() => {
+    if (quizComplete && !reportedRef.current) {
+      reportedRef.current = true;
+      recordQuizResult(quiz.id, score, quiz.questions.length);
+    }
+  }, [quizComplete, quiz.id, score, quiz.questions.length, recordQuizResult]);
 
   const question = quiz.questions[player.step];
 
@@ -87,7 +103,8 @@ export function QuizCard({ quiz }: QuizCardProps) {
   ]!;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
+    <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
+      {quizComplete && score === quiz.questions.length && <Confetti />}
       <div className="flex items-center gap-3 border-b border-border-subtle px-5 py-4">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
           Quiz
