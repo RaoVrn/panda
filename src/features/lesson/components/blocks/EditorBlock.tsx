@@ -17,6 +17,7 @@ import {
 import type { ContentEditorBlock } from "@/content/schema";
 import { CodeWindow } from "@/features/lesson/components/blocks/CodeWindow";
 import { useLessonMode } from "@/features/lesson/lessonModeContext";
+import { useGitSimStore } from "@/stores/gitSimStore";
 import { useReportAi } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 
@@ -99,6 +100,7 @@ function IconBtn({
 export function EditorBlock({ block }: { block: ContentEditorBlock }) {
   const { mode } = useLessonMode();
   const isRead = mode === "read";
+  const writeFile = useGitSimStore((state) => state.writeFile);
 
   const initial = block.code;
   const originalLines = useRef(initial.split("\n")).current;
@@ -125,6 +127,7 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
           : value !== initial
             ? `editing ${block.filename ?? "untitled"} (changes not saved yet)`
             : `viewing ${block.filename ?? "untitled"}`,
+      sandbox: value.slice(0, 1200),
     },
     [value, playing, snapshotAt, block.filename, initial],
   );
@@ -172,6 +175,7 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
     pushHistory(event.target.value);
     setSnapshotAt(null);
     setValue(event.target.value);
+    if (block.filename) writeFile(block.filename, event.target.value);
   };
 
   const undo = () => {

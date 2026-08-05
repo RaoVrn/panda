@@ -7,17 +7,22 @@
  * and logged via `buildTokenReport`.
  */
 
-import { buildTrimmedContext } from "./ContextManager";
+import { buildContextSnippet } from "./aiContextBuilder";
 import type { LessonContext, StyleAction } from "./types";
 
-export const SYSTEM_PROMPT = `You are Panda AI, a patient Git tutor.
-Teach beginners. Explain like they're 10.
-Prefer stories and analogies over definitions.
-Use simple ASCII diagrams when helpful (commits, branches, HEAD, staging).
+export const SYSTEM_PROMPT = `You are Panda, an expert mentor living inside an interactive course. Friendly, occasionally funny, patient, encouraging. Never cringe, never overuse emojis.
+Never say "As an AI", never mention LLMs or models. Speak naturally, like a person.
+You are given the learner's current lesson as structured context. Use it to ground answers whenever the question is about the lesson — its concepts, commands, examples, quiz and challenge take priority.
+You are a GENERAL expert: answer ANY question fully from your own knowledge — Git, Python, Docker, Linux, React, databases, whatever. Lesson context ENHANCES your answers; it never limits them. Never refuse, never say you can't find something.
+If the question is not about the lesson, answer normally with your own expertise.
+Structure answers: simple explanation, then one real example, then a tiny one-line summary. No essays. Increase depth only when the learner asks.
+When explaining a command, put it in a fenced code block first, then explain each part on its own line.
+Use simple ASCII diagrams when helpful.
 Avoid jargon; explain any technical word you use.
-Keep answers warm, short, and encouraging.
-Write in short, natural sentences. Avoid long dashes and dramatic punctuation.
-If unsure, say so. Never invent commands.`;
+If the learner is stuck on a quiz, give hints first: hint, another hint, an analogy, a tiny example, then the solution. Never dump the answer immediately.
+For navigation questions (where should I go, what's next, I skipped something), use the completed/unlocked/recommended lesson facts in context. Never invent a route or claim a lesson is complete when it is not.
+If something was already explained in this conversation, build on it briefly instead of repeating the whole explanation.
+Write in short, natural sentences. Never invent commands. If unsure, say so.`;
 
 export const ACTION_INSTRUCTIONS: Record<StyleAction, string> = {
   simpler:
@@ -37,17 +42,63 @@ export const ACTION_INSTRUCTIONS: Record<StyleAction, string> = {
 /** Extra behavior for Panda's one-tap tutor actions (the quick chips). */
 export function buildTutorIntent(message: string): string {
   const text = message.trim().toLowerCase();
-  if (text === "quiz me") {
-    return "\n\nQuiz me: ask 3 quick multiple-choice questions about this lesson, one at a time. After each answer, say if it was right and explain in one line, then ask the next. End with a score.";
+
+  if (text === "hint" || text === "give me a hint") {
+    return "\n\nGive the learner a HINT about what they're stuck on, not the answer. Start small, then offer another hint, then an analogy, then a tiny example. Reveal the solution only if they keep asking.";
+  }
+  if (text === "what did i do wrong?" || text === "why is this wrong?") {
+    return "\n\nLook at the learner's terminal/quiz state. Diagnose the mistake gently, explain WHY it happened, then show the fix. No lecturing.";
+  }
+  if (text === "explain my terminal" || text === "explain my terminal state") {
+    return "\n\nExplain the learner's live terminal state line by line: branch, staged, modified, untracked files, last command and output. Tell them exactly what to do next.";
+  }
+  if (text === "why did that move?" || text === "why did that happen?") {
+    return "\n\nExplain the change the learner just saw on screen. Use the active visualization state to describe what moved and why.";
+  }
+  if (text === "summarize this section" || text === "summarize this lesson" || text === "summarize this page") {
+    return "\n\nSummarize the section the learner is looking at. 3 bullets max. Then ask if they want to go deeper.";
+  }
+  if (text === "quiz me" || text === "practice question") {
+    return "\n\nAsk ONE quick practice question about the current lesson. Wait for the answer, give feedback, then a one-line takeaway.";
   }
   if (text === "give me a challenge") {
-    return "\n\nGive me a challenge: one tiny hands-on task I can do in a terminal (or in my head) based on this lesson. Then a hint, and the solution hidden behind a spoiler.";
+    return "\n\nGive a tiny hands-on challenge based on the current lesson. Wait, then offer a hint, then the solution behind a spoiler.";
   }
-  if (text === "explain like i'm 10" || text === "explain this again" || text === "i still don't understand") {
+  if (text === "real project example") {
+    return "\n\nShow how this is used in a REAL project by a real developer. One short scenario with the actual commands/steps. Explain each step briefly.";
+  }
+  if (text === "go deeper" || text === "technical explanation") {
+    return "\n\nGo one level DEEPER. Keep it beginner-friendly but add the why behind the what. One new detail the lesson didn't cover.";
+  }
+  if (text === "eli5" || text === "explain simply" || text === "explain like i'm 10" || text === "explain this again" || text === "i still don't understand") {
     return "\n\nExplain this as if I'm 10 years old. Use one analogy. Under 6 sentences.";
   }
-  if (text === "give another example" || text === "give me another example") {
-    return "\n\nGive me a DIFFERENT example than the lesson used. Pick something from daily life (games, school, photos, cooking).";
+  if (text === "give analogy" || text === "show analogy") {
+    return "\n\nExplain with ONE vivid everyday analogy (games, school, photos, cooking). Then map each part back to the topic.";
+  }
+  if (text === "give example" || text === "give another example" || text === "give me another example") {
+    return "\n\nGive me a DIFFERENT example than the lesson used. Pick something from daily life.";
+  }
+  if (text === "explain line by line" || text === "walk me through it") {
+    return "\n\nTake the exact command or code on screen and explain it LINE BY LINE. Put it in a fenced code block, then one short bullet per part: what it does and why.";
+  }
+  if (text === "why does this matter?") {
+    return "\n\nExplain why this concept matters in real projects. One short real-world story, then the payoff in 2 sentences.";
+  }
+  if (text === "common mistakes") {
+    return "\n\nList the 3 most common mistakes beginners make with this, each with a one-line fix.";
+  }
+  if (text.startsWith("what happens if")) {
+    return "\n\nAnswer the 'what happens if' question concretely. Walk through the outcome step by step, then give the safe way to try it.";
+  }
+  if (text === "visual explanation") {
+    return "\n\nExplain with a clear ASCII diagram first, then a short prose explanation.";
+  }
+  if (text === "interview question") {
+    return "\n\nTreat it like a real technical interview question. Give a crisp answer a senior would give, then one follow-up the interviewer might ask.";
+  }
+  if (text.startsWith("explain ") || text.startsWith("why does ")) {
+    return "";
   }
   return "";
 }
@@ -66,11 +117,21 @@ export function buildUserPrompt(
   context: LessonContext,
   action?: StyleAction,
 ): string {
+  const trimmed = message.trim();
+  const lower = trimmed.toLowerCase();
+
+  // "this"/"that" without a subject → resolve to the learner's selection.
+  let selectionHint = "";
+  if (context.selectedText && /(this|that)/.test(lower) && !/course|lesson/.test(lower)) {
+    selectionHint = `\n\nThe learner selected this text on screen — explain exactly this:\n"""${context.selectedText}"""`;
+  }
+
   const parts = [
     buildActionInstruction(action),
-    buildTutorIntent(message),
-    buildTrimmedContext(context),
-    message.trim(),
+    buildTutorIntent(trimmed),
+    buildContextSnippet(context),
+    selectionHint,
+    trimmed,
   ];
   return parts.filter(Boolean).join("\n\n").trim();
 }

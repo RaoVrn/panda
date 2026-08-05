@@ -17,6 +17,15 @@ export interface ChatMessage {
   error?: boolean;
   /** True while the model is still streaming a reply. */
   streaming?: boolean;
+  /** The lesson location that produced an assistant answer. */
+  source?: AiSource;
+}
+
+export interface AiSource {
+  course?: string;
+  module?: string;
+  lesson?: string;
+  section?: string;
 }
 
 /**
@@ -35,14 +44,28 @@ export type StyleAction =
  * The automatic context Panda AI injects into every prompt. Components in the
  * lesson tree push slices of this in (via `stores/aiContextStore.ts`) so the
  * learner never has to repeat where they are or what they're looking at.
+ *
+ * `lessonContextService` enriches the live reports with the static curriculum
+ * (course/module) and the learner's progress, so every turn knows the full
+ * picture: Git › Git Basics › git add › "Stage like a pro" › working-tree viz.
  */
 export interface LessonContext {
-  /** Human title of the current lesson. */
-  lessonTitle?: string;
+  /** Id of the lesson currently open (lets the service resolve the rest). */
+  lessonId?: string;
+  /** Slug used by the route, kept explicit for navigation and cache safety. */
+  lessonSlug?: string;
+  /** Human title of the course (e.g. "Learn Git"). */
+  course?: string;
   /** Title of the module (section of the course) this lesson belongs to. */
   module?: string;
+  /** Human title of the current lesson. */
+  lessonTitle?: string;
   /** Text of the section heading currently on screen. */
   currentSection?: string;
+  /** Current level-2 heading. */
+  currentHeading?: string;
+  /** Current level-3 subheading. */
+  currentSubheading?: string;
   /** read | interactive. */
   mode?: string;
   /** The lesson's stated learning goals, if any. */
@@ -53,12 +76,81 @@ export interface LessonContext {
   terminal?: string;
   /** What the learner is currently editing / the last saved snapshot. */
   editor?: string;
+  /** Current sandbox/editor contents, capped for prompt safety. */
+  sandbox?: string;
   /** The commit currently selected in the timeline. */
   gitGraph?: string;
   /** The quiz question currently on screen, and whether it was answered. */
   quiz?: string;
   /** The practice challenge currently on screen, and whether it was answered. */
   practice?: string;
+  /** Learner's progress through the current lesson (e.g. "40% read"). */
+  lessonProgress?: string;
+  /** Quiz state for the current lesson (attempted / passed / score). */
+  quizProgress?: string;
+  /** What the learner is currently looking at (block label, e.g. "Staging area"). */
+  currentBlock?: string;
+  /** Stable block id currently in front of the learner. */
+  currentBlockId?: string;
+  /** Schema block type currently in front of the learner. */
+  currentBlockType?: string;
+  /** Short source text for the active block. */
+  currentBlockText?: string;
+  /** 0–100 scroll progress through the lesson. */
+  scrollPercent?: number;
+  /** Text/code the learner currently has highlighted on screen. */
+  selectedText?: string;
+  /** Compact summary of the live terminal/git state. */
+  terminalState?: string;
+  /** The section currently in view, plus its nearby headings. */
+  pageOutline?: string;
+  /** The text of the section currently in view (capped). */
+  currentSectionText?: string;
+  /** How long (seconds) the learner has been on the current section. */
+  timeOnSectionSeconds?: number;
+  /** Compact learning-memory summary (topics asked, struggles). */
+  memory?: string;
+  /** Lesson difficulty (for adaptive depth). */
+  difficulty?: string;
+  /** Whether this context is tied to an authored lesson. */
+  contextReady?: boolean;
+  /** Course progress facts used by navigation questions. */
+  completedLessons?: string;
+  unlockedLessons?: string;
+  recommendedNext?: string;
+  /** Learner's current gamification state. */
+  xp?: number;
+  level?: number;
+  /* ------------------------------------------------------------ */
+  /* Structured lesson data — the single source of truth. These are   */
+  /* built from the authored lesson (never scraped from the DOM).      */
+  /* ------------------------------------------------------------ */
+  /** Lesson description (what it's about). */
+  description?: string;
+  /** Learning objectives. */
+  objectives?: string[];
+  /** Section headings, in order. */
+  headings?: string[];
+  /** Subheadings. */
+  subheadings?: string[];
+  /** Concepts/ideas taught (from goals, callouts, takeaways). */
+  concepts?: string[];
+  /** Commands demonstrated in the lesson. */
+  commands?: string[];
+  /** Code/editor examples. */
+  examples?: string[];
+  /** Callouts / tips / warnings. */
+  callouts?: string[];
+  /** Key takeaways. */
+  takeaways?: string[];
+  /** Compact quiz summary (questions). */
+  quizSummary?: string;
+  /** The practice challenge prompt. */
+  challenge?: string;
+  /** Interactive block types present in the lesson. */
+  interactiveComponents?: string[];
+  /** Estimated reading time in minutes. */
+  estimatedMinutes?: number;
 }
 
 export type PartialLessonContext = Partial<LessonContext>;

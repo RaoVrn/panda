@@ -11,6 +11,7 @@ import { LessonRenderer } from "@/features/lesson/LessonRenderer";
 import { ScrollToTop } from "@/app/ScrollToTop";
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { useAiChatStore } from "@/stores/aiChatStore";
 
 export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,13 +22,17 @@ export function LessonPage() {
   // Panda AI context is lesson-scoped: clear it when moving between lessons
   // (and when leaving the lesson for the course page).
   const resetAiContext = useAiContextStore((state) => state.reset);
+  const clearAiChat = useAiChatStore((state) => state.clear);
   const startLesson = useProgressStore((state) => state.startLesson);
 
   useEffect(() => {
     resetAiContext();
+    // Conversation history is lesson-scoped. Never let an answer about one
+    // lesson become evidence for another lesson.
+    clearAiChat();
     if (lesson) startLesson(lesson.id);
     return resetAiContext;
-  }, [slug, lesson, resetAiContext, startLesson]);
+  }, [slug, lesson, resetAiContext, clearAiChat, startLesson]);
 
   if (!lesson) {
     return (

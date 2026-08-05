@@ -9,6 +9,8 @@ import type {
 } from "@/lib/ai/types";
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { useMemoryStore } from "@/features/ai/memory/conversationMemory";
+import { buildLessonContext } from "@/features/ai/lessonContextService";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -47,9 +49,13 @@ interface AiChatState {
   pendingKey: string | null;
   apiConfigured: boolean;
   failedTurn: FailedTurn | null;
+  pinnedIds: string[];
   send: (text: string, opts?: SendOptions) => void;
   regenerate: (assistantId: string, action: StyleAction) => void;
   retry: () => void;
+  /** Stop the in-flight generation and keep what was streamed so far. */
+  stop: () => void;
+  togglePinned: (messageId: string) => void;
   clear: () => void;
 }
 
@@ -60,6 +66,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
   pendingKey: null,
   apiConfigured: isAiConfigured(),
   failedTurn: null,
+  pinnedIds: [],
 
   send: (text, opts) => {
     if (get().isStreaming) return;
@@ -67,7 +74,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
     if (now - lastSendAt < MIN_SEND_GAP_MS) return;
     lastSendAt = now;
 
-    const context = useAiContextStore.getState().context;
+  const context = buildLessonContext(useAiContextStore.getState().context);
     const state = get();
     const action = opts?.action;
     const replaceId = opts?.replaceId;
@@ -96,14 +103,23 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
     const pendingKey = `${promptText}|${action ?? ""}`;
     if (state.pendingKey === pendingKey) return;
 
-    // A fresh question earns XP (regenerations are not new questions).
-    if (!replaceId) useProgressStore.getState().recordAiQuestion();
+    // A fresh question earns XP and is remembered (regenerations are not).
+    if (!replaceId) {
+      useProgressStore.getState().recordAiQuestion();
+      useMemoryStore.getState().recordMessage(promptText, context);
+    }
 
     const placeholder: ChatMessage = {
       id: assistantId,
       role: "assistant",
       text: "",
       streaming: true,
+      source: {
+        course: context.course,
+        module: context.module,
+        lesson: context.lessonTitle,
+        section: context.currentSection,
+      },
     };
 
     const messages = replaceId
@@ -143,6 +159,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
       .then(({ text }) => {
         if (signal.aborted) return;
         pendingAbort = null;
+        useMemoryStore.getState().recordExplanation(promptText);
         const messages = get().messages.map((m) =>
           m.id === assistantId
             ? { ...m, text, streaming: false, error: false }
@@ -195,6 +212,27 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
     });
   },
 
+  stop: () => {
+    pendingAbort?.abort();
+    pendingAbort = null;
+    // Keep partial output: mark the in-flight assistant message done.
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m.streaming ? { ...m, streaming: false } : m,
+      ),
+      isStreaming: false,
+      status: null,
+      pendingKey: null,
+    }));
+  },
+
+  togglePinned: (messageId) =>
+    set((state) => ({
+      pinnedIds: state.pinnedIds.includes(messageId)
+        ? state.pinnedIds.filter((id) => id !== messageId)
+        : [...state.pinnedIds, messageId],
+    })),
+
   clear: () => {
     // Abort any in-flight request so it stops consuming quota/bandwidth.
     pendingAbort?.abort();
@@ -205,6 +243,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
       status: null,
       pendingKey: null,
       failedTurn: null,
+      pinnedIds: [],
     });
   },
 }));

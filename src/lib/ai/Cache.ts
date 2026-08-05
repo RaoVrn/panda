@@ -19,8 +19,24 @@ const CACHE_LIMIT = 60;
 
 function fingerprint(context: LessonContext): string {
   return [
+    context.lessonId ?? "",
+    context.lessonSlug ?? "",
+    context.course ?? "",
+    context.module ?? "",
     context.lessonTitle ?? "",
     context.currentSection ?? "",
+    context.currentHeading ?? "",
+    context.currentSubheading ?? "",
+    context.currentBlockId ?? "",
+    context.currentBlockType ?? "",
+    context.currentBlockText ?? "",
+    context.selectedText ?? "",
+    context.terminalState ?? "",
+    context.sandbox ?? "",
+    context.currentSectionText ?? "",
+    context.quizProgress ?? "",
+    context.contextReady ? "ready" : "not-ready",
+    context.recommendedNext ?? "",
     context.mode ?? "",
   ].join("|");
 }

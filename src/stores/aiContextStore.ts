@@ -9,12 +9,21 @@ interface AiContextState {
    * AI reads this before every request so the learner never repeats context.
    */
   context: LessonContext;
+  /** Starts a new lesson context without carrying old section/block state. */
+  setLesson: (partial: PartialLessonContext) => void;
   report: (partial: PartialLessonContext) => void;
   reset: () => void;
 }
 
 export const useAiContextStore = create<AiContextState>()((set) => ({
   context: {},
+  setLesson: (partial) =>
+    set((state) => ({
+      context:
+        state.context.lessonId === partial.lessonId
+          ? { ...state.context, ...partial }
+          : { ...partial },
+    })),
   report: (partial) =>
     set((state) => ({ context: { ...state.context, ...partial } })),
   reset: () => set({ context: {} }),

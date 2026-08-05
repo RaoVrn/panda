@@ -8,7 +8,7 @@ import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
 import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
-import { useReportAi } from "@/stores/aiContextStore";
+import { useAiContextStore } from "@/stores/aiContextStore";
 import { useReadingStore } from "@/stores/readingStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import {
@@ -80,14 +80,19 @@ export function LessonRenderer({
   const mode = useLessonModeStore((state) => state.mode);
 
   const module = moduleOfLesson(lesson.id);
-  useReportAi(
-    {
-      lessonTitle: lesson.title,
-      module: module?.title,
-      mode,
-      learningGoals: lesson.learningGoals,
-    },
-    [lesson.title, module?.title, mode, lesson.learningGoals],
+  const setLessonContext = useAiContextStore((state) => state.setLesson);
+  useEffect(
+    () =>
+      setLessonContext({
+        lessonId: lesson.id,
+        lessonSlug: lesson.slug,
+        lessonTitle: lesson.title,
+        module: module?.title,
+        mode,
+        learningGoals: lesson.learningGoals,
+        contextReady: true,
+      }),
+    [lesson.id, lesson.slug, lesson.title, module?.title, mode, lesson.learningGoals, setLessonContext],
   );
 
   // Progression: complete the lesson the moment read + interactive + quiz all

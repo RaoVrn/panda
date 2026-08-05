@@ -19,6 +19,7 @@ import {
   type CommandOutput,
   type GitState,
 } from "@/features/lesson/components/interactive/gitEngine";
+import { summarizeGitState } from "@/features/ai/observers/terminalContext";
 import { useAiContextStore } from "@/stores/aiContextStore";
 
 export interface GitSimSeed {
@@ -35,6 +36,7 @@ interface GitSimState {
   state: GitState;
   lastOutput: CommandOutput | null;
   lastCommand: string;
+  history: string[];
   /** Ensure this lesson's repo exists (reset only on lesson/seed change). */
   sync: (lessonId: string, seedId: string, seed?: GitSimSeed) => void;
   /** Run one command against the shared repo; returns its output. */
@@ -50,6 +52,7 @@ export const useGitSimStore = create<GitSimState>()((set, get) => ({
   state: createGitState(),
   lastOutput: null,
   lastCommand: "",
+  history: [],
 
   sync: (lessonId, seedId, seed) => {
     const current = get();
@@ -59,22 +62,35 @@ export const useGitSimStore = create<GitSimState>()((set, get) => ({
       pwd: seed?.pwd,
       initialized: seed?.initialized,
     });
-    set({ lessonId, seedId, state, lastOutput: null, lastCommand: "" });
+    useAiContextStore.getState().report({
+      terminalState: summarizeGitState(state),
+    });
+    set({ lessonId, seedId, state, lastOutput: null, lastCommand: "", history: [] });
   },
 
   run: (command) => {
     const result = runCommand(get().state, command);
-    useAiContextStore.getState().report({ terminal: command });
+    const history = [...get().history, command];
+    useAiContextStore.getState().report({
+      terminal: command,
+      terminalState: summarizeGitState(result.state, command, result.output, history),
+    });
     set({
       state: result.state,
       lastOutput: result.output,
       lastCommand: command,
+      history,
     });
     return result.output;
   },
 
   writeFile: (path, content) => {
-    set({ state: editFile(get().state, path, content) });
+    const state = editFile(get().state, path, content);
+    useAiContextStore.getState().report({
+      editor: `editing ${path}`,
+      terminalState: summarizeGitState(state, get().lastCommand, get().lastOutput ?? undefined, get().history),
+    });
+    set({ state });
   },
 
   resetAll: () =>
@@ -84,6 +100,7 @@ export const useGitSimStore = create<GitSimState>()((set, get) => ({
       state: createGitState(),
       lastOutput: null,
       lastCommand: "",
+      history: [],
     }),
 }));
 

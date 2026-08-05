@@ -4,9 +4,11 @@ import { persist } from "zustand/middleware";
 interface WorkspaceUIState {
   sidebarCollapsed: boolean;
   aiOpen: boolean;
+  aiWidth: number;
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setAiOpen: (open: boolean) => void;
+  setAiWidth: (width: number) => void;
 }
 
 /**
@@ -19,10 +21,12 @@ export const useWorkspaceUI = create<WorkspaceUIState>()(
     (set) => ({
       sidebarCollapsed: false,
       aiOpen: false,
+      aiWidth: 380,
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
       setAiOpen: (aiOpen) => set({ aiOpen }),
+      setAiWidth: (aiWidth) => set({ aiWidth: Math.min(700, Math.max(320, aiWidth)) }),
     }),
     { name: "panda-workspace-ui" },
   ),
