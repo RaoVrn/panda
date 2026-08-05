@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import type { ContentLesson, CourseModule } from "@/content/schema";
-import { modules } from "@/content/roadmap";
+import { isModuleUnlocked, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
 import { cn, formatDuration, percentComplete } from "@/lib/utils";
 import { useProgressStore } from "@/features/progress/progressStore";
@@ -135,11 +135,8 @@ function ModuleGroup({
   const estMin = lessons
     .filter((l) => !state.completedLessonIds.includes(l.id))
     .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0);
-  const locked =
-    lessons.length > 0 &&
-    !(lessons[0]!.meta.prerequisites ?? []).every((id) =>
-      state.completedLessonIds.includes(id),
-    );
+  const locked = isModuleUnlocked(module.id, state.completedLessonIds) === false;
+  const comingSoon = lessons.length === 0;
 
   if (visible.length === 0) return null;
 
@@ -185,12 +182,14 @@ function ModuleGroup({
           />
         </div>
         <span className="flex shrink-0 items-center gap-1 text-[10px] text-text-muted">
-          {locked ? (
+          {comingSoon ? (
+            <Clock className="size-2.5" aria-hidden="true" />
+          ) : locked ? (
             <Lock className="size-2.5" aria-hidden="true" />
           ) : (
             <Clock className="size-2.5" aria-hidden="true" />
           )}
-          {locked ? "Locked" : remaining > 0 ? `${formatDuration(estMin)} left` : "Done"}
+          {comingSoon ? "Coming soon" : locked ? "Locked" : remaining > 0 ? `${formatDuration(estMin)} left` : "Done"}
         </span>
       </div>
 

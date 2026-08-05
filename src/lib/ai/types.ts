@@ -39,10 +39,14 @@ export type StyleAction =
 export interface LessonContext {
   /** Human title of the current lesson. */
   lessonTitle?: string;
+  /** Title of the module (section of the course) this lesson belongs to. */
+  module?: string;
   /** Text of the section heading currently on screen. */
   currentSection?: string;
   /** read | interactive. */
   mode?: string;
+  /** The lesson's stated learning goals, if any. */
+  learningGoals?: string[];
   /** Description of the visualization currently on screen. */
   visualization?: string;
   /** The last command shown/typed in the terminal sandbox. */

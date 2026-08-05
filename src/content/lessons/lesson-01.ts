@@ -35,6 +35,13 @@ export const lesson01: ContentLesson = {
     motivation:
       "Understanding the idea was the hardest part. The rest of the course is downhill from here. See you in the next lesson!",
   },
+  learningGoals: [
+    "Explain what Git is using the time-machine idea",
+    "Recognize that a commit is a saved snapshot",
+    "Know where Git keeps its history",
+    "Tell the difference between Git and GitHub",
+  ],
+  xpReward: 50,
   blocks: [
     // ---------------------------------------------------------------
     // Opening: a question, a story, no definitions.

@@ -10,6 +10,7 @@ export function buildTrimmedContext(context: LessonContext): string {
   const lines: string[] = [];
 
   if (context.lessonTitle) lines.push(`Lesson: "${context.lessonTitle}"`);
+  if (context.module) lines.push(`Module: "${context.module}"`);
   if (context.currentSection) lines.push(`Section: "${context.currentSection}"`);
   if (context.mode) lines.push(`Mode: ${context.mode}`);
   if (context.visualization) lines.push(`On screen: ${context.visualization}`);
@@ -18,6 +19,9 @@ export function buildTrimmedContext(context: LessonContext): string {
   if (context.editor) lines.push(`Editor: ${context.editor}`);
   if (context.quiz) lines.push(`Quiz: ${context.quiz}`);
   if (context.practice) lines.push(`Practice: ${context.practice}`);
+  if (context.learningGoals && context.learningGoals.length > 0) {
+    lines.push(`Goals: ${context.learningGoals.join("; ")}`);
+  }
 
   if (lines.length === 0) return "";
 

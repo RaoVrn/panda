@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { JSX } from "react";
-import { modules } from "@/content/roadmap";
+import { isModuleUnlocked, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
 import { cn, percentComplete, formatDuration } from "@/lib/utils";
 import { useProgressStore } from "@/features/progress/progressStore";
@@ -177,8 +177,8 @@ export function CoursePage() {
                       className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
                       <p className="mt-1.5 text-sm leading-relaxed text-text-secondary transition-colors group-hover:text-text">
-                        Finish “{next.title}” to earn 50 XP and keep your streak
-                        alive.
+                        Finish “{next.title}” to earn{" "}
+                        {next.xpReward ?? 50} XP and keep your streak alive.
                       </p>
                     </Link>
                   ) : (
@@ -251,9 +251,7 @@ export function CoursePage() {
                       .reduce((sum, l) => sum + (l.meta.durationMinutes ?? 0), 0);
                     const locked =
                       moduleLessons_.length > 0 &&
-                      !(firstLesson!.meta.prerequisites ?? []).every((id) =>
-                        completedLessonIds.includes(id),
-                      );
+                      !isModuleUnlocked(m.id, completedLessonIds);
                     const clickable = firstLesson && !locked;
 
                     const inner = (

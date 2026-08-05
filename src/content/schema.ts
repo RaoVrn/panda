@@ -266,14 +266,32 @@ export interface ContentLesson {
   description: string;
   meta: ContentLessonMeta;
   blocks: ContentBlock[];
+  /** Learning goals shown on the lesson intro. */
+  learningGoals?: string[];
+  /** Optional XP reward for completing this lesson (defaults to read + finish). */
+  xpReward?: number;
+  /** Lesson slug to unlock on completion (auto-derived from ordering when absent). */
+  unlocksNext?: string;
 }
 
-/** A module in the course roadmap. `lessons` lists lesson ids in order. */
+/** A course in the platform. */
+export interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+}
+
+/** A module in a course. `lessons` lists lesson ids in order. */
 export interface CourseModule {
   id: string;
   title: string;
   description: string;
   order: number;
   icon?: string;
+  /** The course this module belongs to. */
+  course: string;
   lessons: string[];
+  /** Module ids that must be fully completed before this one unlocks. */
+  requires?: string[];
 }

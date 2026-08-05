@@ -1,8 +1,10 @@
 import type { ContentLesson } from "@/content/schema";
+import { moduleOfLesson } from "@/content/curriculum";
 import { renderBlock } from "@/content/renderer";
 import { LessonTitle } from "@/features/lesson/components/LessonTitle";
 import { LessonSummary } from "@/features/lesson/components/LessonSummary";
 import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
+import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { useReportAi } from "@/stores/aiContextStore";
@@ -67,11 +69,23 @@ export function LessonRenderer({
 }: LessonRendererProps) {
   const mode = useLessonModeStore((state) => state.mode);
 
-  useReportAi({ lessonTitle: lesson.title, mode }, [lesson.title, mode]);
+  const module = moduleOfLesson(lesson.id);
+  useReportAi(
+    {
+      lessonTitle: lesson.title,
+      module: module?.title,
+      mode,
+      learningGoals: lesson.learningGoals,
+    },
+    [lesson.title, module?.title, mode, lesson.learningGoals],
+  );
 
   return (
     <LessonPlayer lessonId={lesson.id} totalBlocks={lesson.blocks.length}>
       <article id={lesson.id} aria-label={lesson.title} className={className}>
+        <div className="mb-8">
+          <LessonBreadcrumb lesson={lesson} />
+        </div>
         <LessonTitle lesson={lesson} />
         {lesson.blocks.map((block, index) => (
           <BlockTracker

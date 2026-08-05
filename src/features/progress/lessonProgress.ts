@@ -3,7 +3,11 @@
  */
 
 import type { ContentLesson } from "@/content/schema";
-import { modules } from "@/content/roadmap";
+import {
+  isModuleUnlocked,
+  moduleOfLesson,
+  modules,
+} from "@/content/curriculum";
 import { allLessons, isLessonUnlocked, moduleLessons } from "@/content/lessons";
 import { percentComplete } from "@/lib/utils";
 import type { LessonStatus } from "./types";
@@ -18,6 +22,8 @@ export interface ModuleProgress {
   completed: number;
   total: number;
   percent: number;
+  /** Whether the module's prerequisite chain has been met. */
+  unlocked: boolean;
 }
 
 export function lessonStatus(
@@ -26,6 +32,8 @@ export function lessonStatus(
 ): LessonStatus {
   if (state.completedLessonIds.includes(lesson.id)) return "completed";
   if (state.startedLessonIds.includes(lesson.id)) return "started";
+  const module = moduleOfLesson(lesson.id);
+  if (module && !isModuleUnlocked(module.id, state.completedLessonIds)) return "locked";
   if (isLessonUnlocked(lesson, state.completedLessonIds)) return "available";
   return "locked";
 }
@@ -43,18 +51,23 @@ export function moduleProgress(
     completed,
     total: lessons.length,
     percent: percentComplete(completed, lessons.length),
+    unlocked: isModuleUnlocked(moduleId, state.completedLessonIds),
   };
 }
 
-/** First lesson the learner should open next (unlocked and not completed). */
+/** First lesson the learner should open next (module + lesson unlocked). */
 export function currentLesson(
   state: LessonProgressState,
 ): ContentLesson | undefined {
-  return allLessons().find(
-    (lesson) =>
+  return allLessons().find((lesson) => {
+    const module = moduleOfLesson(lesson.id);
+    const moduleOk = !module || isModuleUnlocked(module.id, state.completedLessonIds);
+    return (
+      moduleOk &&
       isLessonUnlocked(lesson, state.completedLessonIds) &&
-      !state.completedLessonIds.includes(lesson.id),
-  );
+      !state.completedLessonIds.includes(lesson.id)
+    );
+  });
 }
 
 /** Every module with its progress. */

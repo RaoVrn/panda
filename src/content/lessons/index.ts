@@ -1,5 +1,5 @@
 import type { ContentLesson } from "@/content/schema";
-import { modules } from "@/content/roadmap";
+import { modules } from "@/content/curriculum";
 import { lesson01 } from "@/content/lessons/lesson-01";
 
 /**

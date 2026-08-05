@@ -12,7 +12,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { allLessons, moduleLessons } from "@/content/lessons";
-import { modules } from "@/content/roadmap";
+import { modules } from "@/content/curriculum";
 import {
   evaluateAchievements,
   type AchievementContext,
@@ -52,7 +52,7 @@ interface ProgressState {
   toasts: ProgressToast[];
 
   startLesson: (lessonId: string) => void;
-  completeLesson: (lessonId: string) => void;
+  completeLesson: (lessonId: string, xpReward?: number) => void;
   toggleCompleted: (lessonId: string) => void;
   recordQuizResult: (lessonId: string, correct: number, total: number) => void;
   recordPractice: (lessonId: string) => void;
@@ -187,13 +187,16 @@ export const useProgressStore = create<ProgressState>()(
               : { ...state.lessonStartTimes, [lessonId]: Date.now() },
           })),
 
-        completeLesson: (lessonId) => {
+        completeLesson: (lessonId, xpReward) => {
           if (get().completedLessonIds.includes(lessonId)) return;
           const before = completedModuleIds(get().completedLessonIds);
           const next = [...get().completedLessonIds, lessonId];
           set({ completedLessonIds: next });
-          // Reading the lesson (+10) and finishing it (+40).
-          grantXp(XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"]);
+          // A lesson's XP reward overrides the default read + finish rewards.
+          const reward =
+            xpReward ??
+            XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
+          grantXp(reward);
 
           // Celebrate any section (module) that just became complete.
           for (const id of completedModuleIds(next)) {

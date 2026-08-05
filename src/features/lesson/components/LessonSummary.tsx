@@ -46,8 +46,8 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
   const quizRecord = useProgressStore((s) => s.quizStats[lesson.id]);
 
   useEffect(() => {
-    completeLesson(lesson.id);
-  }, [lesson.id, completeLesson]);
+    completeLesson(lesson.id, lesson.xpReward);
+  }, [lesson.id, lesson.xpReward, completeLesson]);
 
   const lessons = allLessons();
   const index = lessons.findIndex((l) => l.id === lesson.id);
@@ -58,8 +58,9 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
   ).length;
   const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
 
-  // This lesson's guaranteed XP (reading + finishing).
-  const lessonXp = XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
+  // This lesson's XP reward (defaults to reading + finishing).
+  const lessonXp =
+    lesson.xpReward ?? XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
   const timeSpentMin = startedAt
     ? Math.max(1, Math.round((Date.now() - startedAt) / 60000))
     : null;
@@ -225,6 +226,13 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
               Back
             </Button>
           )}
+          <Button
+            variant="secondary"
+            href="/course"
+            leftIcon={<Flag className="size-4" aria-hidden="true" />}
+          >
+            Module overview
+          </Button>
           <Button
             variant="primary"
             size="lg"
