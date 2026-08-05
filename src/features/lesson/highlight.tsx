@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 /**
  * Minimal, framework-safe syntax highlighter for code/editor blocks.
- * No external dependency — a token stream rendered as colored spans that match
+ * No external dependency. A token stream rendered as colored spans that match
  * the VS Code-dark aesthetic of the rest of the product.
  */
 

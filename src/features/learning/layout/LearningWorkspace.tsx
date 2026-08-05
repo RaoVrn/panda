@@ -122,7 +122,7 @@ export function LearningWorkspace({ children }: LearningWorkspaceProps) {
         {children}
       </div>
 
-      {/* Desktop AI panel — docked, animates width */}
+      {/* Desktop AI panel: docked, animates width */}
       <motion.aside
         aria-label="Panda AI"
         aria-hidden={!aiOpen}
@@ -163,7 +163,7 @@ export function LearningWorkspace({ children }: LearningWorkspaceProps) {
         )}
       </AnimatePresence>
 
-      {/* Floating Panda AI trigger — hidden while the panel is open */}
+      {/* Floating Panda AI trigger: hidden while the panel is open */}
       <AnimatePresence>
         {!aiActive && (
           <motion.button

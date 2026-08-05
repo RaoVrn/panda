@@ -3,6 +3,9 @@ import { renderBlock } from "@/content/renderer";
 import { LessonTitle } from "@/features/lesson/components/LessonTitle";
 import { LessonSummary } from "@/features/lesson/components/LessonSummary";
 import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
+import { BlockTracker } from "@/features/lesson/components/BlockTracker";
+import { useLessonModeStore } from "@/stores/lessonModeStore";
+import { useReportAi } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 
 export interface LessonRendererProps {
@@ -54,7 +57,7 @@ function blockPad(block: ContentLesson["blocks"][number]): string {
 /**
  * Renders a complete lesson: header, the data-driven block engine and the
  * prev/next navigation. The engine never knows what a specific lesson
- * contains — the schema union plus the renderer registry decide everything.
+ * contains. The schema union plus the renderer registry decide everything.
  */
 export function LessonRenderer({
   lesson,
@@ -62,14 +65,18 @@ export function LessonRenderer({
   nextLesson,
   className,
 }: LessonRendererProps) {
+  const mode = useLessonModeStore((state) => state.mode);
+
+  useReportAi({ lessonTitle: lesson.title, mode }, [lesson.title, mode]);
+
   return (
     <LessonPlayer lessonId={lesson.id} totalBlocks={lesson.blocks.length}>
       <article id={lesson.id} aria-label={lesson.title} className={className}>
         <LessonTitle lesson={lesson} />
         {lesson.blocks.map((block, index) => (
-          <div
+          <BlockTracker
             key={block.id}
-            data-block-id={block.id}
+            block={block}
             className={cn(
               "first:mt-0",
               blockPad(block),
@@ -77,7 +84,7 @@ export function LessonRenderer({
             )}
           >
             {renderBlock(block)}
-          </div>
+          </BlockTracker>
         ))}
         <LessonSummary
           lesson={lesson}

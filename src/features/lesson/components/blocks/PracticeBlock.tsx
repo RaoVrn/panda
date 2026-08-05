@@ -10,6 +10,7 @@ import {
   Target,
 } from "lucide-react";
 import type { ContentPracticeBlock } from "@/content/schema";
+import { useReportAi } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 
 function Disclosure({
@@ -79,13 +80,13 @@ function feedbackFor(answer: string): { tone: "great" | "good" | "nudge"; messag
   if (hits.length >= 2) {
     return {
       tone: "great",
-      message: `Nice — you said it yourself: ${hits.slice(0, 2).join(" and ")}. That’s exactly the superpower Git gives you.`,
+      message: `Nice. You said it yourself: ${hits.slice(0, 2).join(" and ")}. That’s exactly the superpower Git gives you.`,
     };
   }
   if (hits.length === 1) {
     return {
       tone: "good",
-      message: `You mentioned “${hits[0]}” — you’re right there. Compare your answer with the sample below.`,
+      message: `You mentioned “${hits[0]}”. You’re right there. Compare your answer with the sample below.`,
     };
   }
   return {
@@ -98,12 +99,19 @@ function feedbackFor(answer: string): { tone: "great" | "good" | "nudge"; messag
 /**
  * Mini challenge: a tiny mission the learner answers in their own words. An
  * instant, friendly check responds naturally based on what they wrote, then
- * invites them to compare with a sample answer. No real AI — just clear,
+ * invites them to compare with a sample answer. No real AI here. Just clear,
  * encouraging feedback that never says "wrong".
  */
 export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+
+  useReportAi(
+    {
+      practice: `"${block.description}" (${checked ? "answered" : "not answered yet"})`,
+    },
+    [block.description, checked],
+  );
 
   const trimmed = answer.trim();
   const feedback = feedbackFor(trimmed);
@@ -239,7 +247,7 @@ export function PracticeBlock({ block }: { block: ContentPracticeBlock }) {
 
         {checked && block.exampleAnswer && (
           <p className="text-xs text-text-muted">
-            Compare your idea with the sample above — a perfect answer never has to be word-for-word.
+            Compare your idea with the sample above. A perfect answer never has to be word-for-word.
           </p>
         )}
       </div>

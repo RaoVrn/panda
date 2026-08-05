@@ -38,7 +38,7 @@ export function HowItWorks() {
       <SectionTitle
         eyebrow="How it works"
         title="Four steps from curious to confident"
-        description="Panda follows the natural way you learn — see, do, break, master."
+        description="Panda follows the natural way you learn. See, do, break, master."
       />
       <div className="mx-auto mt-12 flex max-w-2xl flex-col items-center gap-0">
         {steps.map((step, index) => (

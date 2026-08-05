@@ -23,12 +23,12 @@ interface LessonModeState {
 /**
  * Dual visualization modes.
  *
- *  · Read (default): a beautiful passive lesson — every visualization animates
+ *  · Read (default): a beautiful passive lesson. Every visualization animates
  *    and teaches on its own (auto-typing, streaming, appearing nodes, moving
  *    HEAD). No Previous/Next or step controls anywhere; just a Replay.
  *    Feels like an Apple product page or an interactive documentary.
  *
- *  · Interactive: the same content, now controllable — step-through a timeline,
+ *  · Interactive: the same content, now controllable. Step through a timeline,
  *    expand a folder, edit a file, or type into a Git sandbox.
  *
  * The choice persists across lessons. Content is identical in both.

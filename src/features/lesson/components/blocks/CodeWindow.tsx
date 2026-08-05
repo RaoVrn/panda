@@ -12,7 +12,7 @@ export interface CodeWindowProps {
 }
 
 /**
- * VS Code-style window chrome used by both Code and Editor blocks —
+ * VS Code-style window chrome used by both Code and Editor blocks:
  * traffic lights, title, language badge and an optional copy button.
  */
 export function CodeWindow({

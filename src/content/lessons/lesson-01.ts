@@ -17,7 +17,7 @@ export const lesson01: ContentLesson = {
   slug: "what-is-git",
   title: "What is Git?",
   description:
-    "Imagine a time machine for your homework. That’s Git — and it’s the quiet superpower behind nearly every app you love.",
+    "Imagine a time machine for your homework. That's what Git is, and it's the quiet superpower behind nearly every app you love.",
   meta: {
     module: "introduction",
     order: 1,
@@ -33,33 +33,33 @@ export const lesson01: ContentLesson = {
     whyItMatters:
       "Before you ever write code, this one idea changes everything: you can never truly lose your work. Every developer on Earth leans on it every single day.",
     motivation:
-      "That was the hardest part — understanding the idea. The rest of the course is downhill from here. See you in the next lesson!",
+      "Understanding the idea was the hardest part. The rest of the course is downhill from here. See you in the next lesson!",
   },
   blocks: [
     // ---------------------------------------------------------------
-    // Opening — a question, a story, no definitions.
+    // Opening: a question, a story, no definitions.
     // ---------------------------------------------------------------
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end of this lesson you won’t just know what Git is — you’ll feel why it exists, because you’ll have almost needed it yourself.",
+      text: "By the end of this lesson you won’t just know what Git is. You’ll feel why it exists, because you’ll have almost needed it yourself.",
     },
     {
       type: "paragraph",
       id: "open-question",
-      text: "Have you ever spent a long time on something — a drawing, a story, a project — and then lost it all in one second?",
+      text: "Have you ever spent a long time on something like a drawing, a story, or a project, and then lost it all in one second?",
     },
     {
       type: "callout",
       id: "open-story",
       tone: "info",
       title: "The drawing you never finished",
-      text: "Imagine three hours. You’ve drawn every tree, shaded every sky. Right before you finish, your hand slips — delete. It’s all gone. That sinking feeling is the only feeling you need to remember today.",
+      text: "Imagine three hours. You’ve drawn every tree, shaded every sky. Right before you finish, your hand slips, and you hit delete. It’s all gone. That sinking feeling is the only feeling you need to remember today.",
     },
     {
       type: "paragraph",
       id: "open-time-machine",
-      text: "Now imagine the same moment — but this time you own a time machine. One click, and the drawing comes back, exactly as it was. Every single version you ever made. That is what Git does for your work.",
+      text: "Now imagine the same moment, but this time you own a time machine. One click, and the drawing comes back, exactly as it was. Every single version you ever made. That is what Git does for your work.",
     },
 
     // ---------------------------------------------------------------
@@ -82,11 +82,11 @@ export const lesson01: ContentLesson = {
       title: "A night of gaming",
       nodes: [
         { id: "b1", text: "You reach the boss. It looks tough.", icon: "game" },
-        { id: "b2", text: "Smart move — you save your game first.", icon: "save" },
+        { id: "b2", text: "Smart move. You save your game first.", icon: "save" },
         { id: "b3", text: "The fight begins!", icon: "sword" },
         { id: "b4", text: "You lose. It hurts a little.", icon: "skull" },
         { id: "b5", text: "You load your save point.", icon: "load" },
-        { id: "b6", text: "Back before the boss — and this time you win.", icon: "happy" },
+        { id: "b6", text: "You're back before the boss, and this time you win.", icon: "happy" },
       ],
     },
     {
@@ -94,11 +94,11 @@ export const lesson01: ContentLesson = {
       id: "savegame-connect",
       tone: "success",
       title: "Git works exactly like this",
-      text: "A save point never protects you from the fight — it just means you can always try again. Git is that save point for your work. Lose something? Load an older version and keep going.",
+      text: "A save point never protects you from the fight. It just means you can always try again. Git is that save point for your work. Lose something? Load an older version and keep going.",
     },
 
     // ---------------------------------------------------------------
-    // 2 · School assignment — short story, then connect.
+    // 2 · School assignment: short story, then connect.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -114,11 +114,11 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "assignment-story",
-      text: "Every developer faces this exact worry, except their “homework” is hundreds of files. Git is the answer they chose. Each time they save, Git keeps a full copy — and you can rewind to any of them, forever.",
+      text: "Every developer faces this exact worry, except their “homework” is hundreds of files. Git is the answer they chose. Each time they save, Git keeps a full copy, and you can rewind to any of them, forever.",
     },
 
     // ---------------------------------------------------------------
-    // 3 · Watch history grow — the snapshot timeline.
+    // 3 · Watch history grow: the snapshot timeline.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -129,7 +129,7 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "timeline-question",
-      text: "A project starts as one empty folder. What does it look like as it grows? Watch — each dot below is one saved moment.",
+      text: "A project starts as one empty folder. What does it look like as it grows? Watch closely. Each dot below is one saved moment.",
     },
     {
       type: "gitGraph",
@@ -153,7 +153,7 @@ export const lesson01: ContentLesson = {
           x: 96,
           y: 24,
           lane: 0,
-          message: "Another edit — added a note",
+          message: "Another edit: added a note",
           branch: "main",
           timestamp: "day 3",
           filesChanged: ["README.md"],
@@ -184,18 +184,18 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "timeline-explain",
-      text: "Notice how the dots only go forward. In Read mode you watched them appear; in Interactive mode click any dot to see its message, files, and time. That list of dots is your history — and you can land on any one of them.",
+      text: "Notice how the dots only go forward. In Read mode you watched them appear; in Interactive mode click any dot to see its message, files, and time. That list of dots is your history, and you can land on any one of them.",
     },
     {
       type: "callout",
       id: "timeline-connect",
       tone: "info",
       title: "That’s a snapshot",
-      text: "Each dot is called a snapshot — a full picture of the project at that moment. Make a mess later? Land on an older dot, and the mess is gone. Nothing is ever truly lost.",
+      text: "Each dot is called a snapshot. It's a full picture of the project at that moment. Make a mess later? Land on an older dot, and the mess is gone. Nothing is ever truly lost.",
     },
 
     // ---------------------------------------------------------------
-    // 4 · The folder — where Git keeps its memory.
+    // 4 · The folder: where Git keeps its memory.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -255,11 +255,11 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "folder-explain",
-      text: "The `.git` folder is where Git keeps its memory. Every snapshot you save is filed away in `objects`. You never need to open it — Git does. Your files stay clean and untouched on top.",
+      text: "The `.git` folder is where Git keeps its memory. Every snapshot you save is filed away in `objects`. You never need to open it, because Git takes care of it. Your files stay clean and untouched on top.",
     },
 
     // ---------------------------------------------------------------
-    // 5 · The editor — make a change, save a snapshot.
+    // 5 · The editor: make a change, save a snapshot.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -282,18 +282,18 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "editor-interact",
-      text: "In Interactive mode, add an exclamation mark at the end — `Hello Panda!` — then press “Save snapshot”. Watch the green highlight and the before/after compare.",
+      text: "In Interactive mode, add an exclamation mark at the end so it reads `Hello Panda!`. Then press “Save snapshot”. Watch the green highlight and the before/after compare.",
     },
     {
       type: "callout",
       id: "editor-connect",
       tone: "info",
       title: "Git noticed this change",
-      text: "A single “!” — and Git saw it. When you saved the snapshot, Git stored the file exactly as it looked after your edit. Now before and after exist side by side, forever.",
+      text: "A single “!”. And Git saw it. When you saved the snapshot, Git stored the file exactly as it looked after your edit. Now before and after exist side by side, forever.",
     },
 
     // ---------------------------------------------------------------
-    // 6 · The terminal — turning Git on.
+    // 6 · The terminal: turning Git on.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -326,7 +326,7 @@ export const lesson01: ContentLesson = {
         },
         {
           command: "git add README.md",
-          output: "README.md is now staged — ready for its first snapshot.",
+          output: "README.md is now staged and ready for its first snapshot.",
           outputKind: "success",
         },
         {
@@ -340,11 +340,11 @@ export const lesson01: ContentLesson = {
     {
       type: "paragraph",
       id: "terminal-explain",
-      text: "Four short words: `init` wakes Git up, `status` asks what it sees, `add` points at a file, and `commit` takes the snapshot. We’ll unpack each one soon — for now, feel the rhythm.",
+      text: "Four short words: `init` wakes Git up, `status` asks what it sees, `add` points at a file, and `commit` takes the snapshot. We’ll unpack each one soon. For now, just feel the rhythm.",
     },
 
     // ---------------------------------------------------------------
-    // 7 · Git vs GitHub — one picture.
+    // 7 · Git vs GitHub: one picture.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -366,7 +366,7 @@ export const lesson01: ContentLesson = {
       type: "callout",
       id: "github-connect",
       tone: "warning",
-      title: "Easy to mix up — so don’t",
+      title: "Easy to mix up, so don’t",
       text: "Git is the engine inside your computer. GitHub is the website in the cloud where people share projects. Together they’re a team; alone they’re just different tools.",
     },
 
@@ -383,10 +383,10 @@ export const lesson01: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Your homework is almost finished. You reach to delete one bad paragraph — and accidentally delete everything. How would Git help you survive this? Answer in your own words.",
+        "Your homework is almost finished. You reach to delete one bad paragraph and accidentally delete everything. How would Git help you survive this? Answer in your own words.",
       hint: "Remember the save point. Git kept a snapshot of your work a little while ago. What can you do with it?",
       exampleAnswer:
-        "I wouldn’t panic, because Git saved snapshots as I worked. I’d jump back to the snapshot from a while ago, get my work back, and only lose the last tiny bit — not everything.",
+        "I wouldn’t panic, because Git saved snapshots as I worked. I’d jump back to the snapshot from a while ago, get my work back, and only lose the last tiny bit, not everything.",
     },
 
     // ---------------------------------------------------------------
@@ -415,7 +415,7 @@ export const lesson01: ContentLesson = {
               "A type of computer",
             ],
             correctIndex: 0,
-            explanation: "Git remembers your work and lets you go back to any saved moment — that’s the whole idea.",
+            explanation: "Git remembers your work and lets you go back to any saved moment. That's the whole idea.",
           },
           {
             id: "q2",
@@ -427,7 +427,7 @@ export const lesson01: ContentLesson = {
               "A folder icon",
             ],
             correctIndex: 0,
-            explanation: "A snapshot is a full picture of the project at that moment — like a game save point.",
+            explanation: "A snapshot is a full picture of the project at that moment, like a game save point.",
           },
           {
             id: "q3",
@@ -436,7 +436,7 @@ export const lesson01: ContentLesson = {
               "In a hidden .git folder",
               "On a cloud you must pay for",
               "In your web browser",
-              "Nowhere — it forgets",
+              "Nowhere. It forgets",
             ],
             correctIndex: 0,
             explanation: "The .git folder is Git’s filing cabinet, quietly storing every snapshot.",
@@ -445,7 +445,7 @@ export const lesson01: ContentLesson = {
             id: "q4",
             prompt: "Do you need the internet to use Git?",
             options: [
-              "No — it runs on your computer",
+              "No. It runs on your computer",
               "Yes, always",
               "Only when you save",
               "Only on weekends",
@@ -485,14 +485,14 @@ export const lesson01: ContentLesson = {
         "Git is a time machine for your work.",
         "You save moments called snapshots.",
         "Snapshots live in a hidden .git folder.",
-        "Git works offline — GitHub is the online part.",
+        "Git works offline, and GitHub is the online part.",
         "You are in control: Git only saves when you say so.",
       ],
     },
     {
       type: "paragraph",
       id: "close-question",
-      text: "Ready to see why millions of developers reach for Git every single day — and the mess it saved them from?",
+      text: "Ready to see why millions of developers reach for Git every single day and the mess it saved them from?",
     },
     {
       type: "callout",

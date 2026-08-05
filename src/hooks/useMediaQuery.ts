@@ -20,7 +20,7 @@ export function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-/** Large desktop breakpoint — where the sidebar rail and docked AI panel live. */
+/** Large desktop breakpoint, where the sidebar rail and docked AI panel live. */
 export function useIsDesktop(): boolean {
   return useMediaQuery("(min-width: 1024px)");
 }

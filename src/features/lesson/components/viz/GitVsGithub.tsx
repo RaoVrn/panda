@@ -40,7 +40,7 @@ export interface GitVsGithubProps {
 /**
  * A one-picture answer to "Git vs GitHub": your laptop (Git lives here) on the
  * left, the cloud (GitHub lives here) on the right, with push/pull arrows
- * animating between them. No long paragraphs — the picture teaches.
+ * animating between them. No long paragraphs. The picture teaches.
  */
 export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -60,7 +60,7 @@ export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
         footer={<VizChrome mode={mode} player={player} label="Step" started={started} />}
       >
         <div className="grid items-center gap-6 sm:grid-cols-[1fr_auto_1fr]">
-          {/* Laptop — Git */}
+          {/* Laptop: Git */}
           <Cue show={showLaptop} className="mx-auto w-full max-w-[220px]">
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-border-subtle bg-base-subtle/50 px-5 py-6 text-center">
               <span className="flex size-12 items-center justify-center rounded-xl bg-accent-soft">
@@ -69,7 +69,7 @@ export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
               <div>
                 <p className="text-sm font-semibold text-text">Your computer</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-text-muted">
-                  Git lives here — it runs offline, all yours.
+                  Git lives here. It runs offline, and it's all yours.
                 </p>
               </div>
               <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-[11px] font-semibold text-accent-hover">
@@ -98,7 +98,7 @@ export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
             </motion.div>
           </div>
 
-          {/* Cloud — GitHub */}
+          {/* Cloud: GitHub */}
           <Cue show={showCloud} className="mx-auto w-full max-w-[220px]">
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-border-subtle bg-base-subtle/50 px-5 py-6 text-center">
               <span className="flex size-12 items-center justify-center rounded-xl bg-warning-soft">
@@ -107,7 +107,7 @@ export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
               <div>
                 <p className="text-sm font-semibold text-text">The internet</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-text-muted">
-                  GitHub lives here — a website for sharing your work.
+                  GitHub lives here. It's a website for sharing your work.
                 </p>
               </div>
               <span className="rounded-full bg-warning-soft px-2.5 py-0.5 text-[11px] font-semibold text-warning">
@@ -121,7 +121,7 @@ export function GitVsGithub({ title, player, mode }: GitVsGithubProps) {
           <p className={cn("text-xs leading-relaxed text-text-secondary")}>
             <span className="font-semibold text-text">push</span> sends your work up to
             GitHub. <span className="font-semibold text-text">pull</span> brings it back
-            down. Same tool on the inside — one is local, one is online.
+            down. Same tool on the inside. One is local, one is online.
           </p>
         </div>
       </DiagramContainer>

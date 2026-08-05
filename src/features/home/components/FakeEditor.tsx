@@ -129,7 +129,7 @@ export function FakeEditor({
           <span className="size-3 rounded-full bg-[#28c840]" />
         </div>
         <span className="truncate text-center font-mono text-xs text-[#8b949e]">
-          {title} — Visual Studio Code
+          {title} · Visual Studio Code
         </span>
       </div>
 

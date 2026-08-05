@@ -16,6 +16,7 @@ import { useStepPlayer } from "@/features/lesson/components/interactive/useStepP
 import { useReadPlayback } from "@/features/lesson/components/interactive/useReadPlayback";
 import { VizChrome } from "@/features/lesson/components/interactive/VizChrome";
 import { DiagramContainer } from "@/features/lesson/components/DiagramContainer";
+import { useReportAi } from "@/stores/aiContextStore";
 
 function fileIcon(name: string) {
   if (name === "README.md" || name.endsWith(".md")) return FileText;
@@ -255,6 +256,15 @@ export function DirectoryTree({
   const revealedPaths = new Set(order.slice(0, activeIndex + 1));
 
   const [selected, setSelected] = useState<string | null>(null);
+
+  useReportAi(
+    {
+      visualization: title
+        ? `${title}, step ${activeIndex + 1} of ${order.length}`
+        : `Project folder, step ${activeIndex + 1} of ${order.length}`,
+    },
+    [activeIndex, title, order.length],
+  );
 
   return (
     <div ref={ref}>

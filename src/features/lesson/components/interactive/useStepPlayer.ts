@@ -25,7 +25,7 @@ export interface StepPlayer {
 
 /**
  * The shared state machine behind every Panda visualisation (terminal, terminal
- * editor, git graph, timeline…). One hook, one set of controls — each viz only
+ * editor, git graph, timeline…). One hook, one set of controls. Each viz only
  * supplies its steps and drives the timings of its own animation.
  *
  * Visualisations never hardcode their playback UI; they render <StepControls>

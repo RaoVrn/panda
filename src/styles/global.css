@@ -202,3 +202,157 @@
     0 8px 32px rgba(13, 148, 136, 0.1);
   --shadow-topbar: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
+
+/* ------------------------------------------------------------------
+ * Panda AI chat: markdown rendering.
+ * All scoped under `.panda-ai` so the lesson page stays untouched.
+ * ------------------------------------------------------------------ */
+.panda-ai p {
+  line-height: 1.65;
+}
+
+.panda-ai h1,
+.panda-ai h2,
+.panda-ai h3,
+.panda-ai h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.panda-ai ul,
+.panda-ai ol {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.panda-ai ul {
+  list-style: disc;
+}
+
+.panda-ai ol {
+  list-style: decimal;
+}
+
+.panda-ai ul li::marker,
+.panda-ai ol li::marker {
+  color: var(--color-accent);
+}
+
+.panda-ai li > ul,
+.panda-ai li > ol {
+  margin-top: 0.25rem;
+}
+
+.panda-ai strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.panda-ai blockquote {
+  border-left: 2px solid var(--color-border-strong);
+  padding-left: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.panda-ai table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.panda-ai th,
+.panda-ai td {
+  border: 1px solid var(--color-border-subtle);
+  padding: 0.375rem 0.5rem;
+  text-align: left;
+}
+
+.panda-ai th {
+  background: var(--color-base-subtle);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.panda-ai hr {
+  border: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: 0.75rem 0;
+}
+
+.panda-ai input[type="checkbox"] {
+  accent-color: var(--color-accent);
+  margin-right: 0.375rem;
+}
+
+/* GitHub-dark syntax tokens for <pre> code in the chat panel. */
+.panda-ai pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  color: #c9d1d9;
+  background: transparent;
+}
+
+.panda-ai .hljs-keyword,
+.panda-ai .hljs-selector-tag,
+.panda-ai .hljs-literal,
+.panda-ai .hljs-section,
+.panda-ai .hljs-link {
+  color: #ff7b72;
+}
+
+.panda-ai .hljs-string,
+.panda-ai .hljs-title,
+.panda-ai .hljs-name,
+.panda-ai .hljs-type,
+.panda-ai .hljs-attribute,
+.panda-ai .hljs-symbol,
+.panda-ai .hljs-bullet,
+.panda-ai .hljs-addition,
+.panda-ai .hljs-variable,
+.panda-ai .hljs-template-tag,
+.panda-ai .hljs-template-variable {
+  color: #a5d6ff;
+}
+
+.panda-ai .hljs-number,
+.panda-ai .hljs-comment,
+.panda-ai .hljs-meta,
+.panda-ai .hljs-quote {
+  color: #8b949e;
+}
+
+.panda-ai .hljs-title.function_,
+.panda-ai .hljs-class .hljs-title {
+  color: #d2a8ff;
+}
+
+.panda-ai .hljs-built_in,
+.panda-ai .hljs-attr,
+.panda-ai .hljs-selector-attr,
+.panda-ai .hljs-selector-class,
+.panda-ai .hljs-selector-id {
+  color: #79c0ff;
+}
+
+.panda-ai .hljs-tag,
+.panda-ai .hljs-selector-pseudo,
+.panda-ai .hljs-selector-tag {
+  color: #7ee787;
+}
+
+.panda-ai .hljs-deletion {
+  color: #ffa198;
+}
+
+.panda-ai .hljs-emphasis {
+  font-style: italic;
+}
+
+.panda-ai .hljs-strong {
+  font-weight: 700;
+}

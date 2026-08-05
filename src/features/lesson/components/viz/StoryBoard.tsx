@@ -40,7 +40,7 @@ export interface StoryBoardProps {
 }
 
 /**
- * A story that plays one beat at a time — used to teach through a tiny
+ * A story that plays one beat at a time. It's used to teach through a tiny
  * real-life scene (e.g. "game → save → boss → load") before the learner is
  * asked to connect it to Git. In Read mode it plays itself on scroll; in
  * Interactive mode Previous/Next step through the beats.

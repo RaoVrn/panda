@@ -17,6 +17,7 @@ import {
 import type { ContentEditorBlock } from "@/content/schema";
 import { CodeWindow } from "@/features/lesson/components/blocks/CodeWindow";
 import { useLessonMode } from "@/features/lesson/lessonModeContext";
+import { useReportAi } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 
 const LINE_H = 24;
@@ -114,6 +115,19 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
 
   const modified = !playing && value !== initial;
   const hasChanges = modified && value.length > 0;
+
+  useReportAi(
+    {
+      editor: playing
+        ? `watching ${block.filename ?? "untitled"} type itself`
+        : snapshotAt
+          ? `edited ${block.filename ?? "untitled"} and saved a snapshot`
+          : value !== initial
+            ? `editing ${block.filename ?? "untitled"} (changes not saved yet)`
+            : `viewing ${block.filename ?? "untitled"}`,
+    },
+    [value, playing, snapshotAt, block.filename, initial],
+  );
 
   const stopTimer = () => {
     if (timerRef.current) window.clearInterval(timerRef.current);
@@ -384,7 +398,7 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
               <p className="text-xs leading-relaxed text-text-secondary">
                 <span className="font-semibold text-text">Git noticed this change.</span>{" "}
                 The line that changed is highlighted in green. A snapshot stores it exactly like
-                this — forever.
+                this, forever.
               </p>
             </div>
           </motion.div>
@@ -399,9 +413,9 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
         )}
       >
         {isRead
-          ? "In Interactive mode you can edit this file — then save a snapshot to watch Git notice."
+          ? "In Interactive mode you can edit this file, then save a snapshot to watch Git notice."
           : hasChanges && !snapshotAt
-            ? "Git sees a change — press “Save snapshot” to capture it."
+            ? "Git sees a change. Press “Save snapshot” to capture it."
             : snapshotAt
               ? "Snapshots are exactly how Git remembers your work."
               : "Make a small edit, then save a snapshot to compare."}

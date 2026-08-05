@@ -17,6 +17,12 @@ export default defineConfig({
           react: ["react", "react-dom", "react-router-dom"],
           motion: ["framer-motion"],
           icons: ["lucide-react"],
+          ai: [
+            "groq-sdk",
+            "react-markdown",
+            "remark-gfm",
+            "rehype-highlight",
+          ],
         },
       },
     },

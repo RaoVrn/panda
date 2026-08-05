@@ -5,7 +5,7 @@
  * plus the lines to print. It intentionally mirrors real Git's wording so a
  * learner's mental model carries over to a real terminal, while staying small
  * enough to read in an evening. Add new commands here as future lessons need
- * them (merge, rebase, diff, stash …) — each lesson just preloads the state it
+ * them (merge, rebase, diff, stash …). Each lesson just preloads the state it
  * starts from and lets learners type.
  */
 
@@ -247,7 +247,7 @@ export function runCommand(state: GitState, raw: string): CommandResult {
         state,
         output: message(
           addTarget === "."
-            ? "Nothing to add — the working tree has no changes."
+            ? "Nothing to add. The working tree has no changes."
             : `fatal: pathspec '${addTarget}' did not match any files`,
           "error",
         ),
@@ -258,7 +258,7 @@ export function runCommand(state: GitState, raw: string): CommandResult {
     return {
       state: next,
       output: message(
-        `${nouns} now staged — ready for their snapshot.`,
+        `${nouns} now staged and ready for their snapshot.`,
         "success",
       ),
     };

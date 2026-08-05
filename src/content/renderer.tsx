@@ -27,7 +27,7 @@ import {
 } from "@/features/lesson/components/blocks";
 
 /**
- * Block renderer registry — the single extensibility point of the engine.
+ * Block renderer registry, the single extensibility point of the engine.
  *
  * Every block type must have an entry here. The mapped type constrains each
  * entry to its exact block and makes the map exhaustive against the schema

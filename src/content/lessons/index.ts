@@ -4,7 +4,7 @@ import { lesson01 } from "@/content/lessons/lesson-01";
 
 /**
  * Registry of all authored lessons. Adding lesson-57.ts to this array is the
- * entire integration step — nothing else needs to change.
+ * entire integration step. Nothing else needs to change.
  */
 export const lessons: ContentLesson[] = [lesson01];
 

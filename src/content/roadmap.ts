@@ -3,7 +3,7 @@ import type { CourseModule } from "@/content/schema";
 /**
  * Panda course structure.
  *
- * This is the navigational skeleton only — the ordered modules of the course
+ * This is the navigational skeleton only. The ordered modules of the course
  * and the lesson ids each contains. Actual lesson content (and each lesson's
  * own metadata) lives in `content/lessons/`, which is the single source of
  * lesson data. The ids here must match a lesson registered in that folder.

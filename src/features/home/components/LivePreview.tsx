@@ -32,7 +32,7 @@ export function LivePreview() {
             experiment freely and never lose work again.
           </p>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">
-            Watch as a repository comes alive — every command you type is
+            Watch as a repository comes alive. Every command you type is
             reflected instantly in the branch graph below.
           </p>
         </motion.div>

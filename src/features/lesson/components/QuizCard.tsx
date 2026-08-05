@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Quiz } from "@/content/schema";
 import { useStepPlayer } from "@/features/lesson/components/interactive/useStepPlayer";
+import { useReportAi } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 
 interface AnswerState {
@@ -33,6 +34,34 @@ export function QuizCard({ quiz }: QuizCardProps) {
   const [scored, setScored] = useState<Record<string, boolean>>({});
 
   const question = quiz.questions[player.step];
+
+  const currentAnswered = question ? Boolean(states[question.id]?.revealed) : false;
+  const currentCorrect = question
+    ? states[question.id]?.selected === question.correctIndex
+    : false;
+
+  useReportAi(
+    {
+      quiz: question
+        ? `Q${player.step + 1} of ${player.total}: "${question.prompt}" (${
+            currentAnswered
+              ? currentCorrect
+                ? "answered correctly"
+                : "answered (incorrect)"
+              : "not answered yet"
+          }`
+        : undefined,
+    },
+    [
+      question?.id,
+      question?.prompt,
+      currentAnswered,
+      currentCorrect,
+      player.step,
+      player.total,
+    ],
+  );
+
   if (!question) return null;
   const state = states[question.id] ?? { selected: null, revealed: false };
   const answered = state.revealed;
@@ -175,7 +204,7 @@ export function QuizCard({ quiz }: QuizCardProps) {
                 </span>
                 <div className="text-sm leading-relaxed text-text-secondary">
                   <span className={cn("font-semibold", correct ? "text-accent-hover" : "text-danger")}>
-                    {correct ? `${praise} ` : "Not yet — here’s why: "}
+                    {correct ? `${praise} ` : "Not yet. Here’s why: "}
                   </span>
                   {question.explanation}
                   {!correct && (

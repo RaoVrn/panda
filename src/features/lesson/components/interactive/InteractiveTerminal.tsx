@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Clock3, CornerDownLeft } from "lucide-react";
 import type { TerminalStep } from "@/content/schema";
 import type { LessonMode } from "@/stores/lessonModeStore";
+import { useAiContextStore } from "@/stores/aiContextStore";
 import { cn } from "@/lib/utils";
 import { VizChrome } from "./VizChrome";
 import type { StepPlayer } from "./useStepPlayer";
@@ -180,6 +181,8 @@ export function InteractiveTerminal({
     const result = runCommand(engineRef.current, value);
     engineRef.current = result.state;
 
+    useAiContextStore.getState().report({ terminal: trimmed });
+
     if (result.output.clear) {
       setFreeLines([]);
     } else {
@@ -246,7 +249,7 @@ export function InteractiveTerminal({
             <span className="text-[11px] text-[#8b949e]">
               {interactive
                 ? "step through this session"
-                : "watch — this session plays itself"}
+                : "watch this session play itself"}
             </span>
           </div>
         )}
@@ -297,7 +300,7 @@ export function InteractiveTerminal({
                 your turn
               </span>
               <span className="font-sans text-[11px] text-[#8b949e]">
-                type anything — try `git init`, `help`, ↑/↓ for history, Tab to complete
+                type anything. Try `git init` or `help`, use ↑/↓ for history, or Tab to complete
               </span>
             </div>
 
