@@ -18,7 +18,7 @@ export function KeyTakeawaysBlock({ block }: { block: ContentKeyTakeawaysBlock }
         {block.items.map((item, index) => (
           <motion.li
             key={item}
-            initial={{ opacity: 0, x: -8 }}
+            initial={{ opacity: 1, x: -8 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.25, delay: index * 0.05, ease: [0.2, 0.8, 0.2, 1] }}

@@ -1,15 +1,19 @@
 import { AiPanel } from "@/features/learning/layout/AiPanel";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 /**
  * Full-page Panda AI chat. Reuses the same panel the lesson workspace shows,
- * so the experience is identical whether opened from the landing page or a
- * lesson. No lesson context is injected here, but history is preserved for
- * the session.
+ * so the experience is identical whether opened from the header or a lesson.
  */
 export function AiPage() {
   return (
-    <div className="flex h-[calc(100dvh-4rem)] items-stretch justify-center py-6">
-      <div className="flex w-full max-w-3xl overflow-hidden rounded-2xl border border-border-subtle shadow-card">
+    <div className="mx-auto w-full max-w-3xl py-8">
+      <PageHeader
+        title="Panda AI"
+        subtitle="Ask anything about your lessons — Panda knows what you're reading."
+        back={{ to: "/course", label: "Dashboard" }}
+      />
+      <div className="h-[72vh] overflow-hidden rounded-2xl border border-border-subtle shadow-card">
         <AiPanel />
       </div>
     </div>

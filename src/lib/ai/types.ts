@@ -151,6 +151,8 @@ export interface LessonContext {
   interactiveComponents?: string[];
   /** Estimated reading time in minutes. */
   estimatedMinutes?: number;
+  /** The learner's preferred explanation depth (from settings). */
+  explanationStyle?: "simple" | "balanced" | "deep";
 }
 
 export type PartialLessonContext = Partial<LessonContext>;

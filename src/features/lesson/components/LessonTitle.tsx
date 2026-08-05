@@ -7,9 +7,9 @@ import { formatDuration, titleCase } from "@/lib/utils";
 export function LessonTitle({ lesson }: { lesson: ContentLesson }) {
   return (
     <motion.header
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 1, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
       className="flex flex-col gap-4 border-b border-border-subtle pb-8"
     >
       <div className="flex flex-wrap items-center gap-2">

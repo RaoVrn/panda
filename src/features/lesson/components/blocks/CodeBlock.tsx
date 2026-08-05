@@ -8,10 +8,10 @@ export function CodeBlock({ block }: { block: ContentCodeBlock }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 1, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
     >
       <CodeWindow
         filename={block.filename}

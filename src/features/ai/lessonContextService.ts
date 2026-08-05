@@ -22,6 +22,7 @@ import {
   unlockedLessonIds,
 } from "@/features/progress/progressService";
 import { memorySummary } from "@/features/ai/memory/conversationMemory";
+import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 import { levelInfo } from "@/features/progress/xp";
 import {
   buildLessonStructure,
@@ -120,5 +121,6 @@ export function buildLessonContext(
     xp: progress.xp,
     level: levelInfo(progress.xp).level,
     memory: memorySummary() || undefined,
+    explanationStyle: usePreferencesStore.getState().snapshot().aiExplanationStyle,
   };
 }

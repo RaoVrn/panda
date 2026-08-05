@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -18,13 +18,13 @@ import {
 } from "@/features/progress/progressService";
 import { lessonXp } from "@/features/progress/xp";
 import { estimateMinutes } from "@/content/duration";
+import { scaledDuration, useAnimationSpeed } from "@/lib/motion/animation";
 import { Confetti } from "@/features/progress/components/Confetti";
 
-const fadeUp = {
-  initial: { opacity: 0, y: 10 },
+const fadeUpBase = {
+  initial: { opacity: 1, y: 10 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-20px" },
-  transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] },
 } as const;
 
 function scrollToBlock(blockId: string) {
@@ -76,6 +76,15 @@ export function LessonSummary({ lesson, next }: LessonSummaryProps) {
   const youLearned = lesson.meta.summary ?? [];
   const quizBlock = lesson.blocks.find((b) => b.type === "quiz");
   const quizFailed = quiz !== undefined && !check.quizPassed;
+
+  const speed = useAnimationSpeed();
+  const fadeUp = useMemo(
+    () => ({
+      ...fadeUpBase,
+      transition: { duration: scaledDuration(400, speed), ease: [0.2, 0.8, 0.2, 1] },
+    }),
+    [speed],
+  );
 
   return (
     <section aria-label="Lesson complete" className="pt-12">

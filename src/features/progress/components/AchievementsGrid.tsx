@@ -30,7 +30,7 @@ export function AchievementsGrid({ className }: { className?: string }) {
   return (
     <>
       <div className={cn("grid gap-2.5 sm:grid-cols-2", className)}>
-        {ACHIEVEMENTS.map((achievement, index) => {
+        {ACHIEVEMENTS.map((achievement) => {
           const unlocked = Boolean(achievements[achievement.id]);
           return (
             <motion.button
@@ -38,15 +38,12 @@ export function AchievementsGrid({ className }: { className?: string }) {
               type="button"
               onClick={() => setSelectedId(achievement.id)}
               aria-haspopup="dialog"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.04, ease: [0.2, 0.8, 0.2, 1] }}
               className={cn(
                 "relative flex items-start gap-2.5 overflow-hidden rounded-xl border px-3.5 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                 unlocked
                   ? "border-accent/30 bg-accent-soft/40"
                   : "border-border-subtle bg-base-subtle/40 opacity-70",
-                "transition-transform duration-200 hover:-translate-y-0.5",
+                "transition-transform duration-150 hover:-translate-y-0.5",
               )}
             >
               {unlocked && (

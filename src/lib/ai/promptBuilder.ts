@@ -126,9 +126,18 @@ export function buildUserPrompt(
     selectionHint = `\n\nThe learner selected this text on screen — explain exactly this:\n"""${context.selectedText}"""`;
   }
 
+  // Honor the learner's preferred explanation depth.
+  let styleHint = "";
+  if (context.explanationStyle === "simple") {
+    styleHint = "\n\nThis learner prefers SIMPLE explanations: short sentences, one analogy, beginner level throughout.";
+  } else if (context.explanationStyle === "deep") {
+    styleHint = "\n\nThis learner prefers DEEP explanations: include the 'why' behind the 'what' and one extra detail, while staying beginner-friendly.";
+  }
+
   const parts = [
     buildActionInstruction(action),
     buildTutorIntent(trimmed),
+    styleHint,
     buildContextSnippet(context),
     selectionHint,
     trimmed,

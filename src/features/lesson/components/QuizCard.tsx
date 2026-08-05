@@ -16,6 +16,7 @@ import {
   PASSING_SCORE,
   maybeCompleteLessonById,
 } from "@/features/progress/progressService";
+import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 import { Confetti } from "@/features/progress/components/Confetti";
 import { cn } from "@/lib/utils";
 
@@ -31,23 +32,28 @@ export interface QuizCardProps {
 }
 
 /**
- * Two-column responsive quiz: one question at a time with a progress indicator.
- * Picking an answer highlights the correct option, dims the rest (disabling
- * further clicks), and explains both the right and wrong choices.
+ * Two-column responsive quiz. Honors the learner's quiz-feedback preference:
+ *  · immediate — each answer is revealed the moment it's picked
+ *  · end       — answers are collected, then checked together with one tap
  */
 export function QuizCard({ quiz, lessonId }: QuizCardProps) {
   const player = useStepPlayer(quiz.questions.length);
   const [states, setStates] = useState<Record<string, AnswerState>>({});
   const [score, setScore] = useState(0);
   const [scored, setScored] = useState<Record<string, boolean>>({});
+  const [revealedAll, setRevealedAll] = useState(false);
+
+  const quizPreference = usePreferencesStore((s) => s.quizPreference);
+  const endMode = quizPreference === "end";
 
   const recordQuizResult = useProgressStore((s) => s.recordQuizResult);
   const reportedRef = useRef(false);
 
-  // Award quiz XP once, when every question has been answered.
-  const completedCount = quiz.questions.filter((q) => states[q.id]?.revealed).length;
-  const quizComplete =
-    quiz.questions.length > 0 && completedCount === quiz.questions.length;
+  const allAnswered =
+    quiz.questions.length > 0 &&
+    quiz.questions.every((q) => states[q.id]?.selected !== null);
+  const quizComplete = allAnswered && (!endMode || revealedAll);
+
   useEffect(() => {
     if (quizComplete && !reportedRef.current) {
       reportedRef.current = true;
@@ -77,7 +83,9 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
               ? currentCorrect
                 ? "answered correctly"
                 : "answered (incorrect)"
-              : "not answered yet"
+              : allAnswered && endMode && !revealedAll
+                ? "answered, awaiting check"
+                : "not answered yet"
           }`
         : undefined,
     },
@@ -86,6 +94,9 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
       question?.prompt,
       currentAnswered,
       currentCorrect,
+      allAnswered,
+      endMode,
+      revealedAll,
       player.step,
       player.total,
     ],
@@ -93,11 +104,18 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
 
   if (!question) return null;
   const state = states[question.id] ?? { selected: null, revealed: false };
-  const answered = state.revealed;
+  const answered = endMode ? state.selected !== null : state.revealed;
   const correct = state.selected === question.correctIndex;
 
   const choose = (index: number) => {
     if (answered) return;
+    if (endMode) {
+      setStates((prev) => ({
+        ...prev,
+        [question.id]: { selected: index, revealed: false },
+      }));
+      return;
+    }
     setStates((prev) => ({
       ...prev,
       [question.id]: { selected: index, revealed: true },
@@ -106,6 +124,20 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
       setScore((s) => s + 1);
       setScored((prev) => ({ ...prev, [question.id]: true }));
     }
+  };
+
+  // Reveal everything at once (end mode) and compute the score.
+  const checkAnswers = () => {
+    let correctCount = 0;
+    const next: Record<string, AnswerState> = {};
+    for (const q of quiz.questions) {
+      const selected = states[q.id]?.selected;
+      if (selected === q.correctIndex) correctCount += 1;
+      next[q.id] = { selected: selected ?? null, revealed: true };
+    }
+    setStates(next);
+    setScore(correctCount);
+    setRevealedAll(true);
   };
 
   const letter = (i: number) => String.fromCharCode(65 + i);
@@ -205,7 +237,7 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
           </div>
 
           <AnimatePresence mode="wait" initial={false}>
-            {answered && (
+            {state.revealed && (
               <motion.div
                 key="result"
                 initial={{ opacity: 0, y: 8, scale: correct ? 0.97 : 1 }}
@@ -247,6 +279,34 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
             )}
           </AnimatePresence>
         </motion.div>
+      </AnimatePresence>
+
+      {/* Check answers (end mode) */}
+      <AnimatePresence initial={false}>
+        {endMode && allAnswered && !revealedAll && (
+          <motion.div
+            key="check"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-col gap-2 border-t border-border-subtle bg-base-subtle/40 px-4 py-3">
+              <p className="text-sm text-text-secondary">
+                You've answered all {quiz.questions.length} questions.
+              </p>
+              <button
+                type="button"
+                onClick={checkAnswers}
+                className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-lg bg-accent px-4 text-sm font-medium text-text-inverse ring-1 ring-inset ring-white/10 transition-colors hover:bg-accent-hover"
+              >
+                <CircleCheck className="size-4" aria-hidden="true" />
+                Check answers
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
@@ -293,6 +353,7 @@ export function QuizCard({ quiz, lessonId }: QuizCardProps) {
             setStates({});
             setScore(0);
             setScored({});
+            setRevealedAll(false);
             player.replay();
           }}
           className="flex size-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-base-subtle hover:text-text"

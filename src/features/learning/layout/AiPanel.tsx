@@ -25,6 +25,7 @@ import { TypingDots } from "@/features/learning/ai/TypingDots";
 import { MessageActions } from "@/features/learning/ai/MessageActions";
 import { useLessonContext } from "@/features/ai/hooks/useLessonContext";
 import { usePandaChat } from "@/features/ai/hooks/usePandaChat";
+import { Logo } from "@/components/brand/Logo";
 import {
   buildEmptyState,
   buildNotice,
@@ -103,7 +104,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
       <div className="border-b border-border-subtle">
         <div className="flex items-center gap-2 px-4 py-3">
           <span className="flex size-7 items-center justify-center rounded-lg bg-accent-soft">
-            🐼
+            <Logo size={20} />
           </span>
           <div>
             <p className="text-sm font-semibold text-text">Panda AI</p>
@@ -209,7 +210,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
                 key={msg.id}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.18 }}
                 className="flex flex-row-reverse items-start gap-3"
               >
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-subtle">
@@ -227,7 +228,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
               key={msg.id}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.18 }}
               className="flex items-start gap-3"
             >
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-soft">

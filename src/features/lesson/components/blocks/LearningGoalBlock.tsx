@@ -9,9 +9,9 @@ import type { ContentLearningGoalBlock } from "@/content/schema";
 export function LearningGoalBlock({ block }: { block: ContentLearningGoalBlock }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 1, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
       className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent-soft/40 p-4"
     >
       <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent/15">

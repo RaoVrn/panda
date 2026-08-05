@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_AI_MAX_RETRIES?: string;
   readonly VITE_AI_MAX_TOTAL_MS?: string;
   readonly VITE_AI_CACHE_TTL?: string;
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_ANON_KEY?: string;
 }
 
 interface ImportMeta {

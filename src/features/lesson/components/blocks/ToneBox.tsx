@@ -60,10 +60,10 @@ export function ToneBox({ tone, title, children, className }: ToneBoxProps) {
   const Icon = style.icon;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 1, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
       className={cn(
         "flex items-start gap-2.5 rounded-2xl border p-4",
         style.border,

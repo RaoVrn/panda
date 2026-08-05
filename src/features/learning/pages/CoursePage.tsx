@@ -13,11 +13,13 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { JSX } from "react";
-import { isModuleUnlocked, modules } from "@/content/curriculum";
+import { isModuleUnlocked, moduleOfLesson, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
 import { estimateMinutes } from "@/content/duration";
 import { cn, percentComplete, formatDuration } from "@/lib/utils";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { useAuth } from "@/features/user/auth/authContext";
+import { useProfile } from "@/features/user/hooks/useProfile";
 import {
   useLevel,
   useStreak,
@@ -47,6 +49,9 @@ export function CoursePage() {
   const streak = useStreak();
   const todayXp = useTodayXp();
 
+  const { userId } = useAuth();
+  const { data: profile } = useProfile(userId ?? undefined);
+
   const lessons = allLessons();
   const pct = percentComplete(completedLessonIds.length, lessons.length);
   const next = useMemo(
@@ -57,6 +62,37 @@ export function CoursePage() {
   const rank = rankForXp(level.xp);
   const upcoming = nextRank(level.xp);
   const streakDays = streak.current;
+
+  // Contextual hero: time-of-day greeting + a progress-aware message.
+  const greeting = (() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  })();
+  const firstName = (profile?.name || "").trim().split(/\s+/)[0];
+  const heroTitle = firstName ? `${greeting}, ${firstName}!` : `${greeting}!`;
+
+  const heroMessage = useMemo(() => {
+    if (pct === 0) {
+      return "Ready to start your Git journey? Your first lesson is waiting.";
+    }
+    if (completedLessonIds.length === lessons.length) {
+      return "You finished every lesson. Amazing work — take a moment to enjoy it.";
+    }
+    const module = next ? moduleOfLesson(next.id) : undefined;
+    if (module) {
+      const remaining = moduleLessons(module.id).filter(
+        (l) => !completedLessonIds.includes(l.id),
+      ).length;
+      if (remaining > 0) {
+        return `Only ${remaining} lesson${remaining === 1 ? "" : "s"} left in ${
+          module.title
+        }. ${rank.title} is getting closer.`;
+      }
+    }
+    return "Continue where you left off.";
+  }, [pct, completedLessonIds, lessons.length, next, rank.title]);
 
   // Estimated minutes remaining: the unfinished lessons ahead.
   const estimatedRemainingMin = useMemo(
@@ -106,16 +142,10 @@ export function CoursePage() {
                   {rank.title}
                 </p>
                 <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Welcome back!
+                  {heroTitle}
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  {pct === 0
-                    ? "Your journey starts here. One small lesson at a time, and Git will feel like second nature."
-                    : completedLessonIds.length === lessons.length
-                      ? "Amazing work! You finished every lesson. Ready for your next challenge?"
-                      : next
-                        ? `You've completed ${completedLessonIds.length} of ${lessons.length} lessons. Let's keep the momentum going.`
-                        : "Let's keep the momentum going."}
+                  {heroMessage}
                 </p>
 
                 <div className="mt-5">
@@ -211,7 +241,7 @@ export function CoursePage() {
               {/* Course journey */}
               <Card className="p-5">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-text-secondary">
+                  <h2 className="text-sm font-medium uppercase tracking-wide text-text-secondary">
                     Your journey
                   </h2>
                   <span className="text-sm font-medium text-accent-hover">{pct}%</span>
@@ -319,7 +349,7 @@ export function CoursePage() {
 
               {/* Badges */}
               <Card className="p-5">
-                <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
+                <h2 className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-text-secondary">
                   <Sparkles className="size-4 text-accent-hover" aria-hidden="true" />
                   Your Panda Badges
                 </h2>

@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { ACHIEVEMENTS } from "../achievements";
 import { useLevel, useProfileStats, useStreak, useUnlockedAchievements } from "../hooks";
 import { rankForXp } from "../ranks";
+import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
 function Stat({
@@ -58,10 +59,10 @@ export function ProfileCard({ className }: { className?: string }) {
     >
       <div className="flex items-center gap-3 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
         <span
-          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-2xl"
+          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft"
           aria-hidden="true"
         >
-          🐼
+          <Logo size={26} />
         </span>
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-sm font-semibold text-text">

@@ -28,6 +28,7 @@ import { lessonStatus, moduleProgress, type LessonProgressState } from "@/featur
 import { useLevel, useStreak } from "@/features/progress/hooks";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { IconButton } from "@/components/ui/IconButton";
+import { Brand, Logo } from "@/components/brand/Logo";
 
 export interface CourseSidebarProps {
   currentSlug?: string;
@@ -239,11 +240,11 @@ function CollapsedRail({
       <div className="flex flex-col items-center gap-1 pt-5">
         <Link
           to="/course"
-          className="flex size-9 items-center justify-center rounded-lg text-xl transition-colors hover:bg-base-subtle"
+          className="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-base-subtle"
           aria-label="Panda home"
           title="Panda"
         >
-          🐼
+          <Logo size={22} />
         </Link>
       </div>
 
@@ -322,14 +323,13 @@ export function CourseSidebar({
 
   return (
     <div className="flex h-full flex-col bg-base-elevated">
-      <div className="flex items-center justify-between gap-2 px-4 pb-3 pt-4">
+      <div className="flex items-center justify-between gap-2 px-5 pb-4 pt-5">
         <Link
           to="/course"
-          className="flex items-center gap-2 font-semibold"
+          className="flex items-center"
           onClick={onClose}
         >
-          <span aria-hidden="true">🐼</span>
-          <span className="tracking-tight">Panda</span>
+          <Brand size={26} />
         </Link>
         <div className="flex items-center gap-1">
           {onToggle && (

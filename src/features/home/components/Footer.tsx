@@ -1,5 +1,6 @@
 import { ArrowUpRight, Github } from "lucide-react";
 import { Divider } from "@/components/ui/Divider";
+import { Brand } from "@/components/brand/Logo";
 
 export function Footer() {
   return (
@@ -7,8 +8,7 @@ export function Footer() {
       <Divider />
       <div className="flex flex-col items-center justify-between gap-4 py-10 sm:flex-row">
         <div className="flex items-center gap-2 text-sm text-text-secondary">
-          <span aria-hidden="true">🐼</span>
-          <span className="font-medium text-text">Panda</span>
+          <Brand size={18} />
           <span className="text-text-muted">·</span>
           <span>One bamboo at a time.</span>
         </div>

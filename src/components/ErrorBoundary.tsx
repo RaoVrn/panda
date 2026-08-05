@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/brand/Logo";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -47,7 +48,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return (
       <div className="flex min-h-screen items-center justify-center bg-base px-4 text-text">
         <div className="w-full max-w-md text-center">
-          <span className="text-5xl" aria-hidden="true">🐼</span>
+          <Logo size={64} className="mx-auto" />
           <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
             Something went wrong
           </h1>

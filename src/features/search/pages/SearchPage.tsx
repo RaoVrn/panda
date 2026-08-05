@@ -10,6 +10,7 @@ import {
 } from "@/content/searchIndex";
 import { Card } from "@/components/ui/Card";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { cn, formatDuration, titleCase } from "@/lib/utils";
 
 const KIND_STYLE: Record<SearchKind, string> = {
@@ -60,14 +61,15 @@ export function SearchPage() {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-2xl py-12">
-      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Search</h1>
-      <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-        Find lessons, commands, concepts and quiz questions across the course.
-      </p>
+    <div className="mx-auto w-full max-w-3xl py-8">
+      <PageHeader
+        title="Search"
+        subtitle="Find lessons, commands, concepts and quiz questions across the course."
+        back={{ to: "/course", label: "Dashboard" }}
+      />
 
       <SearchInput
-        className="mt-6"
+        className="mt-2"
         placeholder="Try 'git init' or 'snapshot'..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Map } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/brand/Logo";
 
 const container = {
   hidden: {},
@@ -38,7 +39,6 @@ export function Hero() {
           className="flex size-20 items-center justify-center rounded-3xl border border-border-subtle bg-card shadow-card"
         >
           <motion.span
-            className="text-4xl"
             aria-hidden="true"
             initial={{ scale: 0.6, rotate: -8 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -49,7 +49,7 @@ export function Hero() {
               delay: 0.3,
             }}
           >
-            🐼
+            <Logo size={52} />
           </motion.span>
         </motion.div>
 

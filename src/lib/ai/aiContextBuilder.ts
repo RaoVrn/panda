@@ -54,6 +54,7 @@ export function buildContextSnippet(context: LessonContext): string {
     context.lessonProgress && `Lesson progress: ${context.lessonProgress}`,
     context.quizProgress && `Quiz progress: ${context.quizProgress}`,
     context.xp !== undefined && `Learner XP: ${context.xp} (level ${context.level ?? "?"})`,
+    context.explanationStyle && `AI explanation style: ${context.explanationStyle}`,
     context.memory && `Already covered: ${context.memory}`,
   ].filter(Boolean) as string[];
   if (live.length > 0) {

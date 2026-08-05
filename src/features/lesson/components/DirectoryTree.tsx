@@ -63,7 +63,7 @@ export function NodeRow({
 
   return (
     <motion.li
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 1, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
     >

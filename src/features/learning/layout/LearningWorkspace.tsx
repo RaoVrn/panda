@@ -5,6 +5,8 @@ import { useWorkspaceUI } from "@/stores/workspaceUIStore";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { CourseSidebar } from "@/features/learning/layout/CourseSidebar";
 import { AiPanel } from "@/features/learning/layout/AiPanel";
+import { PageTransition } from "@/components/layout/PageTransition";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/lib/utils";
 
@@ -78,19 +80,72 @@ export function LearningWorkspace({ children }: LearningWorkspaceProps) {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-base text-text lg:flex-row">
-      {/* Desktop sidebar rail */}
-      <motion.aside
-        aria-label="Course navigation"
-        className="hidden lg:block lg:shrink-0 lg:overflow-hidden lg:border-r lg:border-border-subtle"
-        animate={{ width: sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED }}
-        transition={spring}
-      >
-        <CourseSidebar
-          collapsed={sidebarCollapsed}
-          onToggle={toggleSidebar}
-        />
-      </motion.aside>
+    <div className="flex h-screen flex-col bg-base text-text">
+      {/* One global header: the avatar menu lives here, top-right, on every page.
+          The sidebar owns the brand, so the header hides it. */}
+      <AppHeader
+        hideBrand
+        leading={
+          <IconButton
+            label="Open course navigation"
+            aria-expanded={mobileSidebar}
+            onClick={() => setMobileSidebar(true)}
+          >
+            <Menu className="size-4" aria-hidden="true" />
+          </IconButton>
+        }
+      />
+
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        {/* Desktop sidebar rail */}
+        <motion.aside
+          aria-label="Course navigation"
+          className="hidden lg:block lg:shrink-0 lg:overflow-hidden lg:border-r lg:border-border-subtle"
+          animate={{ width: sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED }}
+          transition={spring}
+        >
+          <CourseSidebar
+            collapsed={sidebarCollapsed}
+            onToggle={toggleSidebar}
+          />
+        </motion.aside>
+
+        {/* Center panel */}
+        <div
+          className="flex min-w-0 flex-1 flex-col overflow-y-auto"
+          onClick={handleContentClick}
+        >
+          <PageTransition>{children}</PageTransition>
+        </div>
+
+        {/* Desktop AI panel: docked, animates width */}
+        <motion.aside
+          aria-label="Panda AI"
+          aria-hidden={!aiOpen}
+          className="hidden lg:block lg:overflow-visible lg:border-l lg:border-border-subtle"
+          animate={{ width: aiOpen ? aiWidth : 0 }}
+          transition={spring}
+        >
+          {aiOpen && (
+            <div className="relative h-full shadow-card" style={{ width: aiWidth }}>
+              <div
+                role="separator"
+                aria-label="Resize Panda AI panel"
+                aria-orientation="vertical"
+                onPointerDown={(event) => {
+                  resizeStart.current = { x: event.clientX, width: aiWidth };
+                  setResizingAi(true);
+                }}
+                className={cn(
+                  "absolute -left-1 top-0 z-10 h-full w-2 cursor-col-resize transition-colors",
+                  resizingAi ? "bg-accent/30" : "hover:bg-accent/20",
+                )}
+              />
+              <AiPanel onClose={() => setAiOpen(false)} />
+            </div>
+          )}
+        </motion.aside>
+      </div>
 
       {/* Mobile / tablet sidebar drawer */}
       <AnimatePresence>
@@ -117,57 +172,6 @@ export function LearningWorkspace({ children }: LearningWorkspaceProps) {
           </>
         )}
       </AnimatePresence>
-
-      {/* Top bar (tablet / mobile) */}
-      <div className="flex items-center gap-2 border-b border-border-subtle bg-base px-3 py-2 lg:hidden">
-        <IconButton
-          label="Open course navigation"
-          aria-expanded={mobileSidebar}
-          onClick={() => setMobileSidebar(true)}
-        >
-          <Menu className="size-4" aria-hidden="true" />
-        </IconButton>
-        <span className="flex items-center gap-1.5 font-semibold">
-          <span aria-hidden="true">🐼</span>
-          <span className="text-sm tracking-tight">Panda</span>
-        </span>
-      </div>
-
-      {/* Center panel */}
-      <div
-        className="flex min-w-0 flex-1 flex-col overflow-y-auto"
-        onClick={handleContentClick}
-      >
-        {children}
-      </div>
-
-      {/* Desktop AI panel: docked, animates width */}
-      <motion.aside
-        aria-label="Panda AI"
-        aria-hidden={!aiOpen}
-        className="hidden lg:block lg:overflow-visible lg:border-l lg:border-border-subtle"
-        animate={{ width: aiOpen ? aiWidth : 0 }}
-        transition={spring}
-      >
-        {aiOpen && (
-          <div className="relative h-full shadow-card" style={{ width: aiWidth }}>
-            <div
-              role="separator"
-              aria-label="Resize Panda AI panel"
-              aria-orientation="vertical"
-              onPointerDown={(event) => {
-                resizeStart.current = { x: event.clientX, width: aiWidth };
-                setResizingAi(true);
-              }}
-              className={cn(
-                "absolute -left-1 top-0 z-10 h-full w-2 cursor-col-resize transition-colors",
-                resizingAi ? "bg-accent/30" : "hover:bg-accent/20",
-              )}
-            />
-            <AiPanel onClose={() => setAiOpen(false)} />
-          </div>
-        )}
-      </motion.aside>
 
       {/* Mobile / tablet AI overlay */}
       <AnimatePresence>

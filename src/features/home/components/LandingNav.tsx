@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { useTheme } from "@/contexts/useTheme";
+import { Brand } from "@/components/brand/Logo";
 
 export function LandingNav() {
   const { theme, toggleTheme } = useTheme();
@@ -17,15 +18,11 @@ export function LandingNav() {
       >
         <Link
           to="/"
-          className="group flex shrink-0 items-center gap-2 font-semibold"
+          className="group flex shrink-0 items-center"
         >
-          <span
-            className="transition-transform duration-200 group-hover:scale-110"
-            aria-hidden="true"
-          >
-            🐼
+          <span className="transition-transform duration-150 group-hover:scale-105">
+            <Brand size={26} />
           </span>
-          <span className="tracking-tight">Panda</span>
         </Link>
 
         <SearchInput

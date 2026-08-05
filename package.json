@@ -13,6 +13,8 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.1",
+    "@tanstack/react-query": "^5.101.4",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
     "groq-sdk": "^1.5.0",

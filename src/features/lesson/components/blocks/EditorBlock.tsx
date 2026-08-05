@@ -225,10 +225,10 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
   return (
     <div className="group">
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 1, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+        transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
         onViewportEnter={() => {
           if (isRead && !hasPlayed) play();
         }}
@@ -353,10 +353,10 @@ export function EditorBlock({ block }: { block: ContentEditorBlock }) {
         {snapshotAt && (
           <motion.div
             key="snapshot"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 1, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
             className="mt-3 overflow-hidden rounded-2xl border border-accent/30 bg-accent-soft/30"
           >
             <div className="flex items-center gap-2 border-b border-accent/20 px-4 py-2.5">

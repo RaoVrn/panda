@@ -4,7 +4,7 @@ import type { ContentImageBlock } from "@/content/schema";
 export function ImageBlock({ block }: { block: ContentImageBlock }) {
   return (
     <motion.figure
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 1, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}

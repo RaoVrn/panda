@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/brand/Logo";
 
 export function FinalCta() {
   return (
@@ -12,9 +13,7 @@ export function FinalCta() {
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         className="flex flex-col items-center rounded-3xl border border-border-subtle bg-card px-6 py-16 text-center shadow-card"
       >
-        <span className="text-4xl" aria-hidden="true">
-          🐼
-        </span>
+        <Logo size={48} className="mx-auto" />
         <h2 className="mt-6 max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">
           Ready to see Git for the first time?
         </h2>
