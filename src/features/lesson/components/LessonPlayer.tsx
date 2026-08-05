@@ -4,6 +4,7 @@ import {
 } from "@/stores/lessonModeStore";
 import {
   LessonModeContext,
+  LessonIdContext,
   type LessonModeValue,
 } from "@/features/lesson/lessonModeContext";
 import { LessonModeToggle } from "@/features/lesson/components/LessonModeToggle";
@@ -94,36 +95,38 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
     totalBlocks <= 0 ? 0 : Math.min(100, Math.round(((reading?.visited.length ?? 0) / totalBlocks) * 100));
 
   return (
-    <LessonModeContext.Provider value={modeValue}>
-      <div ref={rootRef} className="relative">
-        <div className="sticky top-0 z-20 mb-6 border-b border-border-subtle bg-base/85 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-3 px-1 py-2">
-            <p className="text-xs text-text-muted">
-              {mode === "read" ? "Read" : "Interactive"} mode
-              <span aria-hidden="true" className="mx-2 text-border-strong">
-                ·
-              </span>
-              <span className="tabular-nums">{pct}% read</span>
-            </p>
-            <LessonModeToggle mode={mode} onChange={setMode} />
+    <LessonIdContext.Provider value={lessonId}>
+      <LessonModeContext.Provider value={modeValue}>
+        <div ref={rootRef} className="relative">
+          <div className="sticky top-0 z-20 mb-6 border-b border-border-subtle bg-base/85 backdrop-blur-sm">
+            <div className="flex items-center justify-between gap-3 px-1 py-2">
+              <p className="text-xs text-text-muted">
+                {mode === "read" ? "Read" : "Interactive"} mode
+                <span aria-hidden="true" className="mx-2 text-border-strong">
+                  ·
+                </span>
+                <span className="tabular-nums">{pct}% read</span>
+              </p>
+              <LessonModeToggle mode={mode} onChange={setMode} />
+            </div>
+            <div className="h-0.5 w-full bg-transparent" aria-hidden="true">
+              <div
+                className="h-full bg-accent transition-[width] duration-300 ease-out"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
           </div>
-          <div className="h-0.5 w-full bg-transparent" aria-hidden="true">
-            <div
-              className="h-full bg-accent transition-[width] duration-300 ease-out"
-              style={{ width: `${pct}%` }}
-            />
+          <div
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+            aria-label={`Lesson read ${pct}%`}
+          >
+            {children}
           </div>
         </div>
-        <div
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-          aria-label={`Lesson read ${pct}%`}
-        >
-          {children}
-        </div>
-      </div>
-    </LessonModeContext.Provider>
+      </LessonModeContext.Provider>
+    </LessonIdContext.Provider>
   );
 }

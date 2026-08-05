@@ -28,6 +28,8 @@ export function TerminalStepsBlock({
       title={block.title ?? "terminal"}
       player={player}
       mode={mode}
+      seed={block.seed}
+      seedId={block.seedId}
     />
   );
 }

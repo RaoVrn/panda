@@ -44,6 +44,9 @@ function blockPad(block: ContentLesson["blocks"][number]): string {
     case "terminalSteps":
     case "directoryTree":
     case "gitGraph":
+    case "stageArea":
+    case "branchGraph":
+    case "diffViewer":
       return "mt-9";
     case "quiz":
     case "practice":

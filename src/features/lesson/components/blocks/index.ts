@@ -16,4 +16,7 @@ export { KeyTakeawaysBlock } from "@/features/lesson/components/blocks/KeyTakeaw
 export { PracticeBlock } from "@/features/lesson/components/blocks/PracticeBlock";
 export { StoryBoardBlock } from "@/features/lesson/components/blocks/StoryBoardBlock";
 export { GitVsGithubBlock } from "@/features/lesson/components/blocks/GitVsGithubBlock";
+export { StageAreaBlock } from "@/features/lesson/components/blocks/StageAreaBlock";
+export { BranchGraphBlock } from "@/features/lesson/components/blocks/BranchGraphBlock";
+export { DiffViewerBlock } from "@/features/lesson/components/blocks/DiffViewerBlock";
 export { SpacerBlock } from "@/features/lesson/components/blocks/SpacerBlock";

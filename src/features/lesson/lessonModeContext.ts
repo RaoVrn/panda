@@ -20,3 +20,14 @@ export function useLessonMode(): LessonModeValue {
   }
   return value;
 }
+
+/**
+ * The id of the lesson being rendered. Provided by <LessonPlayer>; interactive
+ * blocks (terminal, visualizations) use it to key their shared Git simulation,
+ * so switching lessons always starts a clean repository.
+ */
+export const LessonIdContext = createContext<string>("");
+
+export function useLessonId(): string {
+  return useContext(LessonIdContext);
+}

@@ -87,6 +87,24 @@ function blockHits(lesson: ContentLesson): SearchHit[] {
       case "storyboard":
         for (const node of block.nodes) push("concept", node.text);
         break;
+      case "branchGraph":
+        for (const step of block.steps) {
+          push(
+            "concept",
+            `${step.branch} ${step.action} ${step.message ?? ""} ${step.tag ?? ""}`.trim(),
+          );
+        }
+        break;
+      case "diffViewer":
+        for (const row of block.rows) {
+          push("concept", `${row.left ?? ""} ${row.right ?? ""}`.trim());
+        }
+        break;
+      case "stageArea":
+        for (const file of block.readFiles ?? []) {
+          push("command", `${file.name} ${file.status}`);
+        }
+        break;
       default:
         break;
     }

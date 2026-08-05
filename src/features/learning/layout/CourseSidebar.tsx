@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Clock,
   Flame,
+  GitBranch,
   Globe,
   Layers,
   Lock,
@@ -37,6 +38,7 @@ export interface CourseSidebarProps {
 const moduleIcons: Record<string, JSX.Element> = {
   sparkles: <Sparkles className="size-4" aria-hidden="true" />,
   layers: <Layers className="size-4" aria-hidden="true" />,
+  "git-branch": <GitBranch className="size-4" aria-hidden="true" />,
   globe: <Globe className="size-4" aria-hidden="true" />,
   rocket: <Rocket className="size-4" aria-hidden="true" />,
 };

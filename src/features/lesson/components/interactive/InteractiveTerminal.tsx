@@ -3,16 +3,13 @@ import { motion } from "framer-motion";
 import { Clock3, CornerDownLeft } from "lucide-react";
 import type { TerminalStep } from "@/content/schema";
 import type { LessonMode } from "@/stores/lessonModeStore";
-import { useAiContextStore } from "@/stores/aiContextStore";
+import { useGitSimStore, type GitSimSeed } from "@/stores/gitSimStore";
+import { useLessonId } from "@/features/lesson/lessonModeContext";
 import { cn } from "@/lib/utils";
 import { VizChrome } from "./VizChrome";
 import type { StepPlayer } from "./useStepPlayer";
 import { useReadPlayback } from "./useReadPlayback";
-import {
-  createGitState,
-  runCommand,
-  type CommandOutput,
-} from "./gitEngine";
+import type { CommandOutput } from "./gitEngine";
 
 const TYPE_MS = 42;
 const OUTPUT_MS = 620;
@@ -34,9 +31,16 @@ const COMPLETIONS = [
   "git status",
   "git add .",
   "git log",
+  "git log --oneline",
+  "git diff",
+  "git restore --staged ",
   "git branch",
-  "git commit -m ",
+  "git switch -c ",
   "git checkout ",
+  "git commit -m ",
+  "git merge ",
+  "git tag ",
+  "git remote add origin ",
 ];
 
 function toneFor(kind?: string, fallback = "text-[#e6edf3]"): string {
@@ -86,6 +90,9 @@ export interface InteractiveTerminalProps {
   height?: number;
   player: StepPlayer;
   mode: LessonMode;
+  /** Starting repository for the sandbox (shared across the lesson). */
+  seed?: GitSimSeed;
+  seedId?: string;
 }
 
 /**
@@ -102,8 +109,11 @@ export function InteractiveTerminal({
   height = 300,
   player,
   mode,
+  seed,
+  seedId,
 }: InteractiveTerminalProps) {
   const interactive = mode === "interactive";
+  const lessonId = useLessonId();
 
   const ref = useRef<HTMLDivElement>(null);
   const { started } = useReadPlayback(ref, player);
@@ -157,14 +167,21 @@ export function InteractiveTerminal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.step, player.replayCount, interactive, started]);
 
-  // Sandbox: an independent Git shell the learner can experiment in.
-  const engineRef = useRef(createGitState());
+  // Sandbox: a Git shell backed by the shared lesson repository, so every
+  // visualization in the lesson sees the same state.
+  const sync = useGitSimStore((s) => s.sync);
+  const run = useGitSimStore((s) => s.run);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [histIndex, setHistIndex] = useState(-1);
   const [freeLines, setFreeLines] = useState<
     Array<{ input: string; output: CommandOutput }>
   >([]);
+
+  useEffect(() => {
+    if (interactive) sync(lessonId, seedId ?? lessonId, seed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interactive, lessonId, seedId, seed]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -178,15 +195,12 @@ export function InteractiveTerminal({
     const trimmed = value.trim();
     if (!trimmed) return;
 
-    const result = runCommand(engineRef.current, value);
-    engineRef.current = result.state;
+    const output = run(trimmed);
 
-    useAiContextStore.getState().report({ terminal: trimmed });
-
-    if (result.output.clear) {
+    if (output.clear) {
       setFreeLines([]);
     } else {
-      setFreeLines((prev) => [...prev, { input: value, output: result.output }]);
+      setFreeLines((prev) => [...prev, { input: value, output }]);
     }
     setHistory((prev) => [...prev, value]);
     setHistIndex(-1);
@@ -300,7 +314,7 @@ export function InteractiveTerminal({
                 your turn
               </span>
               <span className="font-sans text-[11px] text-[#8b949e]">
-                type anything. Try `git init` or `help`, use ↑/↓ for history, or Tab to complete
+                type anything. Try `help`, ↑/↓ for history, Tab to complete — your changes sync with every visualization
               </span>
             </div>
 

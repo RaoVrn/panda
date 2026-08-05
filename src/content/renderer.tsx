@@ -5,8 +5,10 @@ import type {
   ContentBlockType,
 } from "@/content/schema";
 import {
+  BranchGraphBlock,
   CalloutBlock,
   CodeBlock,
+  DiffViewerBlock,
   DirectoryTreeBlock,
   DividerBlock,
   EditorBlock,
@@ -20,6 +22,7 @@ import {
   PracticeBlock,
   QuizBlock,
   SpacerBlock,
+  StageAreaBlock,
   StoryBoardBlock,
   TerminalStepsBlock,
   TipBlock,
@@ -55,6 +58,9 @@ const registry: {
   practice: (block) => <PracticeBlock block={block} />,
   storyboard: (block) => <StoryBoardBlock block={block} />,
   gitVsGithub: (block) => <GitVsGithubBlock block={block} />,
+  stageArea: (block) => <StageAreaBlock block={block} />,
+  branchGraph: (block) => <BranchGraphBlock block={block} />,
+  diffViewer: (block) => <DiffViewerBlock block={block} />,
   spacer: (block) => <SpacerBlock block={block} />,
 };
 

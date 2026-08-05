@@ -6,27 +6,39 @@ import {
   Check,
   Clock,
   Flag,
-  Sparkles,
-  PartyPopper,
-  Zap,
   Trophy,
+  Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ContentLesson } from "@/content/schema";
 import { allLessons } from "@/content/lessons";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { Confetti } from "@/features/progress/components/Confetti";
 import { XP_REWARDS } from "@/features/progress/xp";
-import { formatDuration, titleCase } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-const difficultyTone = {
-  beginner: "accent",
-  intermediate: "warning",
-  advanced: "danger",
+const fadeUp = {
+  initial: { opacity: 0, y: 10 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-20px" },
+  transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] },
 } as const;
+
+function Stat({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium",
+        accent
+          ? "bg-accent-soft text-accent-hover"
+          : "bg-base-subtle text-text-secondary",
+      )}
+    >
+      {children}
+    </span>
+  );
+}
 
 export interface LessonSummaryProps {
   lesson: ContentLesson;
@@ -35,9 +47,9 @@ export interface LessonSummaryProps {
 }
 
 /**
- * The premium ending to every lesson: a calm celebration (Nice work!), a recap
- * of what was learned, a preview of the next lesson with its time and
- * difficulty, and a large Continue action backed by the course progress bar.
+ * A compact, satisfying finish. Teach deeply during the lesson; finish
+ * quickly. Celebration, reward, takeaways and the next-lesson call to action
+ * fit within one screen — no walls of text.
  */
 export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
   const { completeLesson, completedLessonIds } = useProgressStore();
@@ -58,7 +70,6 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
   ).length;
   const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
 
-  // This lesson's XP reward (defaults to reading + finishing).
   const lessonXp =
     lesson.xpReward ?? XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
   const timeSpentMin = startedAt
@@ -66,218 +77,162 @@ export function LessonSummary({ lesson, previous, next }: LessonSummaryProps) {
     : null;
 
   const youLearned = lesson.meta.summary ?? [];
-  const whyItMatters =
-    lesson.meta.whyItMatters ??
-    "What you just learned is the foundation of how every developer protects and shares their work.";
-
-  const fadeUp = {
-    initial: { opacity: 0, y: 14 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
-    transition: { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] },
-  } as const;
+  const why = lesson.meta.whyItMatters;
 
   return (
-    <section aria-label="Lesson complete" className="pt-20">
-      <div className="mb-12 flex items-center gap-4" aria-hidden="true">
+    <section aria-label="Lesson complete" className="pt-12">
+      <div className="mb-5 flex items-center gap-3" aria-hidden="true">
         <span className="h-px flex-1 bg-border-subtle" />
         <span className="size-1.5 rounded-full bg-accent" />
         <span className="h-px flex-1 bg-border-subtle" />
       </div>
 
-      <div className="flex flex-col gap-9">
-        {/* 1 · Celebration */}
-        <motion.div {...fadeUp} className="relative flex flex-col items-center gap-5 text-center">
+      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
+        {/* 1 · Celebration + reward */}
+        <motion.div
+          {...fadeUp}
+          className="relative border-b border-border-subtle px-6 py-7 text-center"
+        >
           <Confetti />
-          <motion.span
-            className="relative flex size-14 items-center justify-center rounded-full bg-accent-soft ring-1 ring-accent/20"
-            initial={{ scale: 0.6, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 220, damping: 16 }}
-          >
-            <motion.span
-              className="absolute inset-0 rounded-full bg-accent/20"
-              animate={{ scale: [1, 1.6], opacity: [0.5, 0] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
-              aria-hidden="true"
-            />
-            <PartyPopper className="size-6 text-accent-hover" aria-hidden="true" />
-          </motion.span>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-3xl font-semibold tracking-tight text-text sm:text-4xl">
-              Great job!
-            </h2>
-            <p className="max-w-md text-sm leading-relaxed text-text-muted">
-              That’s the end of “{lesson.title}”. Here’s a quick recap.
-            </p>
-          </div>
-
-          {/* Lesson stats */}
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1.5 text-xs font-semibold text-accent-hover">
+          <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
+            Great job!
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            You finished “{lesson.title}”.
+          </p>
+          <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2">
+            <Stat accent>
               <Zap className="size-3.5" aria-hidden="true" />
               +{lessonXp} XP
-            </span>
+            </Stat>
             {timeSpentMin !== null && (
-              <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
+              <Stat>
                 <Clock className="size-3.5" aria-hidden="true" />
                 {timeSpentMin} min
-              </span>
+              </Stat>
             )}
-            {quizRecord && (
-              <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
-                <Trophy className="size-3.5" aria-hidden="true" />
-                Quiz {quizRecord.correct}/{quizRecord.total}
-              </span>
-            )}
-            <span className="flex items-center gap-1.5 rounded-full bg-base-subtle px-3 py-1.5 text-xs text-text-secondary">
+            <Stat>
               <Check className="size-3.5" aria-hidden="true" />
               {youLearned.length} concepts
-            </span>
+            </Stat>
+            {quizRecord && (
+              <Stat>
+                <Trophy className="size-3.5" aria-hidden="true" />
+                Quiz {quizRecord.correct}/{quizRecord.total}
+              </Stat>
+            )}
           </div>
         </motion.div>
 
-        {/* 2 · Today you learned */}
-        <motion.div {...fadeUp}>
-          <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
-            <div className="border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
-              <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
-                What you learned
-              </p>
-            </div>
-            <ul className="flex flex-col divide-y divide-border-subtle/60">
-              {youLearned.map((item, i) => (
-                <motion.li
+        {/* 2 · Takeaways */}
+        {youLearned.length > 0 && (
+          <motion.div
+            {...fadeUp}
+            className="border-b border-border-subtle px-6 py-4"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-hover">
+              What you learned
+            </p>
+            <ul className="mt-2 grid gap-x-8 gap-y-1.5 sm:grid-cols-2">
+              {youLearned.map((item) => (
+                <li
                   key={item}
-                  initial={{ opacity: 0, x: -8 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: i * 0.05, ease: [0.2, 0.8, 0.2, 1] }}
-                  className="flex items-start gap-3 px-5 py-3.5"
+                  className="flex items-start gap-2 text-sm leading-snug text-text-secondary"
                 >
-                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-                    <Check className="size-3 text-accent-hover" aria-hidden="true" />
+                  <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-accent-soft">
+                    <Check className="size-2.5 text-accent-hover" aria-hidden="true" />
                   </span>
-                  <span className="text-sm leading-relaxed text-text-secondary">{item}</span>
-                </motion.li>
+                  <span className="min-w-0">{item}</span>
+                </li>
               ))}
             </ul>
-          </div>
-        </motion.div>
-
-        {/* 3 · Why it matters */}
-        <motion.div {...fadeUp}>
-          <div className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent-soft/40 p-5">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-base/40">
-              <Sparkles className="size-4 text-accent-hover" aria-hidden="true" />
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-text">Why this matters</p>
-              <p className="mt-0.5 text-sm leading-relaxed text-text-secondary">
-                {whyItMatters}
-              </p>
-              {lesson.meta.motivation && (
-                <p className="mt-2 text-sm leading-relaxed text-text">
-                  {lesson.meta.motivation}
-                </p>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 4 · Next lesson */}
-        {next && (
-          <motion.div {...fadeUp}>
-            <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
-              <div className="flex items-center gap-2 border-b border-border-subtle bg-base-subtle/50 px-5 py-3.5">
-                <Flag className="size-3.5 text-accent-hover" aria-hidden="true" />
-                <p className="text-xs font-semibold uppercase tracking-widest text-accent-hover">
-                  Continue to next lesson
-                </p>
-              </div>
-              <div className="flex flex-col gap-4 p-5">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <h3 className="text-lg font-semibold text-text">{next.title}</h3>
-                  <span className="flex items-center gap-1 text-xs text-text-muted">
-                    <Clock className="size-3" aria-hidden="true" />
-                    {formatDuration(next.meta.durationMinutes ?? 0)} estimated
-                  </span>
-                  <Badge tone={difficultyTone[next.meta.difficulty ?? "beginner"]}>
-                    {titleCase(next.meta.difficulty ?? "beginner")}
-                  </Badge>
-                </div>
-                <p className="text-sm leading-relaxed text-text-secondary">
-                  {next.description}
-                </p>
-              </div>
-            </div>
           </motion.div>
         )}
 
-        {/* 5 · Actions */}
-        <motion.div {...fadeUp} className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-          {previous && (
-            <Button
-              variant="secondary"
-              href={`/lesson/${previous.slug}`}
-              leftIcon={<ArrowLeft className="size-4" aria-hidden="true" />}
-            >
-              Back
-            </Button>
-          )}
-          <Button
-            variant="secondary"
-            href="/course"
-            leftIcon={<Flag className="size-4" aria-hidden="true" />}
+        {/* 3 · Why it matters — one or two sentences, no card */}
+        {why && (
+          <motion.p
+            {...fadeUp}
+            className="border-b border-border-subtle px-6 py-3.5 text-sm leading-relaxed text-text-secondary"
           >
-            Module overview
-          </Button>
-          <Button
-            variant="primary"
-            size="lg"
-            href={next ? `/lesson/${next.slug}` : "/course"}
-            rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
-            className="flex-1"
-          >
-            {next ? `Start ${next.title}` : "Amazing work! Ready for your next challenge?"}
-          </Button>
-        </motion.div>
+            <span className="font-semibold text-text">Why it matters: </span>
+            {why}
+            {lesson.meta.motivation && (
+              <span className="mt-1 block text-text">{lesson.meta.motivation}</span>
+            )}
+          </motion.p>
+        )}
 
-        {/* 6 · Progress summary */}
+        {/* 4 · Next lesson CTA */}
         <motion.div
           {...fadeUp}
-          className="rounded-2xl border border-border-subtle bg-base-subtle/30 px-5 py-4"
+          className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div className="flex items-center justify-between text-xs text-text-muted">
-            <span>
-              Lesson <span className="tabular-nums">{number}</span> of{" "}
-              <span className="tabular-nums">{total}</span>
-            </span>
-            <span className="tabular-nums">
-              {completedCount}/{total} complete · {percent}%
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
+              Next lesson
+            </p>
+            {next ? (
+              <>
+                <p className="mt-1 truncate text-lg font-semibold text-text">
+                  {next.title}
+                </p>
+                <p className="mt-0.5 line-clamp-2 text-sm leading-snug text-text-secondary">
+                  {next.description}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm leading-snug text-text-secondary">
+                The course is complete. Amazing work!
+              </p>
+            )}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {previous && (
+              <Button
+                variant="secondary"
+                href={`/lesson/${previous.slug}`}
+                leftIcon={<ArrowLeft className="size-4" aria-hidden="true" />}
+              >
+                Back
+              </Button>
+            )}
+            <Button
+              variant="primary"
+              href={next ? `/lesson/${next.slug}` : "/course"}
+              rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
+            >
+              {next ? "Continue" : "Done"}
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* 5 · Progress — secondary */}
+        <div className="border-t border-border-subtle bg-base-subtle/40 px-6 py-3">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/course"
+              className="flex items-center gap-1.5 text-[11px] font-medium text-text-muted transition-colors hover:text-accent-hover"
+            >
+              <Flag className="size-3" aria-hidden="true" />
+              Module overview
+            </Link>
+            <span className="ml-auto text-[11px] tabular-nums text-text-muted">
+              {number} of {total} lessons · {percent}%
             </span>
           </div>
-          <div className="mt-2.5 flex gap-1.5">
+          <div className="mt-2 flex gap-1" aria-hidden="true">
             {lessons.map((l, i) => (
               <span
                 key={l.id}
-                aria-hidden="true"
                 className={cn(
-                  "h-1.5 flex-1 rounded-full transition-colors",
+                  "h-1 flex-1 rounded-full transition-colors",
                   i <= index ? "bg-accent" : "bg-base-subtle",
                 )}
               />
             ))}
           </div>
-        </motion.div>
-
-        <Link
-          to="/course"
-          className="text-center text-xs text-text-muted transition-colors hover:text-accent-hover"
-        >
-          Back to course overview
-        </Link>
+        </div>
       </div>
     </section>
   );

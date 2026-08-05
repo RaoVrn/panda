@@ -80,12 +80,22 @@ export interface TerminalStep {
   note?: string;
 }
 
+/** Starting repository for an interactive terminal or visualization sandbox. */
+export interface GitSimSeed {
+  files?: Record<string, string>;
+  pwd?: string;
+  initialized?: boolean;
+}
+
 export interface ContentTerminalStepsBlock {
   type: "terminalSteps";
   id: string;
   title?: string;
   prompt?: string;
   steps: TerminalStep[];
+  /** Starting files for the "your turn" sandbox (shared across the lesson). */
+  seed?: GitSimSeed;
+  seedId?: string;
 }
 
 export interface ContentEditorBlock {
@@ -187,6 +197,78 @@ export interface ContentPracticeBlock {
   exampleAnswer?: string;
 }
 
+/* ------------------------------------------------------------------ */
+/* Reusable visualizations                                             */
+/* ------------------------------------------------------------------ */
+
+/** A file in the working tree, shown by the staging-area visualization. */
+export interface StageAreaFile {
+  name: string;
+  status: "modified" | "new";
+}
+
+/**
+ * Working Tree → Staging Area → Repository. In Interactive mode the learner
+ * clicks files to stage them and presses Commit, driving the shared Git
+ * simulation (the terminal and this visualization stay in sync). In Read mode
+ * it plays the staging + commit script on its own.
+ */
+export interface ContentStageAreaBlock {
+  type: "stageArea";
+  id: string;
+  title?: string;
+  /** Starting files for the shared simulation. */
+  seed?: GitSimSeed;
+  seedId?: string;
+  /** Files the Read-mode documentary plays through (optional). */
+  readFiles?: StageAreaFile[];
+  /** Suggested commit message for the Commit button. */
+  commitMessage?: string;
+}
+
+/** One beat in a scripted branch/merge scenario. */
+export interface BranchGraphStep {
+  id: string;
+  action: "commit" | "moveHead" | "merge" | "tag";
+  /** Branch this action happens on. */
+  branch: string;
+  /** Commit message (for `commit` actions). */
+  message?: string;
+  /** Tag name (for `tag` actions). */
+  tag?: string;
+}
+
+/**
+ * An animated branch graph: commits appear on lanes, HEAD moves, branches
+ * split and merge. Authored as a tiny scenario that replays step by step.
+ */
+export interface ContentBranchGraphBlock {
+  type: "branchGraph";
+  id: string;
+  title?: string;
+  baseBranch?: string;
+  steps: BranchGraphStep[];
+}
+
+/** One aligned row in a side-by-side diff. */
+export interface DiffRow {
+  left?: string;
+  right?: string;
+  kind: "context" | "add" | "remove";
+}
+
+/**
+ * Animated before/after diff. Lines are aligned by the author; the viewer
+ * reveals them one at a time, additions in green, removals in red.
+ */
+export interface ContentDiffViewerBlock {
+  type: "diffViewer";
+  id: string;
+  title?: string;
+  filename: string;
+  rows: DiffRow[];
+}
+
 export type ContentBlock =
   | ContentHeadingBlock
   | ContentParagraphBlock
@@ -206,6 +288,9 @@ export type ContentBlock =
   | ContentPracticeBlock
   | ContentStoryboardBlock
   | ContentGitVsGithubBlock
+  | ContentStageAreaBlock
+  | ContentBranchGraphBlock
+  | ContentDiffViewerBlock
   | ContentSpacerBlock;
 
 export type ContentBlockType = ContentBlock["type"];

@@ -1,0 +1,342 @@
+import type { ContentLesson } from "@/content/schema";
+
+/**
+ * Lesson 5 · Saving snapshots
+ *
+ * The two commands at the heart of Git: git add (pick what to save) and
+ * git commit (take the snapshot). Uses the reusable working-tree → staging →
+ * repository visualization so the learner FEELS the flow before they ever type
+ * a command.
+ */
+export const lesson05: ContentLesson = {
+  id: "saving-snapshots",
+  slug: "saving-snapshots",
+  title: "Saving snapshots",
+  description:
+    "Git never saves on its own. You choose what to save with git add, then press the button with git commit. Watch it happen, then do it yourself.",
+  meta: {
+    module: "introduction",
+    order: 5,
+    difficulty: "beginner",
+    durationMinutes: 9,
+    tags: ["basics", "commit"],
+    summary: [
+      "Git only saves when you say so.",
+      "git add picks which files go into the next snapshot.",
+      "git commit takes the snapshot and names it.",
+      "Snapshots appear in your history, forever.",
+    ],
+    whyItMatters:
+      "Every Git command for the rest of the course is built on these two. Master add and commit, and Git stops being a mystery and becomes a habit.",
+    motivation:
+      "That's the whole core of Git right there. Everything else is built on these two commands. Amazing work!",
+  },
+  learningGoals: [
+    "Explain the difference between git add and git commit",
+    "Stage files and commit a snapshot",
+    "Find the snapshot in your history",
+  ],
+  xpReward: 55,
+  blocks: [
+    {
+      type: "learningGoal",
+      id: "goal",
+      text: "By the end of this lesson you'll have saved a real snapshot — and you'll understand the two-step flow that every Git user on Earth does all day.",
+    },
+    {
+      type: "paragraph",
+      id: "open-question",
+      text: "Here's a strange but true fact: Git never saves your work by itself. It waits. It watches. And it only takes a picture when you tell it to. Why?",
+    },
+    {
+      type: "callout",
+      id: "two-step-story",
+      tone: "info",
+      title: "Like packing a lunch",
+      text: "Imagine getting ready for a picnic. Step one: you decide which snacks go in the bag. Step two: you zip the bag and call it the \"picnic lunch\". Git works the same way. git add chooses the snacks. git commit zips the bag and takes the snapshot.",
+    },
+
+    // ---------------------------------------------------------------
+    // 1 · The flow, visually.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-flow",
+      level: 2,
+      text: "Watch the whole flow",
+    },
+    {
+      type: "paragraph",
+      id: "flow-question",
+      text: "Three files are waiting in your working tree. Click them to move them to the staging area — then press Commit. In Read mode, watch it happen automatically.",
+    },
+    {
+      type: "stageArea",
+      id: "visual-add-commit",
+      title: "Pick your files, then take the snapshot",
+      commitMessage: "Start the Panda project",
+      seed: {
+        files: {
+          "README.md": "My first project\n",
+          "package.json": '{ "name": "panda" }\n',
+          "src/main.js": "console.log('hi');\n",
+        },
+        pwd: "~/project",
+        initialized: true,
+      },
+      readFiles: [
+        { name: "README.md", status: "new" },
+        { name: "src/main.js", status: "new" },
+        { name: "style.css", status: "new" },
+      ],
+    },
+    {
+      type: "callout",
+      id: "flow-connect",
+      tone: "success",
+      title: "The whole secret of Git",
+      text: "Working tree → staging area → repository. Your files start in the working tree, you git add them to the staging area, and git commit moves them into the repository as a permanent snapshot. That's it. That's the flow.",
+    },
+
+    // ---------------------------------------------------------------
+    // 2 · The commands.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-commands",
+      level: 2,
+      text: "The two commands",
+    },
+    {
+      type: "paragraph",
+      id: "commands-question",
+      text: "In a real terminal, the flow looks like this. Notice how each command has a tiny job and Git answers in plain words.",
+    },
+    {
+      type: "terminalSteps",
+      id: "terminal-add-commit",
+      title: "panda-shell",
+      prompt: "$",
+      seed: {
+        files: {
+          "README.md": "My first project\n",
+          "package.json": '{ "name": "panda" }\n',
+          "src/main.js": "console.log('hi');\n",
+        },
+        pwd: "~/project",
+        initialized: true,
+      },
+      steps: [
+        {
+          command: "git add README.md src/main.js",
+          output: "2 files are now staged and ready for their snapshot.",
+          outputKind: "success",
+          note: "Only these two go into the next snapshot. style.css stays behind.",
+        },
+        {
+          command: 'git commit -m "Start the Panda project"',
+          output: '[main (root-commit) 3f2ab71] Start the Panda project\n 2 files changed',
+          outputKind: "success",
+          note: "ZIP. A permanent snapshot is born, named with a short message.",
+        },
+        {
+          command: "git status",
+          output: "On branch main\nnothing to commit, working tree clean",
+          outputKind: "muted",
+          note: "\"Working tree clean\" = everything worth saving is saved.",
+        },
+      ],
+    },
+
+    // ---------------------------------------------------------------
+    // 3 · The snapshot in history.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-history",
+      level: 2,
+      text: "The snapshot in your history",
+    },
+    {
+      type: "paragraph",
+      id: "history-question",
+      text: "Your snapshot didn't vanish — it joined your history. Watch it appear as the first dot on the timeline.",
+    },
+    {
+      type: "gitGraph",
+      id: "visual-history",
+      title: "Your very first snapshot",
+      width: 320,
+      height: 70,
+      commits: [
+        {
+          id: "c1",
+          x: 30,
+          y: 24,
+          lane: 0,
+          message: "Start the Panda project",
+          branch: "main",
+          timestamp: "just now",
+          filesChanged: ["README.md", "src/main.js"],
+          accent: true,
+        },
+      ],
+      lines: [],
+    },
+    {
+      type: "callout",
+      id: "history-connect",
+      tone: "info",
+      title: "It's in the notebook now",
+      text: "That dot is real history. Weeks from now, you can jump back to it and this exact moment will reappear. That single dot is why you installed Git.",
+    },
+
+    // ---------------------------------------------------------------
+    // 4 · Common mistakes.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-mistakes",
+      level: 2,
+      text: "Three tiny mistakes",
+    },
+    {
+      type: "warning",
+      id: "mistake-commit-empty",
+      title: "\"nothing to commit\"?",
+      text: "It means you forgot git add. The file is changed in your working tree, but it never reached the staging area. Run git add, then commit.",
+    },
+    {
+      type: "warning",
+      id: "mistake-message",
+      title: "Forgetting the message",
+      text: "git commit -m \"hello\" needs that -m and a message in quotes. The message is how you'll recognize this snapshot later — make it say what you did.",
+    },
+    {
+      type: "tip",
+      id: "mistake-tip",
+      title: "If you can't remember the commands…",
+      text: "No one memorizes them overnight. git add → git commit is a rhythm, like the chorus of a song. You'll hum it by the end of the week.",
+    },
+
+    // ---------------------------------------------------------------
+    // 5 · Mini challenge.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-challenge",
+      level: 2,
+      text: "Mini challenge",
+    },
+    {
+      type: "practice",
+      id: "practice-mission",
+      description:
+        "You have three files. You want only two of them in your next snapshot. In your own words, what do you type, and why is the third file left out?",
+      hint: "git add only the two you want. The staging area is where you decide.",
+      exampleAnswer:
+        "I'd type `git add` with the names of the two files I want. The third one stays out because git add only stages the files I tell it to — that's the point of the staging area, it's my filter.",
+    },
+
+    // ---------------------------------------------------------------
+    // 6 · Quick check.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-quiz",
+      level: 2,
+      text: "Quick check",
+    },
+    {
+      type: "quiz",
+      id: "quiz-1",
+      quiz: {
+        id: "quiz-saving-snapshots",
+        title: "Check what you just learned",
+        questions: [
+          {
+            id: "q1",
+            prompt: "What does git add do?",
+            options: [
+              "Picks which files go into the next snapshot",
+              "Saves the snapshot forever",
+              "Deletes old snapshots",
+              "Opens your editor",
+            ],
+            correctIndex: 0,
+            explanation: "git add moves files into the staging area — it decides what will be in the next snapshot.",
+          },
+          {
+            id: "q2",
+            prompt: "What does git commit do?",
+            options: [
+              "Takes the actual snapshot and saves it to history",
+              "Stages the files",
+              "Checks your internet",
+              "Names your project",
+            ],
+            correctIndex: 0,
+            explanation: "git commit takes everything staged and makes it a permanent snapshot in your history.",
+          },
+          {
+            id: "q3",
+            prompt: "If git status says \"nothing to commit\", it means…",
+            options: [
+              "Nothing is staged — you need to git add first",
+              "Your computer is broken",
+              "Git forgot your project",
+              "You're out of storage",
+            ],
+            correctIndex: 0,
+            explanation: "The staging area is empty, so there's nothing to snapshot yet. Stage something, then commit.",
+          },
+          {
+            id: "q4",
+            prompt: "Where does a snapshot live after you commit?",
+            options: [
+              "In your Git history, forever",
+              "On your printer",
+              "In your email",
+              "Nowhere — it's temporary",
+            ],
+            correctIndex: 0,
+            explanation: "A commit is permanent history. You can always find it and jump back to it.",
+          },
+        ],
+      },
+    },
+
+    // ---------------------------------------------------------------
+    // 7 · Takeaways.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-takeaways",
+      level: 2,
+      text: "What to remember",
+    },
+    {
+      type: "keyTakeaways",
+      id: "takeaways",
+      items: [
+        "Git never saves by itself — you're in charge.",
+        "git add picks the files for the next snapshot.",
+        "git commit -m \"…\" takes the snapshot.",
+        "The flow is always: working tree → staging → repository.",
+        "A committed snapshot lives in your history forever.",
+      ],
+    },
+    {
+      type: "paragraph",
+      id: "close-question",
+      text: "You just completed the heart of Git. The Introduction is officially over — time to level up into Git Basics and meet every command a developer uses daily.",
+    },
+    {
+      type: "callout",
+      id: "next-lesson",
+      tone: "tip",
+      title: "Continue to: Repository",
+      text: "Time for Git Basics. First up: what's actually inside a repository, and why it's not as mysterious as it sounds.",
+    },
+  ],
+};

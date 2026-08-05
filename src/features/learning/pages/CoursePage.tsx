@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock,
   Flame,
+  GitBranch,
   Lock,
   Sparkles,
   Target,
@@ -33,6 +34,7 @@ import { Button } from "@/components/ui/Button";
 const moduleIcons: Record<string, JSX.Element> = {
   sparkles: <Sparkles className="size-4 text-accent-hover" aria-hidden="true" />,
   layers: <BookOpen className="size-4 text-accent-hover" aria-hidden="true" />,
+  "git-branch": <GitBranch className="size-4 text-accent-hover" aria-hidden="true" />,
   globe: <Trophy className="size-4 text-accent-hover" aria-hidden="true" />,
   rocket: <Target className="size-4 text-accent-hover" aria-hidden="true" />,
 };

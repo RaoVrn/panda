@@ -34,6 +34,24 @@ export const ACTION_INSTRUCTIONS: Record<StyleAction, string> = {
     "Explain again with DIFFERENT words and a fresh analogy. No repeated sentences.",
 };
 
+/** Extra behavior for Panda's one-tap tutor actions (the quick chips). */
+export function buildTutorIntent(message: string): string {
+  const text = message.trim().toLowerCase();
+  if (text === "quiz me") {
+    return "\n\nQuiz me: ask 3 quick multiple-choice questions about this lesson, one at a time. After each answer, say if it was right and explain in one line, then ask the next. End with a score.";
+  }
+  if (text === "give me a challenge") {
+    return "\n\nGive me a challenge: one tiny hands-on task I can do in a terminal (or in my head) based on this lesson. Then a hint, and the solution hidden behind a spoiler.";
+  }
+  if (text === "explain like i'm 10" || text === "explain this again" || text === "i still don't understand") {
+    return "\n\nExplain this as if I'm 10 years old. Use one analogy. Under 6 sentences.";
+  }
+  if (text === "give another example" || text === "give me another example") {
+    return "\n\nGive me a DIFFERENT example than the lesson used. Pick something from daily life (games, school, photos, cooking).";
+  }
+  return "";
+}
+
 export function buildActionInstruction(action?: StyleAction): string {
   if (!action) return "";
   return `\n\n${ACTION_INSTRUCTIONS[action]}`;
@@ -50,6 +68,7 @@ export function buildUserPrompt(
 ): string {
   const parts = [
     buildActionInstruction(action),
+    buildTutorIntent(message),
     buildTrimmedContext(context),
     message.trim(),
   ];

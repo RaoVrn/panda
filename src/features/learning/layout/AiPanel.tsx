@@ -28,6 +28,16 @@ const STATUS_LABELS: Record<AiProgressStatus, string> = {
   "almost-there": "Preparing an explanation…",
 };
 
+/** One-tap tutor actions available on every message, like Duolingo's coaching. */
+const QUICK_ACTIONS = [
+  "Explain this again",
+  "Give another example",
+  "I still don't understand",
+  "Explain like I'm 10",
+  "Quiz me",
+  "Give me a challenge",
+];
+
 export interface AiPanelProps {
   onClose?: () => void;
 }
@@ -263,9 +273,24 @@ export function AiPanel({ onClose }: AiPanelProps) {
         </p>
       </div>
 
+      {/* One-tap tutor actions */}
+      <div className="flex gap-1.5 overflow-x-auto border-t border-border-subtle px-4 pb-3 pt-2 [scrollbar-width:none]">
+        {QUICK_ACTIONS.map((action) => (
+          <button
+            key={action}
+            type="button"
+            onClick={() => submit(action)}
+            disabled={isStreaming}
+            className="shrink-0 rounded-full border border-border-subtle bg-base-subtle px-2.5 py-1 text-[11px] text-text-secondary transition-colors hover:border-border-strong hover:text-text disabled:pointer-events-none disabled:opacity-40"
+          >
+            {action}
+          </button>
+        ))}
+      </div>
+
       {/* Suggestions: only when the conversation is empty */}
       {messages.length === 0 && (
-        <div className="flex flex-wrap gap-2 border-t border-border-subtle px-4 pb-3 pt-0">
+        <div className="flex flex-wrap gap-2 border-t border-border-subtle px-4 pb-3 pt-2">
           {suggestions.map((s) => (
             <button
               key={s}
