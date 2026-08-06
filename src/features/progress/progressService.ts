@@ -18,17 +18,11 @@ import { isModuleUnlocked, moduleOfLesson } from "@/content/curriculum";
 import { useReadingStore } from "@/stores/readingStore";
 import { lessonXp } from "./xp";
 import { useProgressStore } from "./progressStore";
-import type { QuizRecord } from "./types";
 
 /** Quiz pass mark. */
-export const PASSING_SCORE = 0.8;
 /** Fraction of blocks a learner must visit for "read" to count. */
 export const READ_THRESHOLD = 0.8;
 
-export function quizPassed(record?: QuizRecord): boolean {
-  if (!record || record.total <= 0) return false;
-  return record.correct / record.total >= PASSING_SCORE;
-}
 
 /** Fraction of lesson blocks the learner has visited (0..1). */
 export function readPercent(
@@ -94,7 +88,6 @@ export interface CompletionCheck {
   complete: boolean;
   readDone: boolean;
   interactiveDone: boolean;
-  quizPassed: boolean;
   /** Human-friendly missing steps, for the lesson summary gate. */
   missing: string[];
 }
@@ -104,22 +97,18 @@ export function completionCheck(
   snapshot: {
     visited?: string[];
     interactiveTouched?: boolean;
-    quiz?: QuizRecord;
   },
 ): CompletionCheck {
   const read = readDone(lesson, snapshot.visited);
   const interactive = snapshot.interactiveTouched === true;
-  const quiz = quizPassed(snapshot.quiz);
   const missing: string[] = [];
   if (!read) missing.push("Read the whole lesson");
   if (!interactive) missing.push("Try the interactive parts");
-  if (!quiz) missing.push("Pass the quiz (80% or higher)");
   return {
     lessonId: lesson.id,
-    complete: read && interactive && quiz,
+    complete: read && interactive,
     readDone: read,
     interactiveDone: interactive,
-    quizPassed: quiz,
     missing,
   };
 }
@@ -127,11 +116,10 @@ export function completionCheck(
 /** Current completion check for a lesson, pulled from the persisted stores. */
 export function completionForLesson(lesson: ContentLesson): CompletionCheck {
   const { readings } = useReadingStore.getState();
-  const { interactiveTouched, quizStats } = useProgressStore.getState();
+  const { interactiveTouched } = useProgressStore.getState();
   return completionCheck(lesson, {
     visited: readings[lesson.id]?.visited,
     interactiveTouched: interactiveTouched[lesson.id],
-    quiz: quizStats[lesson.id],
   });
 }
 

@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import type { ContentLesson } from "@/content/schema";
 import { moduleOfLesson } from "@/content/curriculum";
 import { renderBlock } from "@/content/renderer";
 import { LessonTitle } from "@/features/lesson/components/LessonTitle";
-import { LessonSummary } from "@/features/lesson/components/LessonSummary";
 import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
 import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb";
+import { LessonNav } from "@/features/lesson/components/LessonNav";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
+import { PlaygroundWorkspace } from "@/features/playground/components/PlaygroundWorkspace";
+import { PlaygroundCompletionBar } from "@/features/playground/components/PlaygroundCompletionBar";
+import { PlaygroundPreview } from "@/features/playground/components/PlaygroundPreview";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useReadingStore } from "@/stores/readingStore";
@@ -33,9 +36,9 @@ export interface LessonRendererProps {
 function blockPad(block: ContentLesson["blocks"][number]): string {
   switch (block.type) {
     case "heading":
-      return block.level >= 2 ? "mt-12 scroll-mt-24" : "mt-10 scroll-mt-24";
+      return block.level >= 2 ? "mt-16 scroll-mt-24" : "mt-12 scroll-mt-24";
     case "paragraph":
-      return "first:mt-0 mt-4";
+      return "first:mt-0 mt-5";
     case "divider":
       return "mt-10";
     case "spacer":
@@ -55,7 +58,6 @@ function blockPad(block: ContentLesson["blocks"][number]): string {
     case "branchGraph":
     case "diffViewer":
       return "mt-7";
-    case "quiz":
     case "practice":
     case "keyTakeaways":
       return "mt-8";
@@ -81,6 +83,15 @@ export function LessonRenderer({
 
   const module = moduleOfLesson(lesson.id);
   const setLessonContext = useAiContextStore((state) => state.setLesson);
+  // Read mode: the playground CTA appears after key takeaways.
+  const ctaAfterIndex = useMemo(() => {
+    let last = -1;
+    lesson.blocks.forEach((block, index) => {
+      if (block.type === "keyTakeaways") last = index;
+    });
+    return last >= 0 ? last : lesson.blocks.length - 1;
+  }, [lesson.blocks]);
+
   useEffect(
     () =>
       setLessonContext({
@@ -95,45 +106,55 @@ export function LessonRenderer({
     [lesson.id, lesson.slug, lesson.title, module?.title, mode, lesson.learningGoals, setLessonContext],
   );
 
-  // Progression: complete the lesson the moment read + interactive + quiz all
-  // pass. maybeCompleteLesson only acts on the transition, so re-rendering
-  // here is cheap and safe.
+  // Progression: complete the lesson the moment read + interactive both pass.
   const reading = useReadingStore((state) => state.readings[lesson.id]);
   const interactiveTouched = useProgressStore(
     (state) => state.interactiveTouched[lesson.id] === true,
   );
-  const quiz = useProgressStore((state) => state.quizStats[lesson.id]);
   const readPct = readPercent(lesson, reading?.visited);
 
   useEffect(() => {
     maybeCompleteLesson(lesson);
-  }, [lesson, readPct, interactiveTouched, quiz]);
+  }, [lesson, readPct, interactiveTouched]);
 
   return (
     <LessonPlayer lessonId={lesson.id} totalBlocks={lesson.blocks.length}>
       <article id={lesson.id} aria-label={lesson.title} className={className}>
-        <div className="mb-8">
-          <LessonBreadcrumb lesson={lesson} />
-        </div>
-        <LessonTitle lesson={lesson} />
-        {lesson.blocks.map((block, index) => (
-          <BlockTracker
-            key={block.id}
-            block={block}
-            className={cn(
-              "first:mt-0",
-              blockPad(block),
-              block.type === "paragraph" && index === 0 && "mt-0",
-            )}
-          >
-            {renderBlock(block)}
-          </BlockTracker>
-        ))}
-        <LessonSummary
-          lesson={lesson}
-          previous={previousLesson}
-          next={nextLesson}
-        />
+        {/* Interactive mode replaces the documentation with a live Git workspace. */}
+        {mode === "interactive" && lesson.playground ? (
+          <>
+            <PlaygroundWorkspace lesson={lesson} />
+            <PlaygroundCompletionBar
+              lesson={lesson}
+              previous={previousLesson}
+              next={nextLesson}
+            />
+          </>
+        ) : (
+          <>
+            <div className="mb-8">
+              <LessonBreadcrumb lesson={lesson} />
+            </div>
+            <LessonTitle lesson={lesson} />
+            {lesson.blocks.map((block, index) => (
+              <BlockTracker
+                key={block.id}
+                block={block}
+                className={cn(
+                  "first:mt-0",
+                  blockPad(block),
+                  block.type === "paragraph" && index === 0 && "mt-0",
+                )}
+              >
+                {renderBlock(block)}
+                {/* Read mode: the single "ready to try it" CTA, placed after
+                    the learner has read the concept and its key takeaways. */}
+                {index === ctaAfterIndex && <PlaygroundPreview lesson={lesson} />}
+              </BlockTracker>
+            ))}
+            <LessonNav previous={previousLesson} next={nextLesson} />
+          </>
+        )}
       </article>
     </LessonPlayer>
   );

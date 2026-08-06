@@ -187,67 +187,6 @@ export const lesson08: ContentLesson = {
     },
 
     // ---------------------------------------------------------------
-    // 5 · Quick check.
-    // ---------------------------------------------------------------
-    {
-      type: "heading",
-      id: "section-quiz",
-      level: 2,
-      text: "Quick check",
-    },
-    {
-      type: "quiz",
-      id: "quiz-1",
-      quiz: {
-        id: "quiz-staging-area",
-        title: "Check what you just learned",
-        questions: [
-          {
-            id: "q1",
-            prompt: "Why does Git have a staging area?",
-            options: [
-              "So you choose what goes in each snapshot",
-              "To slow you down",
-              "To store passwords",
-              "It's an accident",
-            ],
-            correctIndex: 0,
-            explanation: "The staging area lets you build each snapshot file by file, so history reads cleanly.",
-          },
-          {
-            id: "q2",
-            prompt: "Which command puts a file into the staging area?",
-            options: ["git add <file>", "git remove <file>", "git new <file>", "git snap <file>"],
-            correctIndex: 0,
-            explanation: "git add stages a file, moving it from the working tree into the staging area.",
-          },
-          {
-            id: "q3",
-            prompt: "Which command takes a file back out of the staging area?",
-            options: [
-              "git restore --staged <file>",
-              "git delete <file>",
-              "git undo <file>",
-              "git empty <file>",
-            ],
-            correctIndex: 0,
-            explanation: "git restore --staged unstages a file without deleting your changes.",
-          },
-          {
-            id: "q4",
-            prompt: "What does git commit save?",
-            options: [
-              "Everything currently in the staging area",
-              "Every file in the project",
-              "Only README files",
-              "Nothing",
-            ],
-            correctIndex: 0,
-            explanation: "A commit snapshots exactly what's staged — nothing more, nothing less.",
-          },
-        ],
-      },
-    },
 
     // ---------------------------------------------------------------
     // 6 · Takeaways.

@@ -45,7 +45,7 @@ export type StyleAction =
  * lesson tree push slices of this in (via `stores/aiContextStore.ts`) so the
  * learner never has to repeat where they are or what they're looking at.
  *
- * `lessonContextService` enriches the live reports with the static curriculum
+ * `ContextCollector` enriches the live reports with the static curriculum
  * (course/module) and the learner's progress, so every turn knows the full
  * picture: Git › Git Basics › git add › "Stage like a pro" › working-tree viz.
  */
@@ -116,8 +116,8 @@ export interface LessonContext {
   contextReady?: boolean;
   /** Course progress facts used by navigation questions. */
   completedLessons?: string;
-  unlockedLessons?: string;
   recommendedNext?: string;
+  unlockedLessons?: string;
   /** Learner's current gamification state. */
   xp?: number;
   level?: number;
@@ -153,6 +153,30 @@ export interface LessonContext {
   estimatedMinutes?: number;
   /** The learner's preferred explanation depth (from settings). */
   explanationStyle?: "simple" | "balanced" | "deep";
+  /** Theme preference (settings). */
+  theme?: string;
+  /** Default lesson mode (settings). */
+  lessonMode?: string;
+  /** Animation speed (settings). */
+  animationSpeed?: string;
+  /** Completed/total lesson counts. */
+  completedCount?: number;
+  totalCount?: number;
+  /** The structured block currently in front of the learner. */
+  visibleBlock?: {
+    type: string;
+    label: string;
+    text?: string;
+    code?: string;
+    language?: string;
+    filename?: string;
+    commands?: string[];
+    note?: string;
+  };
+  /** Code contents when the visible block is code/editor. */
+  visibleCode?: { code?: string; language?: string; filename?: string };
+  /** The last terminal command when a terminal block is visible. */
+  visibleCommand?: string;
 }
 
 export type PartialLessonContext = Partial<LessonContext>;

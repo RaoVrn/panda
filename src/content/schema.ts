@@ -143,12 +143,6 @@ export interface ContentGitGraphBlock {
   height?: number;
 }
 
-export interface ContentQuizBlock {
-  type: "quiz";
-  id: string;
-  quiz: Quiz;
-}
-
 export interface ContentSpacerBlock {
   type: "spacer";
   id: string;
@@ -282,7 +276,6 @@ export type ContentBlock =
   | ContentEditorBlock
   | ContentDirectoryTreeBlock
   | ContentGitGraphBlock
-  | ContentQuizBlock
   | ContentLearningGoalBlock
   | ContentKeyTakeawaysBlock
   | ContentPracticeBlock
@@ -313,20 +306,104 @@ export interface FolderTreeNode {
   note?: string;
 }
 
-/** One question inside a quiz. */
-export interface QuizQuestion {
+/* ------------------------------------------------------------------ */
+/* Interactive playground (Git Playground)                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A single state-based objective check. Playground objectives are validated
+ * against the LIVE simulated repository, never against the commands a learner
+ * typed. Adding a new command later (branch, merge, reset…) only means adding
+ * a new check kind here + one branch in the task validator.
+ */
+export type PlaygroundCheck =
+  | { kind: "initialized" }
+  | { kind: "fileExists"; path: string }
+  | { kind: "fileUntracked"; path: string }
+  | { kind: "fileStaged"; path: string }
+  | { kind: "fileTracked"; path: string }
+  | { kind: "fileNotStaged"; path: string }
+  | { kind: "fileContent"; path: string; contains?: string; equals?: string }
+  | { kind: "workingTreeClean" }
+  | { kind: "commitCountAtLeast"; count: number }
+  | { kind: "commitTouchesFile"; path: string }
+  | { kind: "commitDoesNotTouchFile"; path: string }
+  | { kind: "latestCommitMessage"; message?: string }
+  | { kind: "anyCommitMessage"; message: string }
+  | { kind: "branch"; name: string };
+
+/** One checkbox in the Task Panel. All checks must pass to complete it. */
+export interface ContentPlaygroundObjective {
   id: string;
-  prompt: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+  /** Human-readable instruction shown next to the checkbox. */
+  label: string;
+  checks: PlaygroundCheck[];
+  /**
+   * Achievement objectives (default) latch: once the engine's state satisfies
+   * them they stay checked, even if a later commit clears the condition (e.g.
+   * "stage a file" stays done after you commit it). Set `false` for constraint
+   * objectives ("leave X untracked") that must hold in the CURRENT state.
+   */
+  persist?: boolean;
 }
 
-/** A quiz as authored in a lesson. */
-export interface Quiz {
-  id: string;
-  title: string;
-  questions: QuizQuestion[];
+/**
+ * The Interactive-mode workspace for a lesson: a real simulated repository the
+ * learner drives from the terminal, visualizer and file explorer. Completion is
+ * derived from actual repository state (see the task validator).
+ */
+export interface ContentLessonPlayground {
+  /** Starting working-tree files (path → content). */
+  seed: GitSimSeed;
+  /**
+   * Commands run on top of `seed` when the sandbox mounts / resets (e.g.
+   * `git init`, `git add`, a baseline commit). This is how lessons start with a
+   * realistic "modified / untracked" state instead of an empty folder.
+   */
+  setup?: string[];
+  /** The objectives the learner must satisfy, in order. */
+  objectives: ContentPlaygroundObjective[];
+  /** Graduated hints, least → most explicit. */
+  hints: string[];
+  /** The full command sequence that completes every objective. */
+  solution: string[];
+  /** Terminal quick-command chips shown in the welcome state. Falls back to sensible defaults (git init / git status) when absent. */
+  suggestions?: string[];
+  /** Visualizer adaptation — how the 4-column flow should present itself for this lesson. */
+  visualizer?: PlaygroundVisualizerConfig;
+  /** Shell configuration — makes the terminal toolbar, placeholder, welcome text and quick-action chips specific to this lesson. */
+  shell?: PlaygroundShellConfig;
+  /**
+   * Per-event toast messages that override the defaults. Maps GitEventType
+   * strings (e.g. "COMMIT_CREATED") to one-sentence explanations shown after
+   * a command fires.
+   */
+  toasts?: Record<string, string>;
+}
+
+/** Per-lesson visusalizer behaviour overrides. */
+export interface PlaygroundVisualizerConfig {
+  /**
+   * Which column to bring forward. The others can recede (dimmed opacity) so
+   * the learner's eye goes straight to the concept being taught.
+   */
+  highlight?: "working-tree" | "staging" | "repository" | "head";
+  /** A one-line teaching cue shown above the visualizer columns. */
+  banner?: string;
+}
+
+/** Terminal shell personalisation — everything the Panda Shell shows adapts to the lesson. */
+export interface PlaygroundShellConfig {
+  /** The primary command this lesson teaches (shown in the toolbar next to repo/branch). */
+  primaryCommand?: string;
+  /** Placeholder text shown in the command input when empty. */
+  placeholder?: string;
+  /** Quick-action buttons in the welcome empty-state (falls back to `suggestions`, then default chips). */
+  quickActions?: string[];
+  /** Welcome greeting shown when the terminal is empty (first line). */
+  welcomeText?: string;
+  /** Explanatory text below the welcome greeting. */
+  helperText?: string;
 }
 
 export interface ContentLessonMeta {
@@ -357,6 +434,11 @@ export interface ContentLesson {
   xpReward?: number;
   /** Lesson slug to unlock on completion (auto-derived from ordering when absent). */
   unlocksNext?: string;
+  /**
+   * Interactive Playground: when present, Interactive mode replaces the
+   * documentation blocks with a live Git workspace driven by the engine.
+   */
+  playground?: ContentLessonPlayground;
 }
 
 /** A course in the platform. */

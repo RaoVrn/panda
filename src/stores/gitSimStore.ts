@@ -19,7 +19,7 @@ import {
   type CommandOutput,
   type GitState,
 } from "@/features/lesson/components/interactive/gitEngine";
-import { summarizeGitState } from "@/features/ai/observers/terminalContext";
+import { summarizeGitState } from "@/features/ai/context/SandboxContext";
 import { useAiContextStore } from "@/stores/aiContextStore";
 
 export interface GitSimSeed {

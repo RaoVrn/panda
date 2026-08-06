@@ -9,7 +9,6 @@ import {
   GitBranch,
   Globe,
   Layers,
-  Lock,
   PanelLeftClose,
   PanelLeftOpen,
   Play,
@@ -19,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import type { ContentLesson, CourseModule } from "@/content/schema";
-import { isModuleUnlocked, modules } from "@/content/curriculum";
+import { modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
 import { estimateMinutes } from "@/content/duration";
 import { cn, formatDuration, percentComplete } from "@/lib/utils";
@@ -50,21 +49,17 @@ const LessonItem = memo(function LessonItem({
   status,
   current,
   onNavigate,
-  lockHint,
 }: {
   lesson: ContentLesson;
   status: ReturnType<typeof lessonStatus>;
   current: boolean;
   onNavigate?: () => void;
-  lockHint?: string;
 }) {
   const statusIcon =
     status === "completed" ? (
       <Check className="size-3.5 text-accent-hover" aria-hidden="true" />
     ) : status === "started" ? (
       <Play className="size-3 text-accent-hover" aria-hidden="true" />
-    ) : status === "locked" ? (
-      <Lock className="size-3.5 text-text-muted" aria-hidden="true" />
     ) : (
       <span className="font-mono text-[10px] text-text-muted">
         {String(lesson.meta.order).padStart(2, "0")}
@@ -78,7 +73,6 @@ const LessonItem = memo(function LessonItem({
         isActive || current
           ? "bg-accent-soft font-medium text-text ring-1 ring-inset ring-accent/20"
           : "text-text-secondary hover:bg-base-subtle hover:text-text",
-        status === "locked" && "text-text-muted",
       )}
     >
       <span
@@ -94,23 +88,11 @@ const LessonItem = memo(function LessonItem({
         <span
           aria-hidden="true"
           className="ml-auto size-1.5 rounded-full bg-accent"
-          title="Continue here"
+          title="Current lesson"
         />
       )}
     </span>
   );
-
-  if (status === "locked") {
-    return (
-      <li
-        aria-disabled="true"
-        title={lockHint ?? "Complete previous lesson first."}
-        className="cursor-not-allowed"
-      >
-        <span>{inner(false)}</span>
-      </li>
-    );
-  }
 
   return (
     <li>
@@ -145,7 +127,6 @@ function ModuleGroup({
   const estMin = lessons
     .filter((l) => !state.completedLessonIds.includes(l.id))
     .reduce((sum, l) => sum + estimateMinutes(l), 0);
-  const locked = isModuleUnlocked(module.id, state.completedLessonIds) === false;
   const comingSoon = lessons.length === 0;
 
   if (visible.length === 0) return null;
@@ -194,12 +175,10 @@ function ModuleGroup({
         <span className="flex shrink-0 items-center gap-1 text-[10px] text-text-muted">
           {comingSoon ? (
             <Clock className="size-2.5" aria-hidden="true" />
-          ) : locked ? (
-            <Lock className="size-2.5" aria-hidden="true" />
           ) : (
-            <Clock className="size-2.5" aria-hidden="true" />
+            <Check className="size-2.5 text-accent-hover" aria-hidden="true" />
           )}
-          {comingSoon ? "Coming soon" : locked ? "Locked" : remaining > 0 ? `${formatDuration(estMin)} left` : "Done"}
+          {comingSoon ? "Coming soon" : remaining > 0 ? `${formatDuration(estMin)} left` : "Done"}
         </span>
       </div>
 
@@ -212,11 +191,6 @@ function ModuleGroup({
               status={lessonStatus(lesson, state)}
               current={lesson.id === currentLessonId}
               onNavigate={onNavigate}
-              lockHint={
-                locked
-                  ? "Complete the previous section first."
-                  : "Complete previous lesson first."
-              }
             />
           ))}
         </ul>
@@ -308,9 +282,7 @@ export function CourseSidebar({
 
   const currentLessonId = useMemo(() => {
     const next = total.find(
-      (lesson) =>
-        !completedLessonIds.includes(lesson.id) &&
-        !(lesson.meta.prerequisites ?? []).some((id) => !completedLessonIds.includes(id)),
+      (lesson) => !completedLessonIds.includes(lesson.id),
     );
     return next?.id;
   }, [total, completedLessonIds]);

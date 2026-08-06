@@ -208,67 +208,6 @@ export const lesson04: ContentLesson = {
     },
 
     // ---------------------------------------------------------------
-    // 5 · Quick check.
-    // ---------------------------------------------------------------
-    {
-      type: "heading",
-      id: "section-quiz",
-      level: 2,
-      text: "Quick check",
-    },
-    {
-      type: "quiz",
-      id: "quiz-1",
-      quiz: {
-        id: "quiz-first-repository",
-        title: "Check what you just learned",
-        questions: [
-          {
-            id: "q1",
-            prompt: "What is a repository?",
-            options: [
-              "A folder that Git is protecting",
-              "A website for sharing photos",
-              "A type of programming language",
-              "A backup drive",
-            ],
-            correctIndex: 0,
-            explanation: "A repository is a folder Git watches over, with a hidden .git cabinet full of memory.",
-          },
-          {
-            id: "q2",
-            prompt: "Which command turns a folder into a repository?",
-            options: ["git init", "git start", "git new", "git folder"],
-            correctIndex: 0,
-            explanation: "git init creates the hidden .git folder and starts protecting the folder.",
-          },
-          {
-            id: "q3",
-            prompt: "Where does Git store its memory?",
-            options: [
-              "In a hidden .git folder",
-              "On the internet automatically",
-              "In your browser",
-              "In each file itself",
-            ],
-            correctIndex: 0,
-            explanation: "The .git folder is Git's filing cabinet, sitting invisibly inside your project.",
-          },
-          {
-            id: "q4",
-            prompt: "After git init, what does \"No commits yet\" mean?",
-            options: [
-              "Git hasn't saved any snapshots yet",
-              "Git is broken",
-              "You're offline",
-              "Your files are deleted",
-            ],
-            correctIndex: 0,
-            explanation: "It's just an empty notebook — the repository is ready but has no saved snapshots.",
-          },
-        ],
-      },
-    },
 
     // ---------------------------------------------------------------
     // 6 · Takeaways.

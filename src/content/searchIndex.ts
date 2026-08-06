@@ -14,7 +14,6 @@ export type SearchKind =
   | "lesson"
   | "section"
   | "command"
-  | "quiz"
   | "takeaway"
   | "concept"
   | "module";
@@ -30,7 +29,6 @@ const KIND_LABEL: Record<SearchKind, string> = {
   lesson: "Lesson",
   section: "Section",
   command: "Command",
-  quiz: "Quiz question",
   takeaway: "Takeaway",
   concept: "Concept",
   module: "Module",
@@ -71,11 +69,6 @@ function blockHits(lesson: ContentLesson): SearchHit[] {
       case "terminalSteps":
         for (const step of block.steps) {
           push("command", `${step.command} ${step.output ?? ""} ${step.note ?? ""}`.trim());
-        }
-        break;
-      case "quiz":
-        for (const question of block.quiz.questions) {
-          push("quiz", `${question.prompt} ${question.options.join(" ")}`);
         }
         break;
       case "keyTakeaways":

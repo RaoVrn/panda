@@ -18,7 +18,6 @@ const KIND_STYLE: Record<SearchKind, string> = {
   module: "bg-accent-soft text-accent-hover",
   section: "bg-base-subtle text-text-secondary",
   command: "bg-base-subtle text-text-secondary",
-  quiz: "bg-warning-soft text-warning",
   takeaway: "bg-base-subtle text-text-secondary",
   concept: "bg-base-subtle text-text-secondary",
 };
@@ -64,7 +63,7 @@ export function SearchPage() {
     <div className="mx-auto w-full max-w-3xl py-8">
       <PageHeader
         title="Search"
-        subtitle="Find lessons, commands, concepts and quiz questions across the course."
+        subtitle="Find lessons, commands and concepts across the course."
         back={{ to: "/course", label: "Dashboard" }}
       />
 

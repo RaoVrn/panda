@@ -214,67 +214,6 @@ export const lesson12: ContentLesson = {
     },
 
     // ---------------------------------------------------------------
-    // 5 · Quick check.
-    // ---------------------------------------------------------------
-    {
-      type: "heading",
-      id: "section-quiz",
-      level: 2,
-      text: "Quick check",
-    },
-    {
-      type: "quiz",
-      id: "quiz-1",
-      quiz: {
-        id: "quiz-git-log",
-        title: "Check what you just learned",
-        questions: [
-          {
-            id: "q1",
-            prompt: "What does git log show?",
-            options: [
-              "Your snapshots, newest first",
-              "Your passwords",
-              "Only deleted files",
-              "The weather",
-            ],
-            correctIndex: 0,
-            explanation: "git log lists your commits in reverse order — newest at the top.",
-          },
-          {
-            id: "q2",
-            prompt: "What's the point of git log --oneline?",
-            options: [
-              "One compact line per snapshot",
-              "It deletes history",
-              "It opens an editor",
-              "It's a joke",
-            ],
-            correctIndex: 0,
-            explanation: "It's the fast, human-friendly way to skim your history.",
-          },
-          {
-            id: "q3",
-            prompt: "The \"HEAD -> main\" badge means…",
-            options: [
-              "I'm at this commit on main right now",
-              "The computer is stuck",
-              "I need to push",
-              "There's a bug",
-            ],
-            correctIndex: 0,
-            explanation: "It marks your current position in history.",
-          },
-          {
-            id: "q4",
-            prompt: "Which snapshot does git log show first?",
-            options: ["The newest", "The oldest", "The largest", "A random one"],
-            correctIndex: 0,
-            explanation: "Git shows history newest first, so you see where you are immediately.",
-          },
-        ],
-      },
-    },
 
     // ---------------------------------------------------------------
     // 6 · Takeaways.

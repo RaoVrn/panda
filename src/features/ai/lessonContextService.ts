@@ -10,13 +10,12 @@
  */
 
 import type { LessonContext } from "@/lib/ai/types";
-import type { QuizRecord } from "@/features/progress/types";
 import type { LessonReading } from "@/stores/readingStore";
 import { getLesson } from "@/content/lessons";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { useReadingStore } from "@/stores/readingStore";
 import {
-  quizPassed,
+
   readPercent,
   nextLessonToStudy,
   unlockedLessonIds,
@@ -34,7 +33,6 @@ import { allLessons } from "@/content/lessons";
 export interface ContextSnapshot {
   xp: number;
   completedLessonIds: string[];
-  quizStats: Record<string, QuizRecord>;
   startedLessonIds: string[];
   interactiveTouched: Record<string, boolean>;
   readings: Record<string, LessonReading>;
@@ -85,12 +83,6 @@ export function buildLessonContext(
       ? `${pct}% read${progress.interactiveTouched[lessonId] ? " · interactive explored" : ""}`
       : "not started yet";
 
-  const quiz = progress.quizStats[lessonId];
-  const quizProgress = quiz
-    ? quizPassed(quiz)
-      ? `passed (${quiz.correct}/${quiz.total})`
-      : `attempted ${quiz.correct}/${quiz.total} — needs 80%`
-    : "not attempted yet";
 
   const unlocked = unlockedLessonIds(progress.completedLessonIds);
   const next = nextLessonToStudy(progress.completedLessonIds);
@@ -114,7 +106,6 @@ export function buildLessonContext(
     currentHeading: section,
     currentSectionText: structure.sectionText(section) || undefined,
     lessonProgress,
-    quizProgress,
     completedLessons: completedNames.length > 0 ? completedNames.join(" · ") : "none",
     unlockedLessons: unlockedNames.length > 0 ? unlockedNames.join(" · ") : "none",
     recommendedNext: next?.title,

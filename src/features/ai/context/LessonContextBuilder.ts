@@ -22,7 +22,6 @@ const INTERACTIVE_TYPES = new Set([
   "diffViewer",
   "storyboard",
   "gitVsGithub",
-  "quiz",
   "practice",
 ]);
 
@@ -68,6 +67,8 @@ function sectionAtProgress(
   return lastHeading;
 }
 
+export interface VisibleBlock { type: string; label: string; text?: string; code?: string; language?: string; filename?: string; commands?: string[]; note?: string; }
+
 export interface LessonStructure {
   /** Pure lesson facts (no live state). */
   base: {
@@ -87,7 +88,6 @@ export interface LessonStructure {
     examples: string[];
     callouts: string[];
     takeaways: string[];
-    quizSummary?: string;
     challenge?: string;
     interactiveComponents: string[];
   };
@@ -95,6 +95,8 @@ export interface LessonStructure {
   sectionText: (heading: string | undefined) => string;
   /** Which heading a scroll position is at. */
   sectionAtProgress: (scrollPercent: number | undefined) => string | undefined;
+  blockById: (blockId: string) => VisibleBlock | undefined;
+  headingsOf: (blockId: string) => { heading?: string; subheading?: string };
 }
 
 export function buildLessonStructure(lesson: ContentLesson): LessonStructure {
@@ -110,7 +112,6 @@ export function buildLessonStructure(lesson: ContentLesson): LessonStructure {
   const callouts: string[] = [];
   const takeaways: string[] = [];
   const interactiveComponents: string[] = [];
-  let quizQuestions: string[] = [];
   let challenge: string | undefined;
 
   const addConcepts = (texts: string[]) => {
@@ -140,20 +141,14 @@ export function buildLessonStructure(lesson: ContentLesson): LessonStructure {
     } else if (block.type === "keyTakeaways") {
       takeaways.push(...block.items);
       addConcepts(block.items);
-    } else if (block.type === "quiz") {
-      quizQuestions = block.quiz.questions.map((question) => question.prompt);
-    } else if (block.type === "practice") {
-      challenge = clean(block.description);
+      const desc = (block as { description?: string }).description;
+      challenge = desc ? clean(desc) : undefined;
     }
     if (INTERACTIVE_TYPES.has(block.type) && !interactiveComponents.includes(block.type)) {
       interactiveComponents.push(block.type);
     }
   }
 
-  const quizSummary =
-    quizQuestions.length > 0
-      ? `${quizQuestions.length} questions: ${quizQuestions.slice(0, 3).join(" · ")}`
-      : undefined;
 
   const headingsWithStart: Array<{ heading: string; index: number }> = [];
   for (let i = 0; i < lesson.blocks.length; i++) {
@@ -193,7 +188,6 @@ export function buildLessonStructure(lesson: ContentLesson): LessonStructure {
       examples: examples.slice(0, 3),
       callouts: callouts.slice(0, 4),
       takeaways: takeaways.slice(0, 6),
-      quizSummary,
       challenge,
       interactiveComponents,
     },
@@ -207,6 +201,12 @@ export function buildLessonStructure(lesson: ContentLesson): LessonStructure {
       return text.length > CAP ? text.slice(0, CAP) + "…" : text;
     },
     sectionAtProgress: (scrollPercent) => sectionAtProgress(lesson, scrollPercent),
+    blockById: (blockId: string): VisibleBlock | undefined => {
+      const block = lesson.blocks.find((b) => b.id === blockId);
+      if (!block) return undefined;
+      return { type: block.type, label: block.type };
+    },
+    headingsOf: (_blockId: string): { heading?: string; subheading?: string } => ({}),
   };
 }
 

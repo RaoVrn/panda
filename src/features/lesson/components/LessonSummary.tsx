@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Flag,
   RotateCcw,
-  Trophy,
 } from "lucide-react";
 import type { ContentLesson } from "@/content/schema";
 import { Button } from "@/components/ui/Button";
@@ -26,12 +25,6 @@ const fadeUpBase = {
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-20px" },
 } as const;
-
-function scrollToBlock(blockId: string) {
-  document
-    .querySelector(`[data-block-id="${blockId}"]`)
-    ?.scrollIntoView({ behavior: "smooth", block: "center" });
-}
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -58,24 +51,20 @@ export function LessonSummary({ lesson, next }: LessonSummaryProps) {
   const interactiveTouched = useProgressStore(
     (s) => s.interactiveTouched[lesson.id] === true,
   );
-  const quiz = useProgressStore((s) => s.quizStats[lesson.id]);
 
   // Keep the completion transition alive from the summary itself.
   useEffect(() => {
     maybeCompleteLesson(lesson);
-  }, [lesson, isComplete, reading?.visited.length, interactiveTouched, quiz]);
+  }, [lesson, isComplete, reading?.visited.length, interactiveTouched]);
 
   const check = completionCheck(lesson, {
     visited: reading?.visited,
     interactiveTouched,
-    quiz,
   });
 
   const xp = lessonXp(lesson);
   const minutes = estimateMinutes(lesson);
   const youLearned = lesson.meta.summary ?? [];
-  const quizBlock = lesson.blocks.find((b) => b.type === "quiz");
-  const quizFailed = quiz !== undefined && !check.quizPassed;
 
   const speed = useAnimationSpeed();
   const fadeUp = useMemo(
@@ -94,13 +83,13 @@ export function LessonSummary({ lesson, next }: LessonSummaryProps) {
         <span className="h-px flex-1 bg-border-subtle" />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-white/[0.03] bg-card/95 shadow-[0_1px_2px_rgba(0,0,0,0.2)]">
         {isComplete ? (
           <>
             {/* Celebration + reward */}
             <motion.div
               {...fadeUp}
-              className="relative px-6 pb-1 pt-6 text-center"
+              className="relative px-6 pb-1 pt-5 text-center"
             >
               <Confetti />
               <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
@@ -181,14 +170,14 @@ export function LessonSummary({ lesson, next }: LessonSummaryProps) {
           </>
         ) : (
           /* ---------- Gate: not complete yet ---------- */
-          <motion.div {...fadeUp} className="px-6 py-6">
+          <motion.div {...fadeUp} className="px-6 py-5">
             <div className="text-center">
               <h2 className="text-2xl font-semibold tracking-tight text-text sm:text-3xl">
                 Almost there!
               </h2>
               <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-text-secondary">
                 You've reached the end of “{lesson.title}”. Finish the last
-                steps to earn {xp} XP and unlock the next lesson.
+                steps to earn {xp} XP and mark this lesson complete.
               </p>
             </div>
 
@@ -206,23 +195,7 @@ export function LessonSummary({ lesson, next }: LessonSummaryProps) {
               ))}
             </ul>
 
-            {quizFailed && (
-              <p className="mx-auto mt-3 max-w-sm text-center text-sm font-medium text-text-secondary">
-                <span className="text-text">Almost there. </span>Review the
-                lesson and try again. You need 80% on the quiz to pass.
-              </p>
-            )}
-
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-              {quizBlock && !check.quizPassed && (
-                <Button
-                  variant="secondary"
-                  onClick={() => scrollToBlock(quizBlock.id)}
-                  leftIcon={<Trophy className="size-4" aria-hidden="true" />}
-                >
-                  Jump to quiz
-                </Button>
-              )}
               {!check.readDone && (
                 <Button
                   variant="secondary"

@@ -10,7 +10,8 @@ import type {
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { useMemoryStore } from "@/features/ai/memory/conversationMemory";
-import { buildLessonContext } from "@/features/ai/lessonContextService";
+import { collectContext } from "@/features/ai/context/ContextCollector";
+import { normalizeResponse } from "@/features/ai/ResponseParser";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -74,7 +75,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
     if (now - lastSendAt < MIN_SEND_GAP_MS) return;
     lastSendAt = now;
 
-  const context = buildLessonContext(useAiContextStore.getState().context);
+    const context = collectContext(useAiContextStore.getState().context);
     const state = get();
     const action = opts?.action;
     const replaceId = opts?.replaceId;
@@ -147,7 +148,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
       onToken: (fullText) => {
         if (signal.aborted) return;
         const messages = get().messages.map((m) =>
-          m.id === assistantId ? { ...m, text: fullText } : m,
+          m.id === assistantId ? { ...m, text: normalizeResponse(fullText) } : m,
         );
         set({ messages });
       },
@@ -162,7 +163,7 @@ export const useAiChatStore = create<AiChatState>()((set, get) => ({
         useMemoryStore.getState().recordExplanation(promptText);
         const messages = get().messages.map((m) =>
           m.id === assistantId
-            ? { ...m, text, streaming: false, error: false }
+            ? { ...m, text: normalizeResponse(text), streaming: false, error: false }
             : m,
         );
         set({ messages, isStreaming: false, status: null, pendingKey: null });

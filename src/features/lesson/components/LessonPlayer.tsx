@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import {
   useLessonModeStore,
 } from "@/stores/lessonModeStore";
@@ -10,7 +11,7 @@ import {
 import { LessonModeToggle } from "@/features/lesson/components/LessonModeToggle";
 import { useReadingStore } from "@/stores/readingStore";
 import { useProgressStore } from "@/features/progress/progressStore";
-import { AIContextEngine } from "@/features/ai/engine/AIContextEngine";
+import { ViewportObserver } from "@/features/ai/context/ViewportObserver";
 
 function getScrollParent(node: Element | null): Element | null {
   let el = node;
@@ -106,7 +107,7 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
   return (
     <LessonIdContext.Provider value={lessonId}>
       <LessonModeContext.Provider value={modeValue}>
-        <AIContextEngine lessonId={lessonId} />
+        <ViewportObserver lessonId={lessonId} />
         <div ref={rootRef} className="relative">
           <div className="sticky top-0 z-20 mb-6 border-b border-border-subtle bg-base/85 backdrop-blur-sm">
             <div className="flex items-center justify-between gap-3 px-1 py-2">
@@ -133,7 +134,15 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
             aria-valuenow={pct}
             aria-label={`Lesson read ${pct}%`}
           >
-            {children}
+            {/* Keying by mode cross-fades Read ⇄ Playground without a flash. */}
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.16, ease: "easeOut" }}
+            >
+              {children}
+            </motion.div>
           </div>
         </div>
       </LessonModeContext.Provider>

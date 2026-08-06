@@ -68,13 +68,6 @@ export function countLessonWords(lesson: ContentLesson): number {
           add(row.right);
         }
         break;
-      case "quiz":
-        for (const question of block.quiz.questions) {
-          add(question.prompt);
-          for (const option of question.options) add(option);
-          add(question.explanation);
-        }
-        break;
       case "practice":
         add(block.title);
         add(block.description);

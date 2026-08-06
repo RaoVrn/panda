@@ -175,67 +175,6 @@ export const lesson07: ContentLesson = {
     },
 
     // ---------------------------------------------------------------
-    // 5 · Quick check.
-    // ---------------------------------------------------------------
-    {
-      type: "heading",
-      id: "section-quiz",
-      level: 2,
-      text: "Quick check",
-    },
-    {
-      type: "quiz",
-      id: "quiz-1",
-      quiz: {
-        id: "quiz-working-tree",
-        title: "Check what you just learned",
-        questions: [
-          {
-            id: "q1",
-            prompt: "What is the working tree?",
-            options: [
-              "The folder where you edit your files",
-              "Git's hidden memory",
-              "A website",
-              "The internet",
-            ],
-            correctIndex: 0,
-            explanation: "The working tree is the project folder you actually see and edit — the kitchen counter.",
-          },
-          {
-            id: "q2",
-            prompt: "What does 'tracked' mean?",
-            options: [
-              "Git has saved this file in a snapshot before",
-              "Git is following me on social media",
-              "The file is very important",
-              "The file is locked",
-            ],
-            correctIndex: 0,
-            explanation: "A tracked file is one Git has committed before, so it watches every change to it.",
-          },
-          {
-            id: "q3",
-            prompt: "A brand-new file in your project is…",
-            options: ["untracked", "tracked", "deleted", "encrypted"],
-            correctIndex: 0,
-            explanation: "New files are untracked until you add and commit them once.",
-          },
-          {
-            id: "q4",
-            prompt: "Does Git snapshot untracked files automatically?",
-            options: [
-              "No — only files I choose with git add",
-              "Yes — every file, always",
-              "Only on Mondays",
-              "Only if they're small",
-            ],
-            correctIndex: 0,
-            explanation: "Git never grabs files on its own. You pick them with git add.",
-          },
-        ],
-      },
-    },
 
     // ---------------------------------------------------------------
     // 6 · Takeaways.

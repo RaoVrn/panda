@@ -16,7 +16,6 @@ export function useLessonContext(): LessonContext {
   const live = useAiContextStore((state) => state.context);
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
   const xp = useProgressStore((state) => state.xp);
-  const quizStats = useProgressStore((state) => state.quizStats);
   const startedLessonIds = useProgressStore((state) => state.startedLessonIds);
   const interactiveTouched = useProgressStore((state) => state.interactiveTouched);
   const readings = useReadingStore((state) => state.readings);
@@ -26,11 +25,10 @@ export function useLessonContext(): LessonContext {
       buildLessonContext(live, {
         xp,
         completedLessonIds,
-        quizStats,
         startedLessonIds,
         interactiveTouched,
         readings,
       }),
-    [live, xp, completedLessonIds, quizStats, startedLessonIds, interactiveTouched, readings],
+    [live, xp, completedLessonIds, startedLessonIds, interactiveTouched, readings],
   );
 }

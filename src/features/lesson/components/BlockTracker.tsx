@@ -8,7 +8,7 @@ export interface BlockTrackerProps {
 }
 
 /**
- * Wraps every rendered block. AIContextEngine owns the page-level observation;
+ * Wraps every rendered block. ViewportObserver owns the page-level observation;
  * this component only provides stable block anchors for reading progress and
  * scroll-aware context.
  */

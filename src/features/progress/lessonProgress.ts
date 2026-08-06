@@ -1,14 +1,13 @@
 /**
  * Lesson/module status helpers, derived purely from progress data.
+ *
+ * Lessons are NEVER locked: every lesson is available, and status only reflects
+ * progress (completed / started / available).
  */
 
 import type { ContentLesson } from "@/content/schema";
-import {
-  isModuleUnlocked,
-  modules,
-} from "@/content/curriculum";
+import { modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
-import { isLessonUnlocked } from "./progressService";
 import { percentComplete } from "@/lib/utils";
 import type { LessonStatus } from "./types";
 
@@ -22,8 +21,6 @@ export interface ModuleProgress {
   completed: number;
   total: number;
   percent: number;
-  /** Whether the module's prerequisite chain has been met. */
-  unlocked: boolean;
 }
 
 export function lessonStatus(
@@ -32,7 +29,6 @@ export function lessonStatus(
 ): LessonStatus {
   if (state.completedLessonIds.includes(lesson.id)) return "completed";
   if (state.startedLessonIds.includes(lesson.id)) return "started";
-  if (!isLessonUnlocked(lesson, state.completedLessonIds)) return "locked";
   return "available";
 }
 
@@ -49,18 +45,15 @@ export function moduleProgress(
     completed,
     total: lessons.length,
     percent: percentComplete(completed, lessons.length),
-    unlocked: isModuleUnlocked(moduleId, state.completedLessonIds),
   };
 }
 
-/** First lesson the learner should open next (unlocked + not completed). */
+/** First lesson the learner should open next (first incomplete one). */
 export function currentLesson(
   state: LessonProgressState,
 ): ContentLesson | undefined {
   return allLessons().find(
-    (lesson) =>
-      isLessonUnlocked(lesson, state.completedLessonIds) &&
-      !state.completedLessonIds.includes(lesson.id),
+    (lesson) => !state.completedLessonIds.includes(lesson.id),
   );
 }
 

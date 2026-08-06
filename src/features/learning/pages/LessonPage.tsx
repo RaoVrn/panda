@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getLessonBySlug,
   nextLesson,
@@ -12,12 +12,45 @@ import { ScrollToTop } from "@/app/ScrollToTop";
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { useAiChatStore } from "@/stores/aiChatStore";
+import { useLessonModeStore } from "@/stores/lessonModeStore";
 
 export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const scroll = <ScrollToTop />;
 
   const lesson = slug ? getLessonBySlug(slug) : undefined;
+
+  // The interactive playground gets a wider canvas for its IDE workspace.
+  const playgroundMode = useLessonModeStore((state) => state.mode) === "interactive";
+
+  // Keyboard navigation: ← previous lesson, → next lesson. Never hijacks
+  // typing inside inputs/textarea/contenteditable.
+  useEffect(() => {
+    if (!lesson) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        const previous = previousLesson(lesson.id);
+        if (previous) navigate(`/lesson/${previous.slug}`);
+      } else if (event.key === "ArrowRight") {
+        const next = nextLesson(lesson.id);
+        if (next) navigate(`/lesson/${next.slug}`);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lesson, navigate]);
 
   // Panda AI context is lesson-scoped: clear it when moving between lessons
   // (and when leaving the lesson for the course page).
@@ -50,7 +83,7 @@ export function LessonPage() {
   return (
     <LearningWorkspace>
       {scroll}
-      <LearningCanvas>
+      <LearningCanvas wide={playgroundMode && Boolean(lesson.playground)}>
         <LessonRenderer
           lesson={lesson}
           previousLesson={previousLesson(lesson.id)}

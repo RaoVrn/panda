@@ -28,6 +28,24 @@ export function buildContextSnippet(context: LessonContext): string {
 
   if (context.currentSection) lines.push(`Current section: "${context.currentSection}"`);
 
+  // What is literally in front of the learner right now.
+  if (context.visibleBlock) {
+    const block = [
+      `Looking at: ${context.visibleBlock.label} (${context.visibleBlock.type})`,
+      context.visibleBlock.text &&
+        `Visible content: "${context.visibleBlock.text}"`,
+      context.visibleBlock.note && `Visible note: "${context.visibleBlock.note}"`,
+    ].filter(Boolean) as string[];
+    lines.push(...block);
+  }
+  if (context.visibleCode?.code) {
+    lines.push(`Visible code (${context.visibleCode.filename ?? context.visibleCode.language ?? "code"}):`);
+    lines.push("```" + (context.visibleCode.language ?? "") + "\n" + context.visibleCode.code + "\n```");
+  }
+  if (context.visibleCommand) {
+    lines.push(`Visible command: ${context.visibleCommand}`);
+  }
+
   const lesson = [
     context.objectives?.length && `Goal: ${context.objectives.join("; ")}`,
     context.headings?.length && `Headings: ${context.headings.join(" · ")}`,
@@ -54,7 +72,12 @@ export function buildContextSnippet(context: LessonContext): string {
     context.lessonProgress && `Lesson progress: ${context.lessonProgress}`,
     context.quizProgress && `Quiz progress: ${context.quizProgress}`,
     context.xp !== undefined && `Learner XP: ${context.xp} (level ${context.level ?? "?"})`,
+    context.completedCount !== undefined &&
+      `Course: ${context.completedCount}/${context.totalCount ?? "?"} lessons done`,
     context.explanationStyle && `AI explanation style: ${context.explanationStyle}`,
+    context.theme && `Theme: ${context.theme}`,
+    context.lessonMode && `Lesson mode: ${context.lessonMode}`,
+    context.animationSpeed && `Animation speed: ${context.animationSpeed}`,
     context.memory && `Already covered: ${context.memory}`,
   ].filter(Boolean) as string[];
   if (live.length > 0) {

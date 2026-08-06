@@ -10,7 +10,6 @@ export { TerminalStepsBlock } from "@/features/lesson/components/blocks/Terminal
 export { EditorBlock } from "@/features/lesson/components/blocks/EditorBlock";
 export { DirectoryTreeBlock } from "@/features/lesson/components/blocks/DirectoryTreeBlock";
 export { GitGraphBlock } from "@/features/lesson/components/blocks/GitGraphBlock";
-export { QuizBlock } from "@/features/lesson/components/blocks/QuizBlock";
 export { LearningGoalBlock } from "@/features/lesson/components/blocks/LearningGoalBlock";
 export { KeyTakeawaysBlock } from "@/features/lesson/components/blocks/KeyTakeawaysBlock";
 export { PracticeBlock } from "@/features/lesson/components/blocks/PracticeBlock";

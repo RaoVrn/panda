@@ -6,14 +6,13 @@ import {
   Clock,
   Flame,
   GitBranch,
-  Lock,
   Sparkles,
   Target,
   Trophy,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { JSX } from "react";
-import { isModuleUnlocked, moduleOfLesson, modules } from "@/content/curriculum";
+import { moduleOfLesson, modules } from "@/content/curriculum";
 import { allLessons, moduleLessons } from "@/content/lessons";
 import { estimateMinutes } from "@/content/duration";
 import { cn, percentComplete, formatDuration } from "@/lib/utils";
@@ -276,31 +275,24 @@ export function CoursePage() {
                     const estMin = moduleLessons_
                       .filter((l) => !completedLessonIds.includes(l.id))
                       .reduce((sum, l) => sum + estimateMinutes(l), 0);
-                    const locked =
-                      moduleLessons_.length > 0 &&
-                      !isModuleUnlocked(m.id, completedLessonIds);
-                    const clickable = firstLesson && !locked;
+                    const hasLessons = total > 0;
 
                     const inner = (
                       <>
                         <div className="flex items-center gap-2">
                           <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-base-subtle">
-                            {locked ? (
-                              <Lock className="size-3.5 text-text-muted" aria-hidden="true" />
-                            ) : (
-                              (moduleIcons[m.icon ?? ""] ?? (
-                                <BookOpen
-                                  className="size-3.5 text-accent-hover"
-                                  aria-hidden="true"
-                                />
-                              ))
+                            {moduleIcons[m.icon ?? ""] ?? (
+                              <BookOpen
+                                className="size-3.5 text-accent-hover"
+                                aria-hidden="true"
+                              />
                             )}
                           </span>
                           <p className="truncate text-sm font-medium text-text">
                             {m.title}
                           </p>
                           <span className="ml-auto text-[10px] tabular-nums text-text-muted">
-                            {total > 0 ? `${done}/${total}` : "—"}
+                            {hasLessons ? `${done}/${total}` : "—"}
                           </span>
                         </div>
                         <div className="h-1 overflow-hidden rounded-full bg-base-subtle">
@@ -310,13 +302,11 @@ export function CoursePage() {
                           />
                         </div>
                         <p className="text-[11px] text-text-muted">
-                          {total === 0
+                          {!hasLessons
                             ? "More lessons coming soon"
-                            : locked
-                              ? "Finish the previous section to unlock"
-                              : done === total
-                                ? `${formatDuration(estMin || 1)} saved · section complete`
-                                : `${remaining} lesson${remaining === 1 ? "" : "s"} · ${formatDuration(estMin)}`}
+                            : done === total
+                              ? `${formatDuration(estMin || 1)} saved · section complete`
+                              : `${remaining} lesson${remaining === 1 ? "" : "s"} · ${formatDuration(estMin)}`}
                         </p>
                       </>
                     );
@@ -326,11 +316,11 @@ export function CoursePage() {
                         key={m.id}
                         className={cn(
                           "flex flex-col gap-2 rounded-xl border border-border-subtle bg-base-subtle px-3.5 py-3",
-                          clickable &&
+                          hasLessons &&
                             "transition-[color,background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-border hover:bg-base-subtle",
                         )}
                       >
-                        {clickable ? (
+                        {hasLessons ? (
                           <Link
                             to={`/lesson/${firstLesson!.slug}`}
                             className="flex flex-col gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

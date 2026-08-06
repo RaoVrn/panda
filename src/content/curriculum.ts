@@ -147,8 +147,13 @@ export function courseOfLesson(lessonId: string): Course | undefined {
 }
 
 /* ------------------------------------------------------------------ */
-/* Unlocking                                                           */
+/* Availability                                                        */
 /* ------------------------------------------------------------------ */
+
+/** Whether a module has any authored lessons (i.e. it exists in the course). */
+export function moduleHasLessons(moduleId: string): boolean {
+  return (moduleById(moduleId)?.lessons.length ?? 0) > 0;
+}
 
 /**
  * A module is unlocked when every module it requires is fully completed
@@ -158,9 +163,9 @@ export function isModuleUnlocked(
   moduleId: string,
   completedLessonIds: string[],
 ): boolean {
-  const module = moduleById(moduleId);
-  if (!module) return false;
-  const required = module.requires ?? [];
+  const mod = moduleById(moduleId);
+  if (!mod) return false;
+  const required = mod.requires ?? [];
   if (required.length === 0) return true;
   return required.every((requiredId) => {
     const requiredModule = moduleById(requiredId);
@@ -170,9 +175,4 @@ export function isModuleUnlocked(
       requiredModule.lessons.every((id) => completedLessonIds.includes(id))
     );
   });
-}
-
-/** Whether a module has any authored lessons (i.e. it exists in the course). */
-export function moduleHasLessons(moduleId: string): boolean {
-  return (moduleById(moduleId)?.lessons.length ?? 0) > 0;
 }
