@@ -36,6 +36,99 @@ export const lesson10: ContentLesson = {
     "Explain the danger of staging secrets",
   ],
   xpReward: 45,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "Hello\n",
+          "src/main.js": "console.log('hi');\n",
+          "src/utils.js": "export const add = 1;\n",
+          "notes.txt": "draft\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "objectives": [
+        {
+          "id": "stage-one",
+          "label": "Stage one file by name",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "README.md"
+            }
+          ]
+        },
+        {
+          "id": "stage-many",
+          "label": "Stage several files by name",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "src/main.js"
+            },
+            {
+              "kind": "fileStaged",
+              "path": "src/utils.js"
+            }
+          ]
+        },
+        {
+          "id": "stage-all",
+          "label": "Sweep the rest with git add .",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "README.md"
+            },
+            {
+              "kind": "fileStaged",
+              "path": "src/main.js"
+            },
+            {
+              "kind": "fileStaged",
+              "path": "src/utils.js"
+            },
+            {
+              "kind": "fileStaged",
+              "path": "notes.txt"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "Point at one file: git add README.md.",
+        "Git accepts a list: git add src/main.js src/utils.js.",
+        "The dot means everything: git add . picks up notes.txt too.",
+        "Glance at git status before you sweep \u2014 never add secrets by accident."
+      ],
+      "solution": [
+        "git add README.md",
+        "git add src/main.js src/utils.js",
+        "git add ."
+      ],
+      "suggestions": [
+        "git add README.md",
+        "git add src/main.js src/utils.js",
+        "git add .",
+        "git status"
+      ],
+      "visualizer": {
+        "highlight": "staging",
+        "banner": "Point at what you want saved"
+      },
+      "shell": {
+        "primaryCommand": "git add",
+        "placeholder": "git add README.md",
+        "quickActions": [
+          "git add README.md",
+          "git add .",
+          "git status"
+        ],
+        "welcomeText": "Point at what you want saved.",
+        "helperText": "git add README.md stages one file. git add file1 file2 stages several. git add . grabs everything."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

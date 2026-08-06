@@ -37,6 +37,16 @@ export const lesson05: ContentLesson = {
     "Find the snapshot in your history",
   ],
   xpReward: 55,
+    playground: {
+      seed: {"files": {"README.md": "My first project\n", "package.json": "{ \"name\": \"panda\" }\n", "src/main.js": "console.log('hi');\n"}, "pwd": "~/project", "initialized": true},
+      objectives: [{"id": "stage-readme", "label": "Stage README.md", "checks": [{"kind": "fileStaged", "path": "README.md"}]}, {"id": "stage-main", "label": "Stage src/main.js", "checks": [{"kind": "fileStaged", "path": "src/main.js"}]}, {"id": "leave-out", "label": "Leave package.json out of this snapshot", "persist": false, "checks": [{"kind": "fileNotStaged", "path": "package.json"}]}, {"id": "commit", "label": "Commit \"Start the Panda project\"", "checks": [{"kind": "anyCommitMessage", "message": "Start the Panda project"}]}],
+      hints: ["Git never saves by itself \u2014 you pick what goes in with git add.", "Add exactly the two files that belong in this snapshot.", "package.json should stay behind. That's the whole point of the staging area.", "Zip the bag: git commit -m \"Start the Panda project\"."],
+      solution: ["git add README.md src/main.js", "git commit -m \"Start the Panda project\"", "git status"],
+      suggestions: ["git add README.md", "git add src/main.js", "git commit -m", "git status"],
+      visualizer: {"highlight": "staging", "banner": "Pick files, then save a snapshot"},
+      shell: {"primaryCommand": "git add", "placeholder": "git add README.md", "quickActions": ["git add README.md", "git commit -m", "git status"], "welcomeText": "Save your first snapshot.", "helperText": "Pick the files you want to save with git add, then commit them with git commit -m."},
+    },
+
   blocks: [
     {
       type: "learningGoal",

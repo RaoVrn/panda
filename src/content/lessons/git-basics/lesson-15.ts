@@ -36,6 +36,87 @@ export const lesson15: ContentLesson = {
     "Know what never belongs in a repository",
   ],
   xpReward: 55,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "Hello\n",
+          "secret.env": "password=1234\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "objectives": [
+        {
+          "id": "create-ignore",
+          "label": "Create a .gitignore file",
+          "checks": [
+            {
+              "kind": "fileExists",
+              "path": ".gitignore"
+            }
+          ]
+        },
+        {
+          "id": "ignore-pattern",
+          "label": "Ignore .env files",
+          "checks": [
+            {
+              "kind": "fileContent",
+              "path": ".gitignore",
+              "contains": "*.env"
+            }
+          ]
+        },
+        {
+          "id": "commit-clean",
+          "label": "Commit the ignore list without the secret",
+          "checks": [
+            {
+              "kind": "commitTouchesFile",
+              "path": ".gitignore"
+            },
+            {
+              "kind": "commitDoesNotTouchFile",
+              "path": "secret.env"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "Create a .gitignore file \u2014 echo works, or use the file editor.",
+        "One line is enough: *.env matches every .env file.",
+        "Run git status and watch Git stop noticing secret.env.",
+        "Stage and commit \u2014 the secret never makes it into history."
+      ],
+      "solution": [
+        "echo \"*.env\" > .gitignore",
+        "git status",
+        "git add .",
+        "git commit -m \"Add .gitignore\""
+      ],
+      "suggestions": [
+        "cat .gitignore",
+        "echo \"\" > .gitignore",
+        "git status",
+        "git add ."
+      ],
+      "visualizer": {
+        "highlight": "working-tree",
+        "banner": "Tell Git what to ignore"
+      },
+      "shell": {
+        "primaryCommand": "cat .gitignore",
+        "placeholder": "cat .gitignore",
+        "quickActions": [
+          "cat .gitignore",
+          "git status",
+          "touch .gitignore"
+        ],
+        "welcomeText": "Tell Git what to ignore.",
+        "helperText": ".gitignore lists files Git must never track. Secret files, build junk, logs \u2014 they stay out of history."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

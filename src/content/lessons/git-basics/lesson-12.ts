@@ -36,6 +36,85 @@ export const lesson12: ContentLesson = {
     "Spot the HEAD marker in history",
   ],
   xpReward: 45,
+    playground: {
+      "seed": {
+        "files": {
+          "index.html": "<h1>hi</h1>\n",
+          "login.js": "// login\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "objectives": [
+        {
+          "id": "two-commits",
+          "label": "Make two commits",
+          "checks": [
+            {
+              "kind": "commitCountAtLeast",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "both-files",
+          "label": "Commit both files",
+          "checks": [
+            {
+              "kind": "commitTouchesFile",
+              "path": "index.html"
+            },
+            {
+              "kind": "commitTouchesFile",
+              "path": "login.js"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "label": "End with \"Add user login\" at HEAD",
+          "checks": [
+            {
+              "kind": "latestCommitMessage",
+              "message": "Add user login"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "Commit the landing page first.",
+        "Then commit the login module with its own message.",
+        "Read your diary: git log --oneline \u2014 newest first, HEAD marks where you are."
+      ],
+      "solution": [
+        "git add index.html",
+        "git commit -m \"Add landing page\"",
+        "git add login.js",
+        "git commit -m \"Add user login\"",
+        "git log --oneline"
+      ],
+      "suggestions": [
+        "git log",
+        "git log --oneline",
+        "git status"
+      ],
+      "visualizer": {
+        "highlight": "head",
+        "banner": "Your history \u2014 read it like a book"
+      },
+      "shell": {
+        "primaryCommand": "git log",
+        "placeholder": "git log",
+        "quickActions": [
+          "git log",
+          "git log --oneline",
+          "git status"
+        ],
+        "welcomeText": "Read your project's autobiography.",
+        "helperText": "git log lists every snapshot, newest first. git log --oneline gives you the compact version."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

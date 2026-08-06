@@ -36,6 +36,98 @@ export const lesson09: ContentLesson = {
     "Recognize the 'clean' state",
   ],
   xpReward: 45,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "Hello world\n",
+          "index.html": "<h1>hi</h1>\n",
+          "notes.txt": "draft\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "setup": [
+        "git init",
+        "git add README.md index.html",
+        "git commit -m \"Start\"",
+        "echo \"Hello world\" > README.md",
+        "echo \"<h1>hello</h1>\" > index.html"
+      ],
+      "objectives": [
+        {
+          "id": "stage-readme",
+          "label": "Stage README.md",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "README.md"
+            }
+          ]
+        },
+        {
+          "id": "leave-rest",
+          "label": "Keep index.html and notes.txt unstaged",
+          "persist": false,
+          "checks": [
+            {
+              "kind": "fileNotStaged",
+              "path": "index.html"
+            },
+            {
+              "kind": "fileNotStaged",
+              "path": "notes.txt"
+            }
+          ]
+        },
+        {
+          "id": "clean",
+          "label": "Commit everything and reach a clean working tree",
+          "checks": [
+            {
+              "kind": "workingTreeClean"
+            },
+            {
+              "kind": "commitCountAtLeast",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "git status is Git's dashboard \u2014 run it first and read the three sections.",
+        "Stage README.md: git add README.md.",
+        "The other files can wait. Notice status separates staged, changed and new.",
+        "When you're ready, sweep the rest with git add . and commit."
+      ],
+      "solution": [
+        "git status",
+        "git add README.md",
+        "git status",
+        "git add .",
+        "git commit -m \"Finish the homepage\""
+      ],
+      "suggestions": [
+        "git status",
+        "git add README.md",
+        "git add .",
+        "git commit -m"
+      ],
+      "visualizer": {
+        "highlight": "working-tree",
+        "banner": "Git's dashboard \u2014 read every section"
+      },
+      "shell": {
+        "primaryCommand": "git status",
+        "placeholder": "git status",
+        "quickActions": [
+          "git status",
+          "help"
+        ],
+        "welcomeText": "Read Git's dashboard.",
+        "helperText": "git status reports three rooms: staged changes, unstaged changes, and untracked files. Run it to see where you are."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

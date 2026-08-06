@@ -35,6 +35,79 @@ export const lesson11: ContentLesson = {
     "Write messages that describe intent",
   ],
   xpReward: 50,
+    playground: {
+      "seed": {
+        "files": {
+          "index.html": "<h1>hi</h1>\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "objectives": [
+        {
+          "id": "stage",
+          "label": "Stage a file",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "index.html"
+            }
+          ]
+        },
+        {
+          "id": "commit",
+          "label": "Commit it with a clear message",
+          "checks": [
+            {
+              "kind": "commitCountAtLeast",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "history",
+          "label": "See it in your history",
+          "checks": [
+            {
+              "kind": "commitTouchesFile",
+              "path": "index.html"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "Choose what goes in the snapshot: git add index.html.",
+        "Take the picture: git commit -m \"\u2026\" \u2014 say what you did in one clear line.",
+        "Read your diary back: git log (or git log --oneline)."
+      ],
+      "solution": [
+        "git add index.html",
+        "git commit -m \"Add landing page\"",
+        "git log"
+      ],
+      "suggestions": [
+        "git commit -m \"\"",
+        "git log",
+        "git log --oneline",
+        "git status"
+      ],
+      "visualizer": {
+        "highlight": "repository",
+        "banner": "Take the snapshot \u2014 make it permanent"
+      },
+      "shell": {
+        "primaryCommand": "git commit",
+        "placeholder": "git commit -m \"\"",
+        "quickActions": [
+          "git commit -m",
+          "git status",
+          "git log"
+        ],
+        "welcomeText": "Make your work permanent.",
+        "helperText": "A commit is a time capsule: a snapshot, an ID, your name, and a message. Write a good one."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

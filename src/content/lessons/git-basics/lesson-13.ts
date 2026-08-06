@@ -36,6 +36,95 @@ export const lesson13: ContentLesson = {
     "Use git diff and git diff --staged",
   ],
   xpReward: 50,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "Run with: npm start\n",
+          "index.html": "<h1>hi</h1>\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "setup": [
+        "git init",
+        "git add .",
+        "git commit -m \"Start\"",
+        "echo \"<h1>hello</h1>\" > index.html"
+      ],
+      "objectives": [
+        {
+          "id": "edit-readme",
+          "label": "Change README.md to run with npm run dev",
+          "checks": [
+            {
+              "kind": "fileContent",
+              "path": "README.md",
+              "contains": "npm run dev"
+            }
+          ]
+        },
+        {
+          "id": "stage-readme",
+          "label": "Stage README.md",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "README.md"
+            }
+          ]
+        },
+        {
+          "id": "keep-index",
+          "label": "Keep index.html's change unstaged",
+          "persist": false,
+          "checks": [
+            {
+              "kind": "fileNotStaged",
+              "path": "index.html"
+            },
+            {
+              "kind": "fileContent",
+              "path": "index.html",
+              "contains": "<h1>hello"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "Change the run command in README.md (echo works, or the file editor).",
+        "Look at what changed before you stage: git diff.",
+        "Stage README.md, leave index.html in the working tree.",
+        "Now see the staged side: git diff --staged."
+      ],
+      "solution": [
+        "echo \"Run with: npm run dev\" > README.md",
+        "git diff",
+        "git add README.md",
+        "git diff --staged"
+      ],
+      "suggestions": [
+        "git diff",
+        "git diff --staged",
+        "echo \"\" > README.md",
+        "git add README.md"
+      ],
+      "visualizer": {
+        "highlight": "working-tree",
+        "banner": "See exactly what changed \u2014 line by line"
+      },
+      "shell": {
+        "primaryCommand": "git diff",
+        "placeholder": "git diff",
+        "quickActions": [
+          "git diff",
+          "git diff --staged",
+          "git diff README.md"
+        ],
+        "welcomeText": "Inspect changes like a magnifying glass.",
+        "helperText": "git diff shows unstaged changes line by line. Green is new, red is removed. git diff --staged shows what's staged."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

@@ -37,6 +37,85 @@ export const lesson14: ContentLesson = {
     "Know what restore cannot do",
   ],
   xpReward: 50,
+    playground: {
+      "seed": {
+        "files": {
+          "app.js": "const greet = (name) => {\n  console.log('hi');\n};\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "setup": [
+        "git init",
+        "git add app.js",
+        "git commit -m \"Original app\"",
+        "echo \"const greet = (name) => {\n  console.log(undefined.name.totally);\n};\" > app.js"
+      ],
+      "objectives": [
+        {
+          "id": "spot-break",
+          "label": "Spot the break in app.js",
+          "checks": [
+            {
+              "kind": "fileContent",
+              "path": "app.js",
+              "contains": "undefined.name"
+            }
+          ]
+        },
+        {
+          "id": "restore",
+          "label": "Restore app.js to the last snapshot",
+          "checks": [
+            {
+              "kind": "fileContent",
+              "path": "app.js",
+              "contains": "console.log('hi')"
+            }
+          ]
+        },
+        {
+          "id": "clean",
+          "label": "Reach a clean working tree",
+          "checks": [
+            {
+              "kind": "workingTreeClean"
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "git status shows app.js as modified \u2014 the broken version sits in the working tree.",
+        "Throw the scribbles away and go back to the last snapshot: git restore app.js.",
+        "Confirm nothing is left behind: git status."
+      ],
+      "solution": [
+        "git status",
+        "git restore app.js",
+        "git status"
+      ],
+      "suggestions": [
+        "git restore app.js",
+        "git status",
+        "git commit -m"
+      ],
+      "visualizer": {
+        "highlight": "working-tree",
+        "banner": "Undo a mistake \u2014 go back to the last snapshot"
+      },
+      "shell": {
+        "primaryCommand": "git restore",
+        "placeholder": "git restore app.js",
+        "quickActions": [
+          "git restore app.js",
+          "git status",
+          "git diff"
+        ],
+        "welcomeText": "Undo a working-tree mistake.",
+        "helperText": "git restore app.js rewinds the file to the last committed snapshot. The scribbles are gone for good."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",

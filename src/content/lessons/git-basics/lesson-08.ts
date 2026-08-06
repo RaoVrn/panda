@@ -36,6 +36,17 @@ export const lesson08: ContentLesson = {
     "Split a pile of changes into tidy snapshots",
   ],
   xpReward: 55,
+    playground: {
+      seed: {"files": {"essay.md": "my essay\n", "picture.png": "draft\n", "notes.txt": "ideas\n"}, "pwd": "~/project", "initialized": true},
+      setup: ["git init", "git add essay.md", "git commit -m \"Draft essay\"", "echo \"my essay, now with the fixes\" > essay.md"],
+      objectives: [{"id": "stage-essay", "label": "Stage only the essay fix", "checks": [{"kind": "fileStaged", "path": "essay.md"}]}, {"id": "leave-others", "label": "Leave picture.png and notes.txt uncommitted", "persist": false, "checks": [{"kind": "fileNotStaged", "path": "picture.png"}, {"kind": "fileNotStaged", "path": "notes.txt"}]}, {"id": "commit", "label": "Commit \"Add the essay fixes\"", "checks": [{"kind": "anyCommitMessage", "message": "Add the essay fixes"}]}],
+      hints: ["Build this snapshot around one idea \u2014 the essay fix, nothing else.", "Stage it: git add essay.md. Watch picture.png and notes.txt stay behind.", "Unstage if you change your mind: git restore --staged essay.md.", "Commit with a message that says exactly what you did."],
+      solution: ["git add essay.md", "git commit -m \"Add the essay fixes\""],
+      suggestions: ["git add essay.md", "git restore --staged essay.md", "git commit -m"],
+      visualizer: {"highlight": "staging", "banner": "Build your snapshot one file at a time"},
+      shell: {"primaryCommand": "git add", "placeholder": "git add essay.md", "quickActions": ["git add essay.md", "git add .", "git status"], "welcomeText": "Build your snapshot, file by file.", "helperText": "Stage only the files that belong in this snapshot. git add picks them; git restore --staged puts them back."},
+    },
+
   blocks: [
     {
       type: "learningGoal",
