@@ -83,6 +83,18 @@ export function evaluateCheck(
     case "branchExists":
       return repo.branches.has(check.name);
 
+    case "branchNotExists":
+      return !repo.branches.has(check.name);
+
+    case "branchAtCommit":
+      return repo.branches.get(check.name) === check.hash;
+
+    case "reflogHas":
+      return repo.reflog.some((entry) => entry.message.includes(check.text));
+
+    case "detachedHead":
+      return repo.detached;
+
     case "remoteExists":
       return repo.remotes.has(check.name);
 

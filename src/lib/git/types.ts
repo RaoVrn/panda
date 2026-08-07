@@ -98,6 +98,17 @@ export interface GitRebaseState {
   remaining: string[];
 }
 
+/** One recorded HEAD movement, for `git reflog`. */
+export interface GitReflogEntry {
+  /** Short description, e.g. "checkout: moving from main to 3f2ab71". */
+  message: string;
+  /** Commit hash HEAD pointed to before this move. */
+  from: string | null;
+  /** Commit hash HEAD points to after this move. */
+  to: string | null;
+  timestamp: number;
+}
+
 /**
  * The complete simulated repository. Working tree + index + object store
  * (commits) + refs (branches/tags) + stash. Remotes/merge/rebase are modelled
@@ -116,6 +127,8 @@ export interface GitRepository {
   head: string | null;
   /** Checked-out branch name. */
   branch: string;
+  /** True when HEAD points directly at a commit, not at a branch. */
+  detached: boolean;
   /** branch name → head commit hash. */
   branches: Map<string, string>;
   /** All commits, oldest first. */
@@ -126,6 +139,8 @@ export interface GitRepository {
   stash: GitStashEntry[];
   /** remote name → url. */
   remotes: Map<string, string>;
+  /** Every recorded HEAD movement, newest last (for `git reflog`). */
+  reflog: GitReflogEntry[];
   mergeState: GitMergeState | null;
   rebaseState: GitRebaseState | null;
 }

@@ -43,11 +43,13 @@ export function createRepository(options: CreateRepositoryOptions = {}): GitRepo
     index: new Set(),
     head: null,
     branch: "main",
+    detached: false,
     branches: new Map([["main", ""]]),
     commits: [],
     tags: new Map(),
     stash: [],
     remotes: new Map(),
+    reflog: [],
     mergeState: null,
     rebaseState: null,
   };
@@ -78,6 +80,7 @@ export function cloneRepository(repo: GitRepository): GitRepository {
       files: new Map([...entry.files].map(([p, f]) => [p, { ...f }])),
     })),
     remotes: new Map(repo.remotes),
+    reflog: repo.reflog.map((entry) => ({ ...entry })),
     mergeState: repo.mergeState ? { ...repo.mergeState, conflictedFiles: [...repo.mergeState.conflictedFiles] } : null,
     rebaseState: repo.rebaseState ? { ...repo.rebaseState, remaining: [...repo.rebaseState.remaining] } : null,
   };

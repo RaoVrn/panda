@@ -20,12 +20,12 @@ import { lessonRepositoryVsWorkingTree } from "@/content/lessons/git-fundamental
 import { lessonGitRm } from "@/content/lessons/core-commands/git-rm";
 import { lessonGitMv } from "@/content/lessons/core-commands/git-mv";
 
-import { lessonPlaceholder_commit_history } from "@/content/lessons/history/commit-history";
-import { lessonPlaceholder_head } from "@/content/lessons/history/head";
-import { lessonPlaceholder_detached_head } from "@/content/lessons/history/detached-head";
-import { lessonPlaceholder_git_show } from "@/content/lessons/history/git-show";
-import { lessonPlaceholder_git_blame } from "@/content/lessons/history/git-blame";
-import { lessonPlaceholder_git_reflog } from "@/content/lessons/history/git-reflog";
+import { lessonCommitHistory } from "@/content/lessons/history/commit-history";
+import { lessonHead } from "@/content/lessons/history/head";
+import { lessonDetachedHead } from "@/content/lessons/history/detached-head";
+import { lessonGitShow } from "@/content/lessons/history/git-show";
+import { lessonGitBlame } from "@/content/lessons/history/git-blame";
+import { lessonGitReflog } from "@/content/lessons/history/git-reflog";
 import { lessonBranches } from "@/content/lessons/branching/branches";
 import { lessonGitBranch } from "@/content/lessons/branching/git-branch";
 import { lessonGitSwitch } from "@/content/lessons/branching/git-switch";
@@ -71,12 +71,12 @@ export const lessons: ContentLesson[] = [
   lessonRepositoryVsWorkingTree,
   lessonGitRm,
   lessonGitMv,
-  lessonPlaceholder_commit_history,
-  lessonPlaceholder_head,
-  lessonPlaceholder_detached_head,
-  lessonPlaceholder_git_show,
-  lessonPlaceholder_git_blame,
-  lessonPlaceholder_git_reflog,
+  lessonCommitHistory,
+  lessonHead,
+  lessonDetachedHead,
+  lessonGitShow,
+  lessonGitBlame,
+  lessonGitReflog,
   lessonBranches,
   lessonGitBranch,
   lessonGitSwitch,

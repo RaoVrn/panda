@@ -305,6 +305,7 @@ export function runCommand(
     next.head = hash;
     next.branches.set(next.branch, hash);
     next.index.clear();
+    recordReflog(next, next.head, hash, `commit: ${commitMessage}`);
     events.push(createEvent("COMMIT_CREATED", undefined, { hash, message: commitMessage }));
     events.push(createEvent("HEAD_CHANGED", undefined, { hash }));
     events.push(createEvent("STATUS_CHANGED"));
@@ -411,7 +412,9 @@ export function runCommand(
     }
     const base = next.branches.get(next.branch) ?? next.head ?? "";
     next.branches.set(name, base);
+    recordReflog(next, next.head, next.head, `switch: creating branch '${name}'`);
     next.branch = name;
+    next.detached = false;
     restoreWorkingTreeForBranch(next, name);
     events.push(createEvent("BRANCH_CHANGED"));
     events.push(createEvent("HEAD_CHANGED", undefined, { hash: base || undefined }));
@@ -423,7 +426,9 @@ export function runCommand(
     if (!next.branches.has(name)) {
       return { state: repo, events, output: ok(`fatal: invalid reference: ${name}`, "error") };
     }
+    recordReflog(next, next.head, next.head, `switch: moving to ${name}`);
     next.branch = name;
+    next.detached = false;
     restoreWorkingTreeForBranch(next, name);
     events.push(createEvent("BRANCH_CHANGED"));
     return { state: next, events, output: ok(`Switched to branch '${name}'`, "success") };
@@ -433,13 +438,25 @@ export function runCommand(
   const checkoutMatch = trimmed.match(/^git checkout\s+([\w/.-]+)$/);
   if (checkoutMatch) {
     const name = checkoutMatch[1]!;
-    if (!next.branches.has(name)) {
-      return { state: repo, events, output: ok(`error: pathspec '${name}' did not match any branch`, "error") };
+    if (next.branches.has(name)) {
+      recordReflog(next, next.head, next.head, `checkout: moving to ${name}`);
+      next.branch = name;
+      next.detached = false;
+      restoreWorkingTreeForBranch(next, name);
+      events.push(createEvent("BRANCH_CHANGED"));
+      return { state: next, events, output: ok(`Switched to branch '${name}'`, "success") };
     }
-    next.branch = name;
-    restoreWorkingTreeForBranch(next, name);
-    events.push(createEvent("BRANCH_CHANGED"));
-    return { state: next, events, output: ok(`Switched to branch '${name}'`, "success") };
+    // Not a branch name. If it matches a commit hash, enter detached HEAD.
+    const commit = next.commits.find((c) => c.hash === name);
+    if (commit) {
+      recordReflog(next, next.head, commit.hash, `checkout: moving to ${name}`);
+      next.branch = "HEAD";
+      next.detached = true;
+      restoreWorkingTreeAt(next, commit.hash);
+      events.push(createEvent("HEAD_CHANGED", undefined, { hash: commit.hash }));
+      return { state: next, events, output: ok(`HEAD is now at ${name}`, "success") };
+    }
+    return { state: repo, events, output: ok(`error: pathspec '${name}' did not match any branch`, "error") };
   }
 
   // ---------------------------------------------------------- git merge
@@ -453,12 +470,95 @@ export function runCommand(
     const targetHash = next.branches.get(name) ?? "";
     if (headHash && targetHash && isAncestor(next.commits, headHash, targetHash)) {
       next.branches.set(next.branch, targetHash);
+      recordReflog(next, next.head, targetHash, `merge ${name}: fast-forward`);
       next.head = targetHash;
       events.push(createEvent("COMMIT_CREATED", undefined, { hash: targetHash, message: "Fast-forward" }));
       events.push(createEvent("HEAD_CHANGED", undefined, { hash: targetHash }));
       return { state: next, events, output: ok(`Updating ${headHash.slice(0, 7)}..${targetHash.slice(0, 7)}\nFast-forward`, "success") };
     }
     return { state: repo, events, output: ok(`merge: can't merge '${name}' yet in this exercise`, "error") };
+  }
+
+  // ------------------------------------------------------- git branch -d
+  const branchDelete = trimmed.match(/^git branch -d\s+([\w/.-]+)$/);
+  if (branchDelete) {
+    const name = branchDelete[1]!;
+    if (!next.branches.has(name)) {
+      return { state: repo, events, output: ok(`error: branch '${name}' not found`, "error") };
+    }
+    if (name === next.branch) {
+      return { state: repo, events, output: ok(`error: cannot delete branch '${name}' checked out at '${name}'`, "error") };
+    }
+    const headHash = next.branches.get(name) ?? "";
+    // The reflog keeps the branch's commits reachable, so the branch can be
+    // recovered even after deletion.
+    next.branches.delete(name);
+    recordReflog(next, next.head, next.head, `branch -d ${name}`);
+    events.push(createEvent("BRANCH_CHANGED"));
+    return { state: next, events, output: ok(`Deleted branch ${name} (was ${headHash.slice(0, 7)})`, "success") };
+  }
+
+  // ----------------------------------------------------------- git show
+  const showMatch = trimmed.match(/^git show(?:\s+(\S+))?$/);
+  if (showMatch) {
+    const target = showMatch[1] ?? next.head ?? "";
+    const commit = next.commits.find((c) => c.hash === target);
+    if (!commit) {
+      return { state: repo, events, output: ok(`fatal: ambiguous argument '${target || "HEAD"}': unknown revision`, "error") };
+    }
+    const lines: string[] = [
+      `commit ${commit.hash}`,
+      `Author: ${commit.author.name} <${commit.author.email}>`,
+      `Date:   ${new Date(commit.timestamp).toLocaleString("en-US", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" })}`,
+      "",
+      `    ${commit.message}`,
+      "",
+    ];
+    if (commit.changedFiles.length > 0) {
+      lines.push(...commit.changedFiles.map((f) => ` ${f.status === "added" ? "A" : f.status === "deleted" ? "D" : "M"}  ${f.path}`));
+    }
+    return { state: repo, events, output: ok(lines.join("\n"), "output") };
+  }
+
+  // ---------------------------------------------------------- git blame
+  const blameMatch = trimmed.match(/^git blame(?:\s+(\S+))?$/);
+  if (blameMatch) {
+    const path = blameMatch[1] ?? "";
+    if (!path) return { state: repo, events, output: ok("usage: git blame <file>", "error") };
+    const file = next.workingTree.get(path);
+    if (!file) {
+      return { state: repo, events, output: ok(`fatal: cannot stat path '${path}': No such file or directory`, "error") };
+    }
+    const content = file.content;
+    if (!content.trim()) return { state: repo, events, output: ok("(empty file)", "muted") };
+    // Find the last commit that touched this file.
+    const touching = next.commits.filter((c) =>
+      c.changedFiles.some((f) => f.path === path && f.status !== "deleted"),
+    );
+    const last = touching[touching.length - 1];
+    const headHash = last?.hash.slice(0, 7) ?? "0000000";
+    const author = last?.author.name ?? "Unknown";
+    const lines = content.split("\n").filter((l) => l !== "");
+    return {
+      state: repo,
+      events,
+      output: ok(
+        lines
+          .map((line) => `${headHash} (${author} ${new Date(last?.timestamp ?? Date.now()).toLocaleDateString()}) ${line}`)
+          .join("\n"),
+        "muted",
+      ),
+    };
+  }
+
+  // ---------------------------------------------------------- git reflog
+  if (sub === "reflog") {
+    if (next.reflog.length === 0) return { state: repo, events, output: ok("(no reflog entries)", "muted") };
+    const lines = [...next.reflog].reverse().map((entry, i) => {
+      const to = entry.to?.slice(0, 7) ?? "0000000";
+      return `${to} HEAD@{${next.reflog.length - 1 - i}}: ${entry.message}`;
+    });
+    return { state: repo, events, output: ok(lines.join("\n"), "output") };
   }
 
   // ---------------------------------------------------------- git remote
@@ -562,6 +662,7 @@ export function runCommand(
     if (remoteOnly.length === 0) return { state: repo, events, output: ok("Already up to date.", "muted") };
     next.commits.push(...remoteOnly.map((c) => ({ ...c })));
     next.branches.set(next.branch, remoteHead);
+    recordReflog(next, next.head, remoteHead, `pull: fast-forward`);
     next.head = remoteHead;
     // Restore the working tree to the new head.
     const branchFiles = commitsFromHead(next, remoteHead);
@@ -663,9 +764,18 @@ function wasTrackedIn(repo: GitRepository, path: string): boolean {
   return trackedDeletedPaths(repo).includes(path);
 }
 
+/** Record a HEAD movement in the reflog (called whenever HEAD changes). */
+function recordReflog(
+  repo: GitRepository,
+  from: string | null,
+  to: string | null,
+  message: string,
+): void {
+  repo.reflog.push({ from, to, message, timestamp: Date.now() });
+}
+
 /** Whether `ancestorHash` is reachable from `descendantHash` in the commit graph. */
-function isAncestor(
-  commits: GitRepository["commits"],
+function isAncestor(  commits: GitRepository["commits"],
   ancestorHash: string,
   descendantHash: string,
 ): boolean {
@@ -715,9 +825,13 @@ function commitsFromHead(
  * branches behave like real Git instead of just relabeling HEAD.
  */
 function restoreWorkingTreeForBranch(repo: GitRepository, branchName: string): void {
-  const headHash = repo.branches.get(branchName) ?? "";
+  restoreWorkingTreeAt(repo, repo.branches.get(branchName) ?? "");
+}
+
+/** Restore the working tree to the files committed at `hash`. */
+function restoreWorkingTreeAt(repo: GitRepository, hash: string): void {
   const files = new Map<string, string>();
-  for (const commit of commitsFromHead(repo, headHash)) {
+  for (const commit of commitsFromHead(repo, hash)) {
     for (const change of commit.changedFiles) {
       if (change.status === "deleted") files.delete(change.path);
       else if (change.content !== undefined) files.set(change.path, change.content);

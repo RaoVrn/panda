@@ -335,6 +335,10 @@ export type PlaygroundCheck =
   | { kind: "anyCommitMessage"; message: string }
   | { kind: "branch"; name: string }
   | { kind: "branchExists"; name: string }
+  | { kind: "branchNotExists"; name: string }
+  | { kind: "branchAtCommit"; name: string; hash: string }
+  | { kind: "reflogHas"; text: string }
+  | { kind: "detachedHead" }
   | { kind: "remoteExists"; name: string }
   | { kind: "remoteNotExists"; name: string }
   | { kind: "remoteHasCommit"; message: string }
