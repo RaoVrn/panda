@@ -12,10 +12,10 @@ export const lesson12: ContentLesson = {
   slug: "git-log",
   title: "git log",
   description:
-    "Every snapshot you've ever saved, in order. Meet git log — the command that reads your project's autobiography.",
+    "Every snapshot you've ever saved, in order. Meet git log, the command that reads your project's autobiography.",
   meta: {
-    module: "git-basics",
-    order: 7,
+    module: "core-commands",
+    order: 5,
     difficulty: "beginner",
     durationMinutes: 7,
     tags: ["basics", "log", "history"],
@@ -26,9 +26,9 @@ export const lesson12: ContentLesson = {
       "Hashes are the ID cards you point at.",
     ],
     whyItMatters:
-      "History is where all Git's power lives. git log is how you read it — and soon, how you jump around in it.",
+      "History is where all Git's power lives. git log is how you read it, and soon, how you jump around in it.",
     motivation:
-      "You can read history now. Next up: git diff — the magnifying glass that shows exactly what changed between snapshots.",
+      "You can read history now. Next up: git diff, the magnifying glass that shows exactly what changed between snapshots.",
   },
   learningGoals: [
     "Read git log output",
@@ -119,12 +119,12 @@ export const lesson12: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll be able to open your project's history and read it like a book — quickly, and without confusion.",
+      text: "By the end you'll be able to open your project's history and read it like a book, quickly and without confusion.",
     },
     {
       type: "paragraph",
       id: "open-question",
-      text: "You've made a few snapshots. How do you look back at them? With git log — the command that reads your project's diary, newest entry first.",
+      text: "You've made a few snapshots. How do you look back at them? With git log, the command that reads your project's diary, newest entry first.",
     },
 
     // ---------------------------------------------------------------
@@ -139,7 +139,7 @@ export const lesson12: ContentLesson = {
     {
       type: "paragraph",
       id: "timeline-question",
-      text: "Here's a small project's life. Each dot is one commit — click them to inspect.",
+      text: "Here's a small project's life. Each dot is one commit. Click them to inspect.",
     },
     {
       type: "gitGraph",
@@ -196,7 +196,7 @@ export const lesson12: ContentLesson = {
       id: "timeline-connect",
       tone: "info",
       title: "Newest on top",
-      text: "Git always shows the newest commit first. Your most recent work — the HEAD commit — is the first thing you see.",
+      text: "Git always shows the newest commit first. Your most recent work, the HEAD commit, is the first thing you see.",
     },
 
     // ---------------------------------------------------------------
@@ -270,7 +270,7 @@ export const lesson12: ContentLesson = {
       type: "warning",
       id: "mistake",
       title: "\"git log doesn't show my file?\"",
-      text: "git log shows commits, not files. It's the diary, not the contents. To see what changed inside a commit, you'll use git diff and git show — up next.",
+      text: "git log shows commits, not files. It's the diary, not the contents. To see what changed inside a commit, you'll use git diff and git show. That's up next.",
     },
 
     // ---------------------------------------------------------------
@@ -287,7 +287,7 @@ export const lesson12: ContentLesson = {
       id: "practice-mission",
       description:
         "What does the \"HEAD -> main\" badge mean in git log?",
-      hint: "Remember the red dot on a map — where are you standing right now?",
+      hint: "Remember the red dot on a map. Where are you standing right now?",
       exampleAnswer:
         "The top line is the newest snapshot, and the badge means my current position is on the main branch at this exact commit. It's Git saying 'you are here'.",
     },
@@ -304,6 +304,12 @@ export const lesson12: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-git-log",
+      title: "Quick tip",
+      text: "Type git log --oneline for a fast, one-line-per-snapshot view. It's the version everyone actually uses.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
@@ -311,7 +317,7 @@ export const lesson12: ContentLesson = {
         "git log --oneline = one compact line per commit.",
         "The hash is a snapshot's ID card.",
         "HEAD -> branch marks your current spot.",
-        "Read history like a diary — and soon, navigate it.",
+        "Read history like a diary, and soon, navigate it.",
       ],
     },
     {
@@ -324,7 +330,7 @@ export const lesson12: ContentLesson = {
       id: "next-lesson",
       tone: "tip",
       title: "Continue to: git diff",
-      text: "See precisely which lines changed — green for added, red for removed.",
+      text: "See precisely which lines changed. Green for added, red for removed.",
     },
   ],
 };

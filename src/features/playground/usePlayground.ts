@@ -33,6 +33,23 @@ export function usePlaygroundRepository(): GitRepository | null {
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
+/**
+ * The current remote (simulated GitHub) repository snapshot, if one exists.
+ * Re-renders on the same ticks as the local repository.
+ */
+export function usePlaygroundRemote(): GitRepository | null {
+  const engine = usePlaygroundEngine();
+  const subscribe = useCallback(
+    (listener: () => void) => {
+      if (!engine) return () => {};
+      return engine.subscribe(listener);
+    },
+    [engine],
+  );
+  const getSnapshot = useCallback(() => engine?.getRemote() ?? null, [engine]);
+  return useSyncExternalStore(subscribe, getSnapshot);
+}
+
 export function usePlaygroundSession(): {
   lastCommand: string;
   lastOutput: ReturnType<GitSimulation["run"]>["output"] | null;

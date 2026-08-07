@@ -350,7 +350,7 @@ export function StageArea({ block, player, mode }: StageAreaProps) {
         <div className="border-t border-border-subtle bg-base-subtle/30 px-4 py-2.5">
           <p className="flex items-center gap-1.5 text-[11px] text-text-muted">
             <RotateCcw className="size-3" aria-hidden="true" />
-            This is live Git state — type{" "}
+            This is live Git state. Type{" "}
             <code className="rounded bg-base-subtle px-1 font-mono">git status</code>{" "}
             in any terminal in this lesson and you'll see the same thing.
           </p>

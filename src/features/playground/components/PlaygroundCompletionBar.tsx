@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BookOpen, PartyPopper, Rocket } from "lucide-react";
 import type { ContentLesson } from "@/content/schema";
 import { usePlaygroundStore } from "../playgroundStore";
-import { usePlaygroundRepository } from "../usePlayground";
+import { usePlaygroundRepository, usePlaygroundRemote } from "../usePlayground";
 import { playgroundProgress } from "../taskValidator";
 import { useLessonMode } from "@/features/lesson/lessonModeContext";
 import { lessonXp } from "@/features/progress/xp";
@@ -22,12 +22,13 @@ export interface PlaygroundCompletionBarProps {
 export function PlaygroundCompletionBar({ lesson, previous, next }: PlaygroundCompletionBarProps) {
   const config = usePlaygroundStore((state) => state.config);
   const repo = usePlaygroundRepository();
+  const remote = usePlaygroundRemote();
   const { setMode } = useLessonMode();
 
   const objectives = useMemo(() => config?.objectives ?? [], [config]);
   const progress = useMemo(
-    () => (repo && config ? playgroundProgress(repo, objectives) : { done: 0, total: 0 }),
-    [repo, config, objectives],
+    () => (repo && config ? playgroundProgress(repo, objectives, remote) : { done: 0, total: 0 }),
+    [repo, config, objectives, remote],
   );
   const allDone = progress.total > 0 && progress.done === progress.total;
   const xp = lessonXp(lesson);

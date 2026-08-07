@@ -12,10 +12,10 @@ export const lesson07: ContentLesson = {
   slug: "working-tree",
   title: "Working Tree",
   description:
-    "The working tree is simply the folder you see and edit. But Git watches it closely — here's what Git notices, and what it politely ignores.",
+    "The working tree is simply the folder you see and edit. But Git watches it closely. Here's what Git notices, and what it politely ignores.",
   meta: {
-    module: "git-basics",
-    order: 2,
+    module: "git-fundamentals",
+    order: 6,
     difficulty: "beginner",
     durationMinutes: 7,
     tags: ["basics", "working-tree"],
@@ -26,9 +26,9 @@ export const lesson07: ContentLesson = {
       "Git only snapshots what you stage.",
     ],
     whyItMatters:
-      "Half of reading git status is knowing which room Git is talking about. The working tree is that room — and this is where all your work actually happens.",
+      "Half of reading git status is knowing which room Git is talking about. The working tree is that room, and this is where all your work actually happens.",
     motivation:
-      "Working tree: understood. Now the middle room — the staging area — which surprises everyone the first time they meet it.",
+      "Working tree: understood. Now the middle room, the staging area, which surprises everyone the first time they meet it.",
   },
   learningGoals: [
     "Point to the working tree on your own computer",
@@ -51,12 +51,12 @@ export const lesson07: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll see your project folder the way Git sees it — a room full of files, some watched, some brand new.",
+      text: "By the end you'll see your project folder the way Git sees it, as a room full of files, some watched and some brand new.",
     },
     {
       type: "paragraph",
       id: "open-question",
-      text: "When you open your project folder, you see files and folders. That's the working tree. Nothing mysterious — it's just the room where you live and edit.",
+      text: "When you open your project folder, you see files and folders. That's the working tree. Nothing mysterious. It's just the room where you live and edit.",
     },
     {
       type: "callout",
@@ -78,7 +78,7 @@ export const lesson07: ContentLesson = {
     {
       type: "paragraph",
       id: "tracking-question",
-      text: "Git has two moods about a file. If it's tracked, Git has saved it in at least one snapshot and keeps an eye on it. If it's untracked, it's brand new — Git sees it but has never been told about it.",
+      text: "Git has two moods about a file. If it's tracked, Git has saved it in at least one snapshot and keeps an eye on it. If it's untracked, it's brand new. Git sees it but has never been told about it.",
     },
     {
       type: "stageArea",
@@ -102,7 +102,7 @@ export const lesson07: ContentLesson = {
     {
       type: "paragraph",
       id: "tracking-explain",
-      text: "All three files sit on the counter, but Git hasn't saved any of them yet — so every one is untracked. The moment you stage and commit a file, it becomes tracked, and Git starts noticing every change you make to it.",
+      text: "All three files sit on the counter, but Git hasn't saved any of them yet, so every one is untracked. The moment you stage and commit a file, it becomes tracked, and Git starts noticing every change you make to it.",
     },
 
     // ---------------------------------------------------------------
@@ -182,7 +182,7 @@ export const lesson07: ContentLesson = {
         "What does it mean when Git calls a brand-new file \"untracked\"?",
       hint: "Untracked = Git sees it but has no memory of it. What command makes it part of a snapshot?",
       exampleAnswer:
-        "Untracked means Git notices the file but has never saved it, so it has no history of it. I'd git add it and commit it once — after that, Git tracks every change to it.",
+        "Untracked means Git notices the file but has never saved it, so it has no history of it. I'd git add it and commit it once. After that, Git tracks every change to it.",
     },
 
     // ---------------------------------------------------------------
@@ -195,6 +195,12 @@ export const lesson07: ContentLesson = {
       id: "section-takeaways",
       level: 2,
       text: "What to remember",
+    },
+    {
+      type: "tip",
+      id: "tip-working-tree",
+      title: "Quick tip",
+      text: "The working tree is everything you see and edit. Run git status often. It's the map that shows exactly what Git is watching.",
     },
     {
       type: "keyTakeaways",
@@ -210,7 +216,7 @@ export const lesson07: ContentLesson = {
     {
       type: "paragraph",
       id: "close-question",
-      text: "Now for the room that surprises everyone on their first day: the staging area. This one takes a second to click — and then it clicks for good.",
+      text: "Now for the room that surprises everyone on their first day: the staging area. This one takes a second to click, and then it clicks for good.",
     },
     {
       type: "callout",

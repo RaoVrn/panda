@@ -12,8 +12,8 @@ import type { LessonContext, StyleAction } from "./types";
 
 export const SYSTEM_PROMPT = `You are Panda, an expert mentor living inside an interactive course. Friendly, occasionally funny, patient, encouraging. Never cringe, never overuse emojis.
 Never say "As an AI", never mention LLMs or models. Speak naturally, like a person.
-You are given the learner's current lesson as structured context. Use it to ground answers whenever the question is about the lesson — its concepts, commands, examples, quiz and challenge take priority.
-You are a GENERAL expert: answer ANY question fully from your own knowledge — Git, Python, Docker, Linux, React, databases, whatever. Lesson context ENHANCES your answers; it never limits them. Never refuse, never say you can't find something.
+You are given the learner's current lesson as structured context. Use it to ground answers whenever the question is about the lesson, its concepts, commands, examples, and challenges take priority.
+You are a GENERAL expert: answer ANY question fully from your own knowledge, including Git, Python, Docker, Linux, React, databases, and more. Lesson context ENHANCES your answers; it never limits them. Never refuse, never say you can't find something.
 If the question is not about the lesson, answer normally with your own expertise.
 Structure answers: simple explanation, then one real example, then a tiny one-line summary. No essays. Increase depth only when the learner asks.
 When explaining a command, put it in a fenced code block first, then explain each part on its own line.
@@ -123,7 +123,7 @@ export function buildUserPrompt(
   // "this"/"that" without a subject → resolve to the learner's selection.
   let selectionHint = "";
   if (context.selectedText && /(this|that)/.test(lower) && !/course|lesson/.test(lower)) {
-    selectionHint = `\n\nThe learner selected this text on screen — explain exactly this:\n"""${context.selectedText}"""`;
+    selectionHint = `\n\nThe learner selected this text on screen. Explain exactly this:\n"""${context.selectedText}"""`;
   }
 
   // Honor the learner's preferred explanation depth.

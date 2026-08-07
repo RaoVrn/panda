@@ -12,10 +12,10 @@ export const lesson08: ContentLesson = {
   slug: "staging-area",
   title: "Staging Area",
   description:
-    "Why doesn't Git just save everything at once? Because you should get to choose. Meet the staging area — the room where you build each snapshot.",
+    "Why doesn't Git just save everything at once? Because you should get to choose. Meet the staging area, the room where you build each snapshot.",
   meta: {
-    module: "git-basics",
-    order: 3,
+    module: "git-fundamentals",
+    order: 7,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["basics", "staging"],
@@ -28,7 +28,7 @@ export const lesson08: ContentLesson = {
     whyItMatters:
       "The staging area is Git's most famous 'why two steps?' moment. Get it, and you can make history read like a story instead of a mess.",
     motivation:
-      "The staging area just clicked — and once it clicks, it never un-clicks. Next up: reading git status like a pro.",
+      "The staging area just clicked, and once it clicks, it never un-clicks. Next up: reading git status like a pro.",
   },
   learningGoals: [
     "Explain why Git uses a staging area",
@@ -51,7 +51,7 @@ export const lesson08: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll be able to explain why Git has a staging area — and use it to save your work in tidy, thoughtful chunks.",
+      text: "By the end you'll be able to explain why Git has a staging area, and use it to save your work in tidy, thoughtful chunks.",
     },
     {
       type: "paragraph",
@@ -105,7 +105,7 @@ export const lesson08: ContentLesson = {
       id: "build-connect",
       tone: "success",
       title: "That's the superpower",
-      text: "You staged only essay.md and left the rest. So your snapshot says exactly one thing: \"Add the essay fixes\". Clean history is built from clean staging decisions — one idea per snapshot.",
+      text: "You staged only essay.md and left the rest. So your snapshot says exactly one thing: \"Add the essay fixes\". Clean history is built from clean staging decisions, one idea per snapshot.",
     },
 
     // ---------------------------------------------------------------
@@ -120,7 +120,7 @@ export const lesson08: ContentLesson = {
     {
       type: "paragraph",
       id: "unstage-question",
-      text: "Stage the wrong file? No problem — files can walk out of the staging area too. Watch, then try it.",
+      text: "Stage the wrong file? No problem. Files can walk out of the staging area too. Watch, then try it.",
     },
     {
       type: "terminalSteps",
@@ -160,7 +160,7 @@ export const lesson08: ContentLesson = {
       type: "tip",
       id: "unstage-tip",
       title: "The command to remember",
-      text: "git restore --staged <file> takes a file out of the staging area. It doesn't delete your changes — the file just goes back to the working tree. Nothing lost, ever.",
+      text: "git restore --staged <file> takes a file out of the staging area. It doesn't delete your changes. The file just goes back to the working tree. Nothing lost, ever.",
     },
 
     // ---------------------------------------------------------------
@@ -222,7 +222,7 @@ export const lesson08: ContentLesson = {
     {
       type: "paragraph",
       id: "close-question",
-      text: "You've got the flow. Now let's master the command you'll type to check your work — reading git status like it's your favorite game's HUD.",
+      text: "You've got the flow. Now let's master the command you'll type to check your work, reading git status like it's your favorite game's HUD.",
     },
     {
       type: "callout",

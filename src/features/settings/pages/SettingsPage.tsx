@@ -195,7 +195,7 @@ export function SettingsPage() {
                   {prefs.dailyReminder && <Check className="size-3.5 text-accent-hover" aria-hidden="true" />}
                 </OptionPill>
                 <span className="text-xs text-text-muted">
-                  Preference saved — reminders go live soon.
+                  Preference saved. Reminders go live soon.
                 </span>
               </div>
             </div>

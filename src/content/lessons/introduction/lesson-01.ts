@@ -19,7 +19,7 @@ export const lesson01: ContentLesson = {
   description:
     "Imagine a time machine for your homework. That's what Git is, and it's the quiet superpower behind nearly every app you love.",
   meta: {
-    module: "introduction",
+    module: "git-fundamentals",
     order: 1,
     difficulty: "beginner",
     durationMinutes: 8,
@@ -42,6 +42,76 @@ export const lesson01: ContentLesson = {
     "Tell the difference between Git and GitHub",
   ],
   xpReward: 50,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "Hello Panda\n"
+        },
+        "pwd": "~/project"
+      },
+      "objectives": [
+        {
+          "id": "init",
+          "label": "Run git init to wake Git up",
+          "checks": [
+            {
+              "kind": "initialized"
+            }
+          ]
+        },
+        {
+          "id": "add",
+          "label": "Stage your file with git add",
+          "checks": [
+            {
+              "kind": "fileStaged",
+              "path": "README.md"
+            }
+          ]
+        },
+        {
+          "id": "commit",
+          "label": "Take your first snapshot with git commit",
+          "checks": [
+            {
+              "kind": "commitCountAtLeast",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "This folder isn't protected yet. One command wakes Git up.",
+        "Point at the file you want to save: git add README.md.",
+        "Save the snapshot: git commit -m \"hello world\". Your first save point!"
+      ],
+      "solution": [
+        "git init",
+        "git add README.md",
+        "git commit -m \"hello world\""
+      ],
+      "suggestions": [
+        "git init",
+        "git add README.md",
+        "git commit -m"
+      ],
+      "visualizer": {
+        "highlight": "repository",
+        "banner": "Make your very first snapshot \u2014 just like saving a game"
+      },
+      "shell": {
+        "primaryCommand": "git init",
+        "placeholder": "git init",
+        "quickActions": [
+          "git init",
+          "git status",
+          "help"
+        ],
+        "welcomeText": "Make your first save point.",
+        "helperText": "You can never lose your work again. Run git init to wake Git up."
+      }
+    },
+
   blocks: [
     // ---------------------------------------------------------------
     // Opening: a question, a story, no definitions.
@@ -406,6 +476,12 @@ export const lesson01: ContentLesson = {
       id: "section-takeaways",
       level: 2,
       text: "What to remember",
+    },
+    {
+      type: "tip",
+      id: "tip-what-is-git",
+      title: "Quick tip",
+      text: "Git only saves when you say so. Nothing happens by accident. You are always in control.",
     },
     {
       type: "keyTakeaways",

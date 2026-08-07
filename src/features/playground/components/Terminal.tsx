@@ -311,7 +311,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
                 (repo?.initialized
                   ? (
                     <>
-                      Type <span className="text-[#79c0ff]">git status</span> to see what Git notices — or click a command below.
+                      Type <span className="text-[#79c0ff]">git status</span> to see what Git notices, or click a command below.
                     </>
                   )
                   : (

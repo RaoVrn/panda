@@ -12,9 +12,9 @@ export const lesson03: ContentLesson = {
   slug: "installing-git",
   title: "Installing Git",
   description:
-    "Git is a program that lives on your computer. Let's meet the terminal and get Git installed — it takes about two minutes.",
+    "Git is a program that lives on your computer. Let's meet the terminal and get Git installed. It takes about two minutes.",
   meta: {
-    module: "introduction",
+    module: "git-fundamentals",
     order: 3,
     difficulty: "beginner",
     durationMinutes: 6,
@@ -28,7 +28,7 @@ export const lesson03: ContentLesson = {
     whyItMatters:
       "Every developer you'll ever meet uses a terminal. This is the moment you stop being a spectator and start having a conversation with your computer.",
     motivation:
-      "You did it — Git is on your computer. Time to create your first repository!",
+      "You did it! Git is on your computer. Time to create your first repository!",
   },
   learningGoals: [
     "Recognize a terminal and type one command in it",
@@ -52,7 +52,7 @@ export const lesson03: ContentLesson = {
       id: "terminal-story",
       tone: "info",
       title: "It's a conversation, not magic",
-      text: "You type a command, press Enter, and the computer answers. Like texting a friend — except the friend is your computer, and it never gets tired. Today you'll write two very short texts to it.",
+      text: "You type a command, press Enter, and the computer answers. It's like texting a friend, except the friend is your computer, and it never gets tired. Today you'll write two very short texts to it.",
     },
 
     // ---------------------------------------------------------------
@@ -67,7 +67,7 @@ export const lesson03: ContentLesson = {
     {
       type: "paragraph",
       id: "open-mac",
-      text: "On a Mac, it's called Terminal and lives in Applications → Utilities. On Windows, Git includes a friendly one called Git Bash. On Linux, it's usually right there in your menu — called Terminal.",
+      text: "On a Mac, it's called Terminal and lives in Applications → Utilities. On Windows, Git includes a friendly one called Git Bash. On Linux, it's usually right there in your menu, called Terminal.",
     },
     {
       type: "tip",
@@ -108,7 +108,7 @@ export const lesson03: ContentLesson = {
     {
       type: "paragraph",
       id: "check-explain",
-      text: "If your computer prints something like `git version 2.x`, Git is already installed and you can skip to step 4. If instead it says “command not found”, Git isn't there yet — that's fine, step 3 is for you.",
+      text: "If your computer prints something like `git version 2.x`, Git is already installed and you can skip to step 4. If instead it says “command not found”, Git isn't there yet. That's fine, step 3 is for you.",
     },
 
     // ---------------------------------------------------------------
@@ -128,7 +128,7 @@ export const lesson03: ContentLesson = {
     {
       type: "paragraph",
       id: "install-windows",
-      text: "Windows: download it from git-scm.com and install with all the default options. You'll get Git Bash too — a terminal made just for Git.",
+      text: "Windows: download it from git-scm.com and install with all the default options. You'll get Git Bash too, a terminal made just for Git.",
     },
     {
       type: "paragraph",
@@ -154,7 +154,7 @@ export const lesson03: ContentLesson = {
     {
       type: "paragraph",
       id: "configure-question",
-      text: "Git stamps every save with a name. So it needs to know yours. These two commands are the only setup you'll ever do — and every snapshot you make will carry your name.",
+      text: "Git stamps every save with a name. So it needs to know yours. These two commands are the only setup you'll ever do, and every snapshot you make will carry your name.",
     },
     {
       type: "terminalSteps",
@@ -188,7 +188,7 @@ export const lesson03: ContentLesson = {
       id: "configure-connect",
       tone: "success",
       title: "One time only",
-      text: "You'll never type these again on this computer. From now on, every snapshot you save is signed with your name — just like writing your name on the top of a test.",
+      text: "You'll never type these again on this computer. From now on, every snapshot you save is signed with your name, just like writing your name on the top of a test.",
     },
 
     // ---------------------------------------------------------------
@@ -207,7 +207,7 @@ export const lesson03: ContentLesson = {
         "Explain what a terminal is, in one sentence.",
       hint: "Think about the word “conversation”. What are you doing when you type a command?",
       exampleAnswer:
-        "The terminal is just a text window where you talk to your computer. You type a short command, press Enter, and it answers — it's how developers tell their computer what to do.",
+        "The terminal is just a text window where you talk to your computer. You type a short command, press Enter, and it answers. It's how developers tell their computer what to do.",
     },
 
     // ---------------------------------------------------------------

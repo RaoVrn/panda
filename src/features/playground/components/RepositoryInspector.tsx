@@ -267,7 +267,7 @@ export function RepositoryInspector({ className }: RepositoryInspectorProps) {
                 <MiniStat icon={<CheckCircle2 className="size-3" />} label="Snapshots" value={String(repo.commits.length)} />
                 <MiniStat icon={<ShieldCheck className="size-3" />} label="Repository" value={repo.initialized ? "active" : "empty"} tone={repo.initialized ? "success" : "danger"} />
               </div>
-              <p className="mt-1.5 truncate font-mono text-[9px] text-text-muted">{repo.initialized ? latest ? `${latest.hash.slice(0, 7)} — ${latest.message}` : `${counts.tracked} tracked · no commits yet` : "run git init to begin"}</p>
+              <p className="mt-1.5 truncate font-mono text-[9px] text-text-muted">{repo.initialized ? latest ? `${latest.hash.slice(0, 7)} · ${latest.message}` : `${counts.tracked} tracked · no commits yet` : "run git init to begin"}</p>
             </div>
           </div>
         )}

@@ -12,10 +12,10 @@ export const lesson10: ContentLesson = {
   slug: "git-add",
   title: "git add",
   description:
-    "The command that says 'save this one'. Learn to stage like a pro — specific files, groups, or everything at once.",
+    "The command that says 'save this one'. Learn to stage like a pro: specific files, groups, or everything at once.",
   meta: {
-    module: "git-basics",
-    order: 5,
+    module: "core-commands",
+    order: 3,
     difficulty: "beginner",
     durationMinutes: 7,
     tags: ["basics", "add", "staging"],
@@ -26,7 +26,7 @@ export const lesson10: ContentLesson = {
       "git add -A is the same as git add . for a repo.",
     ],
     whyItMatters:
-      "Staging is how you write clean history. Knowing exactly what you're adding — and never more — is the difference between a tidy timeline and a mess.",
+      "Staging is how you write clean history. Knowing exactly what you're adding, and never more, is the difference between a tidy timeline and a mess.",
     motivation:
       "Staging's mastered. Now the moment your snapshot becomes permanent history: git commit.",
   },
@@ -133,7 +133,7 @@ export const lesson10: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll be able to stage exactly what you want — never more, never less — and explain why that's a superpower.",
+      text: "By the end you'll be able to stage exactly what you want, never more and never less, and explain why that's a superpower.",
     },
     {
       type: "paragraph",
@@ -191,7 +191,7 @@ export const lesson10: ContentLesson = {
       id: "ways-connect",
       tone: "info",
       title: "The dot is a shortcut",
-      text: "git add . means \"stage everything in the current folder that's changed or new\". It's fast and handy — but it's also a trap, because you sometimes stage things you didn't mean to.",
+      text: "git add . means \"stage everything in the current folder that's changed or new\". It's fast and handy, but it's also a trap, because you sometimes stage things you didn't mean to.",
     },
 
     // ---------------------------------------------------------------
@@ -206,13 +206,13 @@ export const lesson10: ContentLesson = {
     {
       type: "paragraph",
       id: "secret-question",
-      text: "Imagine your project has a file with a password in it. You run git add . — and suddenly that password is inside your history, forever, even if you delete it later.",
+      text: "Imagine your project has a file with a password in it. You run git add . and suddenly that password is inside your history, forever, even if you delete it later.",
     },
     {
       type: "warning",
       id: "secret-warning",
       title: "Secrets never truly leave Git history",
-      text: "A committed secret stays in every past snapshot. The safest rule: never commit passwords, API keys, or private files at all. Later you'll learn .gitignore — a file that tells Git to never even look at them.",
+      text: "A committed secret stays in every past snapshot. The safest rule: never commit passwords, API keys, or private files at all. Later you'll learn .gitignore, a file that tells Git to never even look at them.",
     },
     {
       type: "tip",
@@ -255,7 +255,7 @@ export const lesson10: ContentLesson = {
       id: "visual-connect",
       tone: "success",
       title: "Your hands, on the wheel",
-      text: "Notice what you'd do: stage index.html and style.css — and leave secret.env completely alone. That instinct, repeated every day, is what keeps your history clean and safe.",
+      text: "Notice what you'd do: stage index.html and style.css, and leave secret.env completely alone. That instinct, repeated every day, is what keeps your history clean and safe.",
     },
 
     // ---------------------------------------------------------------
@@ -274,7 +274,7 @@ export const lesson10: ContentLesson = {
         "Why is always running git add . risky?",
       hint: "Think about secrets, or about clean, one-idea snapshots.",
       exampleAnswer:
-        "git add . grabs everything, including files you didn't intend — like secrets that would live in history forever. I'd tell them to check git status first and stage by name when anything looks private.",
+        "git add . grabs everything, including files you didn't intend, like secrets that would live in history forever. I'd tell them to check git status first and stage by name when anything looks private.",
     },
 
     // ---------------------------------------------------------------
@@ -293,7 +293,7 @@ export const lesson10: ContentLesson = {
       id: "takeaways",
       items: [
         "git add <file> stages one file; a list stages many.",
-        "git add . stages everything — quick but careless.",
+        "git add . stages everything. Quick but careless.",
         "Never commit secrets; they live in history forever.",
         "Check git status before sweeping.",
         "You always choose what enters the staging area.",

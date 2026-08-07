@@ -361,7 +361,7 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
                     <p className="max-w-full truncate text-[12px] text-text-secondary">{latest.message}</p>
                   </div>
                 ) : (
-                  <p className="text-[12px] text-text-muted">unborn — no commits yet</p>
+                  <p className="text-[12px] text-text-muted">unborn, no commits yet</p>
                 )}
                 <span
                   className={cn(

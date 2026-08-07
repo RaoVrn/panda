@@ -15,8 +15,8 @@ export const lesson05: ContentLesson = {
   description:
     "Git never saves on its own. You choose what to save with git add, then press the button with git commit. Watch it happen, then do it yourself.",
   meta: {
-    module: "introduction",
-    order: 5,
+    module: "core-commands",
+    order: 1,
     difficulty: "beginner",
     durationMinutes: 9,
     tags: ["basics", "commit"],
@@ -51,7 +51,7 @@ export const lesson05: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end of this lesson you'll have saved a real snapshot — and you'll understand the two-step flow that every Git user on Earth does all day.",
+      text: "By the end of this lesson you'll have saved a real snapshot, and you'll understand the two-step flow that every Git user on Earth does all day.",
     },
     {
       type: "paragraph",
@@ -78,7 +78,7 @@ export const lesson05: ContentLesson = {
     {
       type: "paragraph",
       id: "flow-question",
-      text: "Three files are waiting in your working tree. Click them to move them to the staging area — then press Commit. In Read mode, watch it happen automatically.",
+      text: "Three files are waiting in your working tree. Click them to move them to the staging area, then press Commit. In Read mode, watch it happen automatically.",
     },
     {
       type: "stageArea",
@@ -170,7 +170,7 @@ export const lesson05: ContentLesson = {
     {
       type: "paragraph",
       id: "history-question",
-      text: "Your snapshot didn't vanish — it joined your history. Watch it appear as the first dot on the timeline.",
+      text: "Your snapshot didn't vanish. It joined your history. Watch it appear as the first dot on the timeline.",
     },
     {
       type: "gitGraph",
@@ -220,7 +220,7 @@ export const lesson05: ContentLesson = {
       type: "warning",
       id: "mistake-message",
       title: "Forgetting the message",
-      text: "git commit -m \"hello\" needs that -m and a message in quotes. The message is how you'll recognize this snapshot later — make it say what you did.",
+      text: "git commit -m \"hello\" needs that -m and a message in quotes. The message is how you'll recognize this snapshot later, so make it say what you did.",
     },
     {
       type: "tip",
@@ -245,7 +245,7 @@ export const lesson05: ContentLesson = {
         "You have three files but want only two in the next snapshot. What do you type?",
       hint: "git add only the two you want. The staging area is where you decide.",
       exampleAnswer:
-        "I'd type `git add` with the names of the two files I want. The third one stays out because git add only stages the files I tell it to — that's the point of the staging area, it's my filter.",
+        "I'd type `git add` with the names of the two files I want. The third one stays out because git add only stages the files I tell it to. That's the point of the staging area. It's my filter.",
     },
 
     // ---------------------------------------------------------------
@@ -263,7 +263,7 @@ export const lesson05: ContentLesson = {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
-        "Git never saves by itself — you're in charge.",
+        "Git never saves by itself. You're in charge.",
         "git add picks the files for the next snapshot.",
         "git commit -m \"…\" takes the snapshot.",
         "The flow is always: working tree → staging → repository.",
@@ -273,7 +273,7 @@ export const lesson05: ContentLesson = {
     {
       type: "paragraph",
       id: "close-question",
-      text: "You just completed the heart of Git. The Introduction is officially over — time to level up into Git Basics and meet every command a developer uses daily.",
+      text: "You just completed the heart of Git. The Introduction is officially over. It's time to level up into Git Basics and meet every command a developer uses daily.",
     },
     {
       type: "callout",

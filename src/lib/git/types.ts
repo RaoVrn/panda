@@ -54,6 +54,8 @@ export type GitChangedFileStatus = "added" | "modified" | "deleted";
 export interface GitChangedFile {
   path: string;
   status: GitChangedFileStatus;
+  /** File content at commit time (used to reconstruct a branch's working tree). */
+  content?: string;
 }
 
 export interface GitCommit {
@@ -172,6 +174,8 @@ export interface GitCommandOutput {
 export interface GitCommandResult {
   /** The new repository state (commands are immutable: old state untouched). */
   state: GitRepository;
+  /** The remote repository after the command, if it changed (push/pull/fetch). */
+  remote?: GitRepository;
   events: GitEvent[];
   output: GitCommandOutput;
 }

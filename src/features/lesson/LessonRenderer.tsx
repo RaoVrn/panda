@@ -8,6 +8,7 @@ import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb"
 import { LessonNav } from "@/features/lesson/components/LessonNav";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
 import { PlaygroundWorkspace } from "@/features/playground/components/PlaygroundWorkspace";
+import { PlaygroundUnavailable } from "@/features/playground/components/PlaygroundUnavailable";
 import { PlaygroundCompletionBar } from "@/features/playground/components/PlaygroundCompletionBar";
 import { PlaygroundPreview } from "@/features/playground/components/PlaygroundPreview";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
@@ -120,16 +121,24 @@ export function LessonRenderer({
   return (
     <LessonPlayer lessonId={lesson.id} totalBlocks={lesson.blocks.length}>
       <article id={lesson.id} aria-label={lesson.title} className={className}>
-        {/* Interactive mode replaces the documentation with a live Git workspace. */}
-        {mode === "interactive" && lesson.playground ? (
-          <>
-            <PlaygroundWorkspace lesson={lesson} />
-            <PlaygroundCompletionBar
-              lesson={lesson}
-              previous={previousLesson}
-              next={nextLesson}
-            />
-          </>
+        {/* Three independent experiences:
+            1. Interactive mode WITH a playground → the live Git workspace.
+            2. Interactive mode WITHOUT a playground → disabled state (never
+               the read content).
+            3. Read mode → the documentation blocks. */}
+        {mode === "interactive" ? (
+          lesson.playground ? (
+            <>
+              <PlaygroundWorkspace lesson={lesson} />
+              <PlaygroundCompletionBar
+                lesson={lesson}
+                previous={previousLesson}
+                next={nextLesson}
+              />
+            </>
+          ) : (
+            <PlaygroundUnavailable lesson={lesson} />
+          )
         ) : (
           <>
             <div className="mb-8">
@@ -149,7 +158,7 @@ export function LessonRenderer({
                 {renderBlock(block)}
                 {/* Read mode: the single "ready to try it" CTA, placed after
                     the learner has read the concept and its key takeaways. */}
-                {index === ctaAfterIndex && <PlaygroundPreview lesson={lesson} />}
+                {index === ctaAfterIndex && lesson.playground && <PlaygroundPreview lesson={lesson} />}
               </BlockTracker>
             ))}
             <LessonNav previous={previousLesson} next={nextLesson} />

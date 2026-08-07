@@ -85,6 +85,8 @@ export interface GitSimSeed {
   files?: Record<string, string>;
   pwd?: string;
   initialized?: boolean;
+  /** Seed the simulated remote (GitHub) repository. */
+  remote?: GitSimSeed;
 }
 
 export interface ContentTerminalStepsBlock {
@@ -319,6 +321,7 @@ export interface FolderTreeNode {
 export type PlaygroundCheck =
   | { kind: "initialized" }
   | { kind: "fileExists"; path: string }
+  | { kind: "fileNotExists"; path: string }
   | { kind: "fileUntracked"; path: string }
   | { kind: "fileStaged"; path: string }
   | { kind: "fileTracked"; path: string }
@@ -330,7 +333,12 @@ export type PlaygroundCheck =
   | { kind: "commitDoesNotTouchFile"; path: string }
   | { kind: "latestCommitMessage"; message?: string }
   | { kind: "anyCommitMessage"; message: string }
-  | { kind: "branch"; name: string };
+  | { kind: "branch"; name: string }
+  | { kind: "branchExists"; name: string }
+  | { kind: "remoteExists"; name: string }
+  | { kind: "remoteNotExists"; name: string }
+  | { kind: "remoteHasCommit"; message: string }
+  | { kind: "pushSucceeded" };
 
 /** One checkbox in the Task Panel. All checks must pass to complete it. */
 export interface ContentPlaygroundObjective {
@@ -361,6 +369,12 @@ export interface ContentLessonPlayground {
    * realistic "modified / untracked" state instead of an empty folder.
    */
   setup?: string[];
+  /**
+   * Commands run on the simulated REMOTE repository when the sandbox mounts.
+   * Use this to seed the remote with commits the learner can fetch / pull /
+   * push against.
+   */
+  remoteSetup?: string[];
   /** The objectives the learner must satisfy, in order. */
   objectives: ContentPlaygroundObjective[];
   /** Graduated hints, least → most explicit. */

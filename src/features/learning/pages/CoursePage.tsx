@@ -77,7 +77,7 @@ export function CoursePage() {
       return "Ready to start your Git journey? Your first lesson is waiting.";
     }
     if (completedLessonIds.length === lessons.length) {
-      return "You finished every lesson. Amazing work — take a moment to enjoy it.";
+      return "You finished every lesson. Amazing work. Take a moment to enjoy it.";
     }
     const module = next ? moduleOfLesson(next.id) : undefined;
     if (module) {

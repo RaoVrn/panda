@@ -12,10 +12,10 @@ export const lesson04: ContentLesson = {
   slug: "first-repository",
   title: "Creating your first repository",
   description:
-    "One command turns a boring folder into a Git repository — a project Git will protect forever. You're about to feel the moment it clicks.",
+    "One command turns a boring folder into a Git repository, a project Git will protect forever. You're about to feel the moment it clicks.",
   meta: {
-    module: "introduction",
-    order: 4,
+    module: "git-fundamentals",
+    order: 9,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["setup", "repository"],
@@ -23,7 +23,7 @@ export const lesson04: ContentLesson = {
       "A repository is a folder Git is protecting.",
       "git init turns any folder into a repository.",
       "git init creates a hidden .git folder where Git's memory lives.",
-      "A repository starts with no commits — no snapshots yet.",
+      "A repository starts with no commits. No snapshots yet.",
     ],
     whyItMatters:
       "git init is the very first command in every single Git project on Earth. Master this moment and every future command has somewhere to live.",
@@ -50,12 +50,12 @@ export const lesson04: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll have a folder that Git promises to protect — and you'll know exactly where Git hides its memory.",
+      text: "By the end you'll have a folder that Git promises to protect, and you'll know exactly where Git hides its memory.",
     },
     {
       type: "paragraph",
       id: "open-question",
-      text: "Picture a brand-new notebook. Empty pages, full of possibility. A repository is that notebook — except it's a folder on your computer, and Git has promised to remember every page you ever write.",
+      text: "Picture a brand-new notebook. Empty pages, full of possibility. A repository is that notebook, except it's a folder on your computer, and Git has promised to remember every page you ever write.",
     },
     {
       type: "callout",
@@ -125,7 +125,7 @@ export const lesson04: ContentLesson = {
     {
       type: "paragraph",
       id: "hidden-explain",
-      text: "Your files sit on top, exactly as before. Git's filing cabinet (.git) sits underneath, invisible. You never edit .git yourself — Git does, quietly, all the time.",
+      text: "Your files sit on top, exactly as before. Git's filing cabinet (.git) sits underneath, invisible. You never edit .git yourself. Git does, quietly, all the time.",
     },
 
     // ---------------------------------------------------------------
@@ -174,7 +174,7 @@ export const lesson04: ContentLesson = {
       id: "init-connect",
       tone: "success",
       title: "Reading the answer",
-      text: "\"No commits yet\" means your notebook is still empty — no snapshots saved. \"Untracked files\" means Git sees README.md and main.js but isn't watching them yet. Both problems disappear once you save your first snapshot. That's literally the next lesson.",
+      text: "\"No commits yet\" means your notebook is still empty, with no snapshots saved. \"Untracked files\" means Git sees README.md and main.js but isn't watching them yet. Both problems disappear once you save your first snapshot. That's literally the next lesson.",
     },
 
     // ---------------------------------------------------------------
@@ -190,12 +190,12 @@ export const lesson04: ContentLesson = {
       type: "warning",
       id: "mistake-warning",
       title: "Where did you run git init?",
-      text: "Run git init inside the folder you want to protect — not in a random folder, and not a level too high. A good rule: if you can't see your project files when you run `ls`, you're in the wrong place.",
+      text: "Run git init inside the folder you want to protect, not in a random folder and not a level too high. A good rule: if you can't see your project files when you run `ls`, you're in the wrong place.",
     },
     {
       type: "paragraph",
       id: "mistake-note",
-      text: "Don't worry about getting it perfect. If you run git init in the wrong folder, it's harmless — you can always delete the .git folder that appears and start over.",
+      text: "Don't worry about getting it perfect. If you run git init in the wrong folder, it's harmless. You can always delete the .git folder that appears and start over.",
     },
 
     // ---------------------------------------------------------------
@@ -214,7 +214,7 @@ export const lesson04: ContentLesson = {
         "You run git init and status says \"No commits yet\". What's inside Git's cabinet right now?",
       hint: "Think about what's in the cabinet when the notebook is brand new.",
       exampleAnswer:
-        "The cabinet exists (the .git folder) but it's empty — there are no snapshots in it yet. Git has promised to protect the folder, but hasn't saved any versions because I haven't told it to save.",
+        "The cabinet exists (the .git folder) but it's empty. There are no snapshots in it yet. Git has promised to protect the folder, but hasn't saved any versions because I haven't told it to save.",
     },
 
     // ---------------------------------------------------------------
@@ -229,12 +229,18 @@ export const lesson04: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-first-repository",
+      title: "Quick tip",
+      text: "Run ls after git init to see your files are still right there. Git never touches them.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
         "A repository is a folder Git protects.",
         "git init is the one command that creates it.",
-        "It makes a hidden .git folder — Git's filing cabinet.",
+        "It makes a hidden .git folder, Git's filing cabinet.",
         "Your files stay untouched on top.",
         "A fresh repository has no snapshots yet.",
       ],
@@ -242,7 +248,7 @@ export const lesson04: ContentLesson = {
     {
       type: "paragraph",
       id: "close-question",
-      text: "Your repository exists. It's watching you. Now let's give it something worth remembering — its very first snapshot.",
+      text: "Your repository exists. It's watching you. Now let's give it something worth remembering: its very first snapshot.",
     },
     {
       type: "callout",

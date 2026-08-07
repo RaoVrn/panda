@@ -10,7 +10,7 @@ export function AiPage() {
     <div className="mx-auto w-full max-w-3xl py-8">
       <PageHeader
         title="Panda AI"
-        subtitle="Ask anything about your lessons — Panda knows what you're reading."
+        subtitle="Ask anything about your lessons. Panda knows what you're reading."
         back={{ to: "/course", label: "Dashboard" }}
       />
       <div className="h-[72vh] overflow-hidden rounded-2xl border border-border-subtle shadow-card">

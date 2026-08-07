@@ -12,10 +12,10 @@ export const lesson13: ContentLesson = {
   slug: "git-diff",
   title: "git diff",
   description:
-    "A magnifying glass for your changes. git diff shows exactly which lines you added and removed — green for new, red for gone.",
+    "A magnifying glass for your changes. git diff shows exactly which lines you added and removed. Green for new, red for gone.",
   meta: {
-    module: "git-basics",
-    order: 8,
+    module: "core-commands",
+    order: 6,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["basics", "diff"],
@@ -26,9 +26,9 @@ export const lesson13: ContentLesson = {
       "Diffs are the daily language of Git.",
     ],
     whyItMatters:
-      "Before you commit, you check your work with git diff. It's how every developer double-checks what they're about to save — and how teams review each other's code.",
+      "Before you commit, you check your work with git diff. It's how every developer double-checks what they're about to save, and how teams review each other's code.",
     motivation:
-      "You can read a diff now — a skill most people never learn. Next: the undo that saves you when you change something by mistake.",
+      "You can read a diff now, a skill most people never learn. Next: the undo that saves you when you change something by mistake.",
   },
   learningGoals: [
     "Explain what a diff is",
@@ -141,7 +141,7 @@ export const lesson13: ContentLesson = {
       id: "diff-story",
       tone: "info",
       title: "A corrected story",
-      text: "Imagine a story that says \"The cat sat on the mat\". You change it to \"The cat sat on the roof\". A diff would show: one line removed in red (the mat), one line added in green (the roof). That's all a diff ever does — show what left and what arrived.",
+      text: "Imagine a story that says \"The cat sat on the mat\". You change it to \"The cat sat on the roof\". A diff would show one line removed in red (the mat) and one line added in green (the roof). That's all a diff ever does. It shows what left and what arrived.",
     },
 
     // ---------------------------------------------------------------
@@ -178,7 +178,7 @@ export const lesson13: ContentLesson = {
       id: "see-connect",
       tone: "success",
       title: "Two colors, one idea",
-      text: "Red (−) lines used to exist and now don't. Green (+) lines are brand new. Git literally paints over the old and writes the new — exactly like a red pen on a corrected story.",
+      text: "Red (−) lines used to exist and now don't. Green (+) lines are brand new. Git literally paints over the old and writes the new, exactly like a red pen on a corrected story.",
     },
 
     // ---------------------------------------------------------------
@@ -218,7 +218,7 @@ export const lesson13: ContentLesson = {
           command: "git diff",
           output: "diff --git a/index.html b/index.html\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-<h1>hi</h1>\n+<h1>hello</h1>",
           outputKind: "muted",
-          note: "git diff shows unstaged changes — the ones not in the staging area yet.",
+          note: "git diff shows unstaged changes, the ones not in the staging area yet.",
         },
         {
           command: "git diff --staged",
@@ -275,6 +275,12 @@ export const lesson13: ContentLesson = {
       id: "section-takeaways",
       level: 2,
       text: "What to remember",
+    },
+    {
+      type: "tip",
+      id: "tip-git-diff",
+      title: "Quick tip",
+      text: "Run git diff right before you commit. It's the best way to double-check what you're about to save.",
     },
     {
       type: "keyTakeaways",

@@ -184,7 +184,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
               </p>
               <p className="mt-0.5 text-xs leading-relaxed text-text-muted">
                 Panda already knows the course, the lesson and what you're
-                reading. Ask anything — lesson or not.
+                reading. Ask anything, lesson or not.
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5 px-1">

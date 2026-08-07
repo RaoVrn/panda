@@ -32,7 +32,7 @@ export function LessonModeToggle({ mode, onChange }: LessonModeToggleProps) {
             key={value}
             type="button"
             aria-pressed={active}
-            title={`${label} — ${hint}`}
+            title={`${label}. ${hint}`}
             onClick={() => onChange(value)}
             className={cn(
               "relative flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150",

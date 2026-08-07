@@ -30,6 +30,10 @@ import { createEvent } from "./events";
 export interface GitSimulation {
   /** Current repository snapshot (stable until the next command). */
   getState(): GitRepository;
+  /** The remote repository (the simulated GitHub), if one exists. */
+  getRemote(): GitRepository | null;
+  /** Run a command against the remote repository (used to seed/setup the remote). */
+  runRemote(command: string): void;
   /**
    * Run a command. Immutable: `getState()` returns the NEW state afterwards.
    * Returns the events emitted and the human-readable output.
@@ -56,9 +60,13 @@ function isRepository(value: unknown): value is GitRepository {
 export function createGitSimulation(
   initial?: CreateRepositoryOptions | GitRepository,
 ): GitSimulation {
+  const opts = initial && !isRepository(initial) ? (initial as CreateRepositoryOptions) : undefined;
   let state: GitRepository = initial && isRepository(initial)
     ? cloneRepository(initial)
     : createRepository(initial as CreateRepositoryOptions | undefined);
+  let remote: GitRepository | null = opts?.remote
+    ? createRepository(opts.remote)
+    : null;
   const listeners = new Set<() => void>();
   const emitter = new GitEventEmitter();
 
@@ -69,9 +77,18 @@ export function createGitSimulation(
   return {
     getState: () => state,
 
+    getRemote: () => remote,
+
+    runRemote: (command) => {
+      if (!remote) return;
+      const result = runCommand(remote, command);
+      remote = result.state;
+    },
+
     run: (command) => {
-      const result = runCommand(state, command);
+      const result = runCommand(state, command, remote ?? undefined);
       state = result.state;
+      if (result.remote) remote = result.remote;
       for (const event of result.events) emitter.emit(event);
       notify();
       return { output: result.output, events: result.events };
@@ -88,6 +105,8 @@ export function createGitSimulation(
       state = options && isRepository(options)
         ? cloneRepository(options)
         : createRepository(options as CreateRepositoryOptions | undefined);
+      const opts = options && !isRepository(options) ? (options as CreateRepositoryOptions) : undefined;
+      remote = opts?.remote ? createRepository(opts.remote) : null;
       emitter.emit({ type: "VISUALIZATION_UPDATED", path: undefined, id: `reset-${Date.now()}`, timestamp: Date.now() });
       notify();
     },

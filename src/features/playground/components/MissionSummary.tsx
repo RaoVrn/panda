@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Award, Clock, Flag, Target } from "lucide-react";
 import { objectiveStatuses } from "../taskValidator";
-import { usePlaygroundRepository } from "../usePlayground";
+import { usePlaygroundRepository, usePlaygroundRemote } from "../usePlayground";
 import { usePlaygroundStore } from "../playgroundStore";
 import { cn } from "@/lib/utils";
 
@@ -19,12 +19,13 @@ export interface MissionSummaryProps {
  */
 export function MissionSummary({ xpReward, durationMinutes, className }: MissionSummaryProps) {
   const repo = usePlaygroundRepository();
+  const remote = usePlaygroundRemote();
   const config = usePlaygroundStore((state) => state.config);
   const completedObjectives = usePlaygroundStore((state) => state.completedObjectives);
 
   const statuses = useMemo(
-    () => (repo && config ? objectiveStatuses(repo, config.objectives) : []),
-    [repo, config],
+    () => (repo && config ? objectiveStatuses(repo, config.objectives, remote) : []),
+    [repo, config, remote],
   );
 
   const objectives = useMemo(() => config?.objectives ?? [], [config]);

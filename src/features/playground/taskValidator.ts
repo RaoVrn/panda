@@ -13,13 +13,20 @@ import type { GitRepository } from "@/lib/git";
 import type { PlaygroundCheck } from "@/content/schema";
 
 /** Whether one check passes for the given repository state. */
-export function evaluateCheck(repo: GitRepository, check: PlaygroundCheck): boolean {
+export function evaluateCheck(
+  repo: GitRepository,
+  check: PlaygroundCheck,
+  remote?: GitRepository | null,
+): boolean {
   switch (check.kind) {
     case "initialized":
       return repo.initialized;
 
     case "fileExists":
       return repo.workingTree.has(check.path);
+
+    case "fileNotExists":
+      return !repo.workingTree.has(check.path);
 
     case "fileUntracked": {
       const status = fileStatusOf(repo, check.path);
@@ -72,6 +79,24 @@ export function evaluateCheck(repo: GitRepository, check: PlaygroundCheck): bool
 
     case "branch":
       return repo.branch === check.name;
+
+    case "branchExists":
+      return repo.branches.has(check.name);
+
+    case "remoteExists":
+      return repo.remotes.has(check.name);
+
+    case "remoteNotExists":
+      return !repo.remotes.has(check.name);
+
+    case "remoteHasCommit":
+      if (!remote) return false;
+      return remote.commits.some((commit) => commit.message === check.message);
+
+    case "pushSucceeded":
+      if (!remote) return false;
+      // The remote's current branch head must match the local head: the push landed.
+      return remote.branches.get(repo.branch) === (repo.branches.get(repo.branch) ?? repo.head);
   }
 }
 
@@ -84,10 +109,11 @@ export interface PlaygroundObjectiveStatus {
 export function objectiveStatuses(
   repo: GitRepository,
   objectives: ReadonlyArray<{ id: string; checks: PlaygroundCheck[] }>,
+  remote?: GitRepository | null,
 ): PlaygroundObjectiveStatus[] {
   return objectives.map((objective) => ({
     objectiveId: objective.id,
-    done: objective.checks.every((check) => evaluateCheck(repo, check)),
+    done: objective.checks.every((check) => evaluateCheck(repo, check, remote)),
   }));
 }
 
@@ -95,8 +121,9 @@ export function objectiveStatuses(
 export function playgroundProgress(
   repo: GitRepository,
   objectives: ReadonlyArray<{ id: string; checks: PlaygroundCheck[] }>,
+  remote?: GitRepository | null,
 ): { done: number; total: number } {
-  const statuses = objectiveStatuses(repo, objectives);
+  const statuses = objectiveStatuses(repo, objectives, remote);
   return {
     done: statuses.filter((status) => status.done).length,
     total: statuses.length,

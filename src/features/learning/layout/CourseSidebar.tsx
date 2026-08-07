@@ -8,6 +8,7 @@ import {
   Flame,
   GitBranch,
   Globe,
+  History,
   Layers,
   PanelLeftClose,
   PanelLeftOpen,
@@ -42,6 +43,7 @@ const moduleIcons: Record<string, JSX.Element> = {
   "git-branch": <GitBranch className="size-4" aria-hidden="true" />,
   globe: <Globe className="size-4" aria-hidden="true" />,
   rocket: <Rocket className="size-4" aria-hidden="true" />,
+  history: <History className="size-4" aria-hidden="true" />,
 };
 
 const LessonItem = memo(function LessonItem({

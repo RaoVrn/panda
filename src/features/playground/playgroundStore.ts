@@ -79,13 +79,20 @@ function runSetup(engine: GitSimulation, setup: string[] | undefined): void {
   for (const command of setup ?? []) engine.run(command);
 }
 
+function runRemoteSetup(
+  engine: GitSimulation,
+  remoteSetup: string[] | undefined,
+): void {
+  for (const command of remoteSetup ?? []) engine.runRemote(command);
+}
+
 /** Latch objectives that just passed (persist:true). */
 function latchObjectives(
   engine: GitSimulation,
   objectives: ContentPlaygroundObjective[],
   completed: string[],
 ): string[] {
-  const statuses = objectiveStatuses(engine.getState(), objectives);
+  const statuses = objectiveStatuses(engine.getState(), objectives, engine.getRemote());
   const next = new Set(completed);
   for (const status of statuses) {
     const objective = objectives.find((o) => o.id === status.objectiveId);
@@ -138,6 +145,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
 
       const engine = createGitSimulation(lesson.playground.seed);
       runSetup(engine, lesson.playground.setup);
+      runRemoteSetup(engine, lesson.playground.remoteSetup);
 
       // Subscribe to engine events → toasts + area highlights
       const unsub = engine.onEvent((event: GitEvent) => {
@@ -267,6 +275,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
       if (!engine || !config) return;
       engine.reset(config.seed);
       runSetup(engine, config.setup);
+      runRemoteSetup(engine, config.remoteSetup);
       report(engine.getState());
       set({
         lastCommand: "",

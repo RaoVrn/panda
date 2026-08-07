@@ -314,7 +314,7 @@ export function InteractiveTerminal({
                 your turn
               </span>
               <span className="font-sans text-[11px] text-[#8b949e]">
-                type anything. Try `help`, ↑/↓ for history, Tab to complete — your changes sync with every visualization
+                type anything. Try `help`, ↑/↓ for history, Tab to complete. Your changes sync with every visualization
               </span>
             </div>
 

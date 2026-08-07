@@ -11,10 +11,10 @@ export const lesson11: ContentLesson = {
   slug: "git-commit",
   title: "git commit",
   description:
-    "The moment your work becomes permanent history. Learn to commit well — and write messages that future-you will love.",
+    "The moment your work becomes permanent history. Learn to commit well, and write messages that future-you will love.",
   meta: {
-    module: "git-basics",
-    order: 6,
+    module: "core-commands",
+    order: 4,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["basics", "commit"],
@@ -27,7 +27,7 @@ export const lesson11: ContentLesson = {
     whyItMatters:
       "Your commit messages become your project's table of contents. Good ones save you hours of detective work; vague ones leave you guessing.",
     motivation:
-      "Commits are the heartbeats of your project. You've mastered them — next, reading the full story with git log.",
+      "Commits are the heartbeats of your project. You've mastered them. Next, reading the full story with git log.",
   },
   learningGoals: [
     "Commit with a clear message",
@@ -214,7 +214,7 @@ export const lesson11: ContentLesson = {
       id: "message-connect",
       tone: "success",
       title: "The one-line rule",
-      text: "Describe the change in the present tense, like an order: \"Add …\", \"Fix …\", \"Update …\". If you can't fit it in one line, your commit might be doing too much — split it.",
+      text: "Describe the change in the present tense, like an order: \"Add …\", \"Fix …\", \"Update …\". If you can't fit it in one line, your commit might be doing too much. Split it.",
     },
 
     // ---------------------------------------------------------------
@@ -235,7 +235,7 @@ export const lesson11: ContentLesson = {
       type: "warning",
       id: "oneidea-warning",
       title: "Commit early, commit often",
-      text: "There's no rule about how often to commit — some people commit every few minutes. Small snapshots are easier to understand and easier to undo. Never save for the end of the day.",
+      text: "There's no rule about how often to commit. Some people commit every few minutes. Small snapshots are easier to understand and easier to undo. Never save for the end of the day.",
     },
 
     // ---------------------------------------------------------------
@@ -254,7 +254,7 @@ export const lesson11: ContentLesson = {
         "Write a commit message for: you fixed the search box crashing on empty pages.",
       hint: "Present tense, one line, what + why.",
       exampleAnswer:
-        'git commit -m "Fix search crash when there is no content" — it says what changed and why, in one clear line.',
+        'git commit -m "Fix search crash when there is no content" says what changed and why, in one clear line.',
     },
 
     // ---------------------------------------------------------------
@@ -269,6 +269,12 @@ export const lesson11: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-git-commit",
+      title: "Quick tip",
+      text: "Commit small and often. A tiny, clear snapshot beats a giant messy one every time.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
@@ -276,7 +282,7 @@ export const lesson11: ContentLesson = {
         "The message tells future-you what happened.",
         "Write present-tense, one-line messages.",
         "One idea per commit keeps history clean.",
-        "Commit often — never wait till the end of the day.",
+        "Commit often. Never wait till the end of the day.",
       ],
     },
     {
@@ -289,7 +295,7 @@ export const lesson11: ContentLesson = {
       id: "next-lesson",
       tone: "tip",
       title: "Continue to: git log",
-      text: "See your whole project history as a readable timeline — and learn the --oneline trick everyone uses.",
+      text: "See your whole project history as a readable timeline, and learn the --oneline trick everyone uses.",
     },
   ],
 };

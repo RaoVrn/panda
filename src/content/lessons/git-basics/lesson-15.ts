@@ -12,9 +12,9 @@ export const lesson15: ContentLesson = {
   slug: "gitignore",
   title: ".gitignore",
   description:
-    "Some files should never be saved: secrets, junk, build files. Meet .gitignore — Git's 'do not look at these' list.",
+    "Some files should never be saved: secrets, junk, build files. Meet .gitignore, Git's 'do not look at these' list.",
   meta: {
-    module: "git-basics",
+    module: "core-commands",
     order: 10,
     difficulty: "beginner",
     durationMinutes: 8,
@@ -26,9 +26,9 @@ export const lesson15: ContentLesson = {
       "Tracked files aren't ignored just by adding them.",
     ],
     whyItMatters:
-      "A clean history starts here. .gitignore is how professionals keep secrets out and repos tidy — and it's the last piece of the Git Basics foundation.",
+      "A clean history starts here. .gitignore is how professionals keep secrets out and repos tidy, and it's the last piece of the Git Basics foundation.",
     motivation:
-      "Git Basics complete! You know the whole core flow now. Next stop: branching — where Git gets genuinely magical.",
+      "Git Basics complete! You know the whole core flow now. Next stop: branching, where Git gets genuinely magical.",
   },
   learningGoals: [
     "Explain what .gitignore is for",
@@ -121,7 +121,7 @@ export const lesson15: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll be able to tell Git exactly what to ignore — and you'll understand why every professional project has one of these files.",
+      text: "By the end you'll be able to tell Git exactly what to ignore, and you'll understand why every professional project has one of these files.",
     },
     {
       type: "paragraph",
@@ -133,7 +133,7 @@ export const lesson15: ContentLesson = {
       id: "gitignore-story",
       tone: "info",
       title: "The messy desk",
-      text: "Imagine your desk has candy wrappers and secret notes on it. A tidy person (Git) would normally pick up everything — but you give them a list: \"never touch these\". That list is .gitignore. The wrappers stay, the secrets stay, and history stays clean.",
+      text: "Imagine your desk has candy wrappers and secret notes on it. A tidy person (Git) would normally pick up everything, but you give them a list: \"never touch these\". That list is .gitignore. The wrappers stay, the secrets stay, and history stays clean.",
     },
 
     // ---------------------------------------------------------------
@@ -148,7 +148,7 @@ export const lesson15: ContentLesson = {
     {
       type: "paragraph",
       id: "see-question",
-      text: "In this project, a few files are dimmed. Those are the ignored ones — Git will never track them, no matter what.",
+      text: "In this project, a few files are dimmed. Those are the ignored ones. Git will never track them, no matter what.",
     },
     {
       type: "directoryTree",
@@ -173,7 +173,7 @@ export const lesson15: ContentLesson = {
     {
       type: "paragraph",
       id: "see-explain",
-      text: "secret.env, node_modules and debug.log are all dimmed — Git won't watch them. README.md and app.js are normal. The .gitignore file itself is tracked, because it's an important part of your project.",
+      text: "secret.env, node_modules and debug.log are all dimmed. Git won't watch them. README.md and app.js are normal. The .gitignore file itself is tracked, because it's an important part of your project.",
     },
 
     // ---------------------------------------------------------------
@@ -217,7 +217,7 @@ export const lesson15: ContentLesson = {
     {
       type: "paragraph",
       id: "live-question",
-      text: "Create a .gitignore, drop a secret file, and watch Git stop noticing it. (In a real repo, secrets should still never be committed — .gitignore is the first line of defense.)",
+      text: "Create a .gitignore, drop a secret file, and watch Git stop noticing it. (In a real repo, secrets should still never be committed. .gitignore is the first line of defense.)",
     },
     {
       type: "terminalSteps",
@@ -262,7 +262,7 @@ export const lesson15: ContentLesson = {
       type: "warning",
       id: "live-warning",
       title: "Ignore first, commit later",
-      text: ".gitignore only protects files that were never tracked. If you already committed a secret, adding it to .gitignore won't remove it from history — it's still in past snapshots. Rule: set up .gitignore early, before your first commit.",
+      text: ".gitignore only protects files that were never tracked. If you already committed a secret, adding it to .gitignore won't remove it from history. It's still in past snapshots. Rule: set up .gitignore early, before your first commit.",
     },
 
     // ---------------------------------------------------------------
@@ -296,6 +296,12 @@ export const lesson15: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-gitignore",
+      title: "Quick tip",
+      text: "Set up .gitignore BEFORE your first commit. A secret committed once stays in history forever.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
@@ -303,20 +309,20 @@ export const lesson15: ContentLesson = {
         "Great for secrets, caches, and build junk.",
         "Patterns: *.log, node_modules/, cache/.",
         "Set it up BEFORE your first commit.",
-        "Committed secrets stay in history — ignore early.",
+        "Committed secrets stay in history. Ignore early.",
       ],
     },
     {
       type: "paragraph",
       id: "close-question",
-      text: "Git Basics is complete — you know the entire core flow. Now Git shows its real magic: the ability to work on many things at once without them ever fighting.",
+      text: "Git Basics is complete. You know the entire core flow. Now Git shows its real magic: the ability to work on many things at once without them ever fighting.",
     },
     {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
       title: "Continue to: Branches",
-      text: "The branching module unlocks next. Branches are Git's superpower — parallel timelines you can create, merge and switch between freely.",
+      text: "The branching module unlocks next. Branches are Git's superpower, parallel timelines you can create, merge and switch between freely.",
     },
   ],
 };

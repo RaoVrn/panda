@@ -14,8 +14,8 @@ export const lesson06: ContentLesson = {
   description:
     "You've made one. Now let's peek inside. A repository is a folder plus a hidden memory, and the parts have names you'll use every day.",
   meta: {
-    module: "git-basics",
-    order: 1,
+    module: "git-fundamentals",
+    order: 5,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["basics", "repository"],
@@ -28,7 +28,7 @@ export const lesson06: ContentLesson = {
     whyItMatters:
       "Every Git command is a small errand inside this cabinet. Learn the rooms, and commands like log, branch and reset stop being random spells.",
     motivation:
-      "You now know the inside of a repository better than most beginners. Next: the working tree — the room where you actually live and edit.",
+      "You now know the inside of a repository better than most beginners. Next: the working tree, the room where you actually live and edit.",
   },
   learningGoals: [
     "Name the main rooms inside .git",
@@ -36,11 +36,97 @@ export const lesson06: ContentLesson = {
     "Recognize a commit hash",
   ],
   xpReward: 45,
+    playground: {
+      "seed": {
+        "files": {
+          "README.md": "My project\n",
+          "src/main.js": "console.log('hi');\n"
+        },
+        "pwd": "~/project",
+        "initialized": true
+      },
+      "setup": [
+        "git init",
+        "git add .",
+        "git commit -m \"First snapshot\"",
+        "echo \"Now with a subtitle\" >> README.md"
+      ],
+      "objectives": [
+        {
+          "id": "log",
+          "label": "See the history with git log",
+          "checks": [
+            {
+              "kind": "commitCountAtLeast",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "label": "Check what Git notices with git status",
+          "checks": [
+            {
+              "kind": "fileNotStaged",
+              "path": "README.md"
+            },
+            {
+              "kind": "fileContent",
+              "path": "README.md",
+              "contains": "subtitle"
+            }
+          ]
+        },
+        {
+          "id": "commit",
+          "label": "Save the change with git commit",
+          "checks": [
+            {
+              "kind": "commitCountAtLeast",
+              "count": 2
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "This repository already has history. Run git log to read it.",
+        "Run git status \u2014 Git noticed README.md changed but you haven't saved it yet.",
+        "Stage and commit: git add README.md, then git commit -m \"...\"."
+      ],
+      "solution": [
+        "git log",
+        "git status",
+        "git add README.md",
+        "git commit -m \"Add subtitle\""
+      ],
+      "suggestions": [
+        "git log",
+        "git status",
+        "git add README.md",
+        "git commit -m"
+      ],
+      "visualizer": {
+        "highlight": "repository",
+        "banner": "A repository is your project's history book"
+      },
+      "shell": {
+        "primaryCommand": "git log",
+        "placeholder": "git log",
+        "quickActions": [
+          "git log",
+          "git status",
+          "git add ."
+        ],
+        "welcomeText": "Peek inside a real repository.",
+        "helperText": "This repo already has a snapshot. Run git log to read your history, then save the change Git noticed."
+      }
+    },
+
   blocks: [
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end you'll be able to open the hood of a Git project and name what you see — no fear, just familiarity.",
+      text: "By the end you'll be able to open the hood of a Git project and name what you see. No fear, just familiarity.",
     },
     {
       type: "paragraph",
@@ -100,14 +186,14 @@ export const lesson06: ContentLesson = {
           name: "README.md",
           type: "file",
           tracked: true,
-          note: "your file — untouched",
+          note: "your file, untouched",
         },
       ],
     },
     {
       type: "paragraph",
       id: "cabinet-explain",
-      text: "Three things matter. objects is the vault holding every snapshot. refs is a shelf of labels — each branch name is a label stuck to the latest snapshot. And HEAD is a little note that says which branch you're standing on right now.",
+      text: "Three things matter. objects is the vault holding every snapshot. refs is a shelf of labels, and each branch name is a label stuck to the latest snapshot. And HEAD is a little note that says which branch you're standing on right now.",
     },
 
     // ---------------------------------------------------------------
@@ -168,7 +254,7 @@ export const lesson06: ContentLesson = {
       type: "warning",
       id: "mistake",
       title: "Don't go digging in .git",
-      text: "You never need to open these files or edit them. They're Git's private diary. If something looks scary inside, close it — you're not supposed to read it. Git reads it for you.",
+      text: "You never need to open these files or edit them. They're Git's private diary. If something looks scary inside, close it. You're not supposed to read it. Git reads it for you.",
     },
 
     // ---------------------------------------------------------------
@@ -202,6 +288,12 @@ export const lesson06: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-repository",
+      title: "Quick tip",
+      text: "You never edit the .git folder yourself. Git reads and writes it for you. Leave it alone.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
@@ -222,7 +314,7 @@ export const lesson06: ContentLesson = {
       id: "next-lesson",
       tone: "tip",
       title: "Continue to: Working Tree",
-      text: "The working tree is just the folder you see — but Git watches it closely. Let's learn what it's tracking.",
+      text: "The working tree is just the folder you see, but Git watches it closely. Let's learn what it's tracking.",
     },
   ],
 };

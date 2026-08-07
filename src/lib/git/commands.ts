@@ -69,10 +69,15 @@ function formatDate(timestamp: number): string {
 }
 
 /**
- * Run one command against `repo`. Returns the new state, the events emitted
- * and the human-readable output. Never mutates `repo`.
+ * Run one command against `repo` (and its `remote`, when provided). Returns the
+ * new state(s), the events emitted and the human-readable output. Never mutates
+ * its inputs.
  */
-export function runCommand(repo: GitRepository, raw: string): GitCommandResult {
+export function runCommand(
+  repo: GitRepository,
+  raw: string,
+  remote?: GitRepository,
+): GitCommandResult {
   const trimmed = raw.trim();
   const cmd = trimmed.split(/\s+/)[0] ?? "";
   const events: GitCommandResult["events"] = [];
@@ -140,7 +145,7 @@ export function runCommand(repo: GitRepository, raw: string): GitCommandResult {
       events,
       output: ok(
         [
-          "Panda Git Simulator — phase 1 commands:",
+          "Panda Git Simulator. Phase 1 commands:",
           "  git init                  create the repository",
           "  git status                show working tree + staging state",
           "  git add <file|.>          stage files",
@@ -277,7 +282,11 @@ export function runCommand(repo: GitRepository, raw: string): GitCommandResult {
       if (!file) {
         changed.push({ path, status: "deleted" });
       } else {
-        changed.push({ path, status: file.original === undefined ? "added" : "modified" });
+        changed.push({
+          path,
+          status: file.original === undefined ? "added" : "modified",
+          content: file.content,
+        });
         file.original = file.content;
       }
     }
@@ -373,6 +382,265 @@ export function runCommand(repo: GitRepository, raw: string): GitCommandResult {
     return { state: repo, events, output: ok(out.join("\n"), "muted") };
   }
 
+  // ---------------------------------------------------------- git branch
+  if (sub === "branch") {
+    const lines = [...next.branches.keys()].map((b) =>
+      b === next.branch ? `* ${b}` : `  ${b}`,
+    );
+    if (lines.length === 0) lines.push("(no branches)");
+    return { state: repo, events, output: ok(lines.join("\n"), "output") };
+  }
+  const branchCreate = trimmed.match(/^git branch\s+([\w/.-]+)$/);
+  if (branchCreate) {
+    const name = branchCreate[1]!;
+    if (next.branches.has(name)) {
+      return { state: repo, events, output: ok(`fatal: a branch named '${name}' already exists`, "error") };
+    }
+    const base = next.branches.get(next.branch) ?? next.head ?? "";
+    next.branches.set(name, base);
+    events.push(createEvent("BRANCH_CHANGED"));
+    return { state: next, events, output: ok(`Created branch '${name}'`, "success") };
+  }
+
+  // -------------------------------------------------------- git switch
+  const switchCreate = trimmed.match(/^git switch -c\s+([\w/.-]+)$/);
+  if (switchCreate) {
+    const name = switchCreate[1]!;
+    if (next.branches.has(name)) {
+      return { state: repo, events, output: ok(`fatal: a branch named '${name}' already exists`, "error") };
+    }
+    const base = next.branches.get(next.branch) ?? next.head ?? "";
+    next.branches.set(name, base);
+    next.branch = name;
+    restoreWorkingTreeForBranch(next, name);
+    events.push(createEvent("BRANCH_CHANGED"));
+    events.push(createEvent("HEAD_CHANGED", undefined, { hash: base || undefined }));
+    return { state: next, events, output: ok(`Switched to a new branch '${name}'`, "success") };
+  }
+  const switchMatch = trimmed.match(/^git switch\s+([\w/.-]+)$/);
+  if (switchMatch) {
+    const name = switchMatch[1]!;
+    if (!next.branches.has(name)) {
+      return { state: repo, events, output: ok(`fatal: invalid reference: ${name}`, "error") };
+    }
+    next.branch = name;
+    restoreWorkingTreeForBranch(next, name);
+    events.push(createEvent("BRANCH_CHANGED"));
+    return { state: next, events, output: ok(`Switched to branch '${name}'`, "success") };
+  }
+
+  // ------------------------------------------------------- git checkout
+  const checkoutMatch = trimmed.match(/^git checkout\s+([\w/.-]+)$/);
+  if (checkoutMatch) {
+    const name = checkoutMatch[1]!;
+    if (!next.branches.has(name)) {
+      return { state: repo, events, output: ok(`error: pathspec '${name}' did not match any branch`, "error") };
+    }
+    next.branch = name;
+    restoreWorkingTreeForBranch(next, name);
+    events.push(createEvent("BRANCH_CHANGED"));
+    return { state: next, events, output: ok(`Switched to branch '${name}'`, "success") };
+  }
+
+  // ---------------------------------------------------------- git merge
+  const mergeMatch = trimmed.match(/^git merge\s+([\w/.-]+)$/);
+  if (mergeMatch) {
+    const name = mergeMatch[1]!;
+    if (name === next.branch || !next.branches.has(name)) {
+      return { state: repo, events, output: ok(`Already up to date.`, "muted") };
+    }
+    const headHash = next.branches.get(next.branch) ?? next.head ?? "";
+    const targetHash = next.branches.get(name) ?? "";
+    if (headHash && targetHash && isAncestor(next.commits, headHash, targetHash)) {
+      next.branches.set(next.branch, targetHash);
+      next.head = targetHash;
+      events.push(createEvent("COMMIT_CREATED", undefined, { hash: targetHash, message: "Fast-forward" }));
+      events.push(createEvent("HEAD_CHANGED", undefined, { hash: targetHash }));
+      return { state: next, events, output: ok(`Updating ${headHash.slice(0, 7)}..${targetHash.slice(0, 7)}\nFast-forward`, "success") };
+    }
+    return { state: repo, events, output: ok(`merge: can't merge '${name}' yet in this exercise`, "error") };
+  }
+
+  // ---------------------------------------------------------- git remote
+  if (sub === "remote") {
+    const names = [...next.remotes.keys()];
+    if (names.length === 0) return { state: repo, events, output: ok("(no remotes configured)", "muted") };
+    return { state: repo, events, output: ok(names.join("\n"), "output") };
+  }
+  if (sub === "remote -v") {
+    const lines = [...next.remotes.entries()].map(
+      ([name, url]) => `${name}\t${url} (fetch)\n${name}\t${url} (push)`,
+    );
+    return { state: repo, events, output: ok(lines.join("\n") || "(no remotes configured)", "muted") };
+  }
+  const remoteAdd = trimmed.match(/^git remote add\s+(\S+)\s+(\S+)$/);
+  if (remoteAdd) {
+    const name = remoteAdd[1]!;
+    const url = remoteAdd[2]!;
+    if (next.remotes.has(name)) {
+      return { state: repo, events, output: ok(`error: remote ${name} already exists`, "error") };
+    }
+    next.remotes.set(name, url);
+    return { state: next, events, output: ok(`Added remote ${name} at ${url}`, "success") };
+  }
+  const remoteRename = trimmed.match(/^git remote rename\s+(\S+)\s+(\S+)$/);
+  if (remoteRename) {
+    const from = remoteRename[1]!;
+    const to = remoteRename[2]!;
+    if (!next.remotes.has(from)) {
+      return { state: repo, events, output: ok(`error: no such remote: '${from}'`, "error") };
+    }
+    if (next.remotes.has(to)) {
+      return { state: repo, events, output: ok(`error: remote ${to} already exists`, "error") };
+    }
+    const url = next.remotes.get(from)!;
+    next.remotes.delete(from);
+    next.remotes.set(to, url);
+    return { state: next, events, output: ok(`Renamed remote ${from} to ${to}`, "success") };
+  }
+  const remoteRemove = trimmed.match(/^git remote remove\s+(\S+)$/);
+  if (remoteRemove) {
+    const name = remoteRemove[1]!;
+    if (!next.remotes.has(name)) {
+      return { state: repo, events, output: ok(`error: no such remote: '${name}'`, "error") };
+    }
+    next.remotes.delete(name);
+    return { state: next, events, output: ok(`Removed remote ${name}`, "success") };
+  }
+
+  // ---------------------------------------------------------- git clone
+  const cloneMatch = trimmed.match(/^git clone\s+(\S+)(?:\s+(\S+))?$/);
+  if (cloneMatch) {
+    if (!remote) {
+      return { state: repo, events, output: ok(`fatal: could not clone '${cloneMatch[1]}'`, "error") };
+    }
+    const cloned = cloneRepository(remote);
+    cloned.pwd = cloneMatch[2] ?? "~/project";
+    cloned.initialized = true;
+    // A clone sets up the remote automatically, named origin.
+    if (cloneMatch[1] && !cloned.remotes.has("origin")) {
+      cloned.remotes.set("origin", cloneMatch[1]);
+    }
+    events.push(createEvent("REPOSITORY_INITIALIZED"));
+    events.push(createEvent("STATUS_CHANGED"));
+    return { state: cloned, events, output: ok(`Cloning into '${cloneMatch[2] ?? "project"}'...\nDone.`, "success") };
+  }
+
+  // ---------------------------------------------------------- git fetch
+  if (sub === "fetch") {
+    if (!remote) return { state: repo, events, output: ok("fatal: no remote repository configured", "error") };
+    const remoteHead = remote.branches.get(remote.branch) ?? remote.head;
+    if (!remoteHead) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
+    const localHead = next.branches.get(next.branch) ?? next.head;
+    if (remoteHead === localHead) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
+    const remoteOnly = remote.commits.filter(
+      (c) => !next.commits.some((l) => l.hash === c.hash),
+    );
+    if (remoteOnly.length === 0) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
+    // Fetch is read-only: it reports what's available without touching local work.
+    return {
+      state: repo,
+      events,
+      output: ok(
+        `Remote has ${remoteOnly.length} new commit${remoteOnly.length === 1 ? "" : "s"} (${remoteOnly.map((c) => c.hash.slice(0, 7)).join(", ")}).\nYour work is untouched. Run git pull to bring them in.`,
+        "success",
+      ),
+    };
+  }
+
+  // ---------------------------------------------------------- git pull
+  if (sub === "pull") {
+    if (!remote) return { state: repo, events, output: ok("fatal: no remote repository configured", "error") };
+    const remoteHead = remote.branches.get(remote.branch) ?? remote.head;
+    if (!remoteHead) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
+    const localHead = next.branches.get(next.branch) ?? next.head;
+    if (remoteHead === localHead) return { state: repo, events, output: ok("Already up to date.", "muted") };
+
+    const remoteOnly = remote.commits.filter(
+      (c) => !next.commits.some((l) => l.hash === c.hash),
+    );
+    if (remoteOnly.length === 0) return { state: repo, events, output: ok("Already up to date.", "muted") };
+    next.commits.push(...remoteOnly.map((c) => ({ ...c })));
+    next.branches.set(next.branch, remoteHead);
+    next.head = remoteHead;
+    // Restore the working tree to the new head.
+    const branchFiles = commitsFromHead(next, remoteHead);
+    const tree = new Map<string, (typeof repo.workingTree extends Map<string, infer T> ? T : never)>();
+    for (const commit of branchFiles) {
+      for (const change of commit.changedFiles) {
+        if (change.status === "deleted") tree.delete(change.path);
+        else if (change.content !== undefined) {
+          tree.set(change.path, {
+            id: change.path,
+            name: change.path.split("/").pop() ?? change.path,
+            path: change.path,
+            content: change.content,
+            original: change.content,
+          });
+        }
+      }
+    }
+    if (tree.size === 0) {
+      for (const [path, entry] of remote.workingTree) {
+        tree.set(path, {
+          id: path,
+          name: path.split("/").pop() ?? path,
+          path,
+          content: entry.content,
+          original: entry.original,
+        });
+      }
+    }
+    next.workingTree = tree;
+    events.push(createEvent("COMMIT_CREATED", undefined, { hash: remoteHead, message: "Pull" }));
+    events.push(createEvent("HEAD_CHANGED", undefined, { hash: remoteHead }));
+    return { state: next, events, output: ok(`Updating ${(localHead ?? "").slice(0, 7)}..${remoteHead.slice(0, 7)}\nFast-forward`, "success") };
+  }
+
+  // ---------------------------------------------------------- git push
+  if (sub === "push") {
+    if (!remote) return { state: repo, events, output: ok("fatal: no remote repository configured", "error") };
+    const localHead = next.branches.get(next.branch) ?? next.head;
+    if (!localHead) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
+
+    const remoteHead = remote.branches.get(remote.branch) ?? remote.head;
+    // Non-fast-forward: remote has commits we don't have. Reject.
+    if (remoteHead && remoteHead !== localHead && !isAncestor(next.commits, remoteHead, localHead)) {
+      return {
+        state: repo,
+        events,
+        output: ok(
+          `! [rejected] ${next.branch} -> ${next.branch} (non-fast-forward)\nerror: failed to push some refs to the remote\nhint: the remote has commits you don't have. Pull first, then push.`,
+          "error",
+        ),
+      };
+    }
+    const localOnly = next.commits.filter(
+      (c) => !remote.commits.some((r) => r.hash === c.hash),
+    );
+    const nextRemote = cloneRepository(remote);
+    nextRemote.commits.push(...localOnly.map((c) => ({ ...c })));
+    // The pushed branch on the remote now points at the local head.
+    nextRemote.branches.set(next.branch, localHead);
+    // If the remote's default branch is unborn (""), adopt the pushed one.
+    if (!nextRemote.branches.get(remote.branch)) {
+      nextRemote.branches.set(remote.branch, localHead);
+    }
+    nextRemote.head = localHead;
+    events.push(createEvent("STATUS_CHANGED"));
+    return {
+      state: next,
+      remote: nextRemote,
+      events,
+      output: ok(
+        localOnly.length === 0
+          ? "Everything up-to-date"
+          : `To the remote\n   ${(remoteHead ?? "").slice(0, 7)}..${localHead.slice(0, 7)}  ${next.branch} -> ${next.branch}\n  ${localOnly.length} commit${localOnly.length === 1 ? "" : "s"} pushed.`,
+        "success",
+      ),
+    };
+  }
+
   return {
     state: repo,
     events,
@@ -393,6 +661,79 @@ function trackedDeletedPaths(repo: GitRepository): string[] {
 
 function wasTrackedIn(repo: GitRepository, path: string): boolean {
   return trackedDeletedPaths(repo).includes(path);
+}
+
+/** Whether `ancestorHash` is reachable from `descendantHash` in the commit graph. */
+function isAncestor(
+  commits: GitRepository["commits"],
+  ancestorHash: string,
+  descendantHash: string,
+): boolean {
+  if (ancestorHash === descendantHash) return true;
+  const byHash = new Map(commits.map((c) => [c.hash, c]));
+  const stack = [descendantHash];
+  const seen = new Set<string>();
+  while (stack.length > 0) {
+    const hash = stack.pop()!;
+    if (hash === ancestorHash) return true;
+    if (seen.has(hash)) continue;
+    seen.add(hash);
+    const commit = byHash.get(hash);
+    if (commit) stack.push(...commit.parents);
+  }
+  return false;
+}
+
+/** All commits reachable from `headHash`, oldest-first, in file-update order. */
+function commitsFromHead(
+  repo: GitRepository,
+  headHash: string | undefined,
+): GitRepository["commits"] {
+  if (!headHash) return [];
+  const byHash = new Map(repo.commits.map((c) => [c.hash, c]));
+  const ordered: GitRepository["commits"] = [];
+  const seen = new Set<string>();
+  const stack: string[] = [];
+  let current: string | undefined = headHash;
+  while (current && !seen.has(current)) {
+    stack.push(current);
+    seen.add(current);
+    const commit = byHash.get(current);
+    current = commit?.parents[0];
+  }
+  for (const hash of stack.reverse()) {
+    const commit = byHash.get(hash);
+    if (commit) ordered.push(commit);
+  }
+  return ordered;
+}
+
+/**
+ * Restore the working tree to match the state committed on `branchName`.
+ * Files the branch has are written with their committed content and baseline;
+ * files that don't belong to the branch are removed. This makes switching
+ * branches behave like real Git instead of just relabeling HEAD.
+ */
+function restoreWorkingTreeForBranch(repo: GitRepository, branchName: string): void {
+  const headHash = repo.branches.get(branchName) ?? "";
+  const files = new Map<string, string>();
+  for (const commit of commitsFromHead(repo, headHash)) {
+    for (const change of commit.changedFiles) {
+      if (change.status === "deleted") files.delete(change.path);
+      else if (change.content !== undefined) files.set(change.path, change.content);
+    }
+  }
+  const nextTree = new Map<string, (typeof repo.workingTree extends Map<string, infer T> ? T : never)>();
+  for (const [path, content] of files) {
+    nextTree.set(path, {
+      id: path,
+      name: path.split("/").pop() ?? path,
+      path,
+      content,
+      original: content,
+    });
+  }
+  repo.workingTree = nextTree;
 }
 
 function renderStatus(repo: GitRepository): string {

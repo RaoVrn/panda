@@ -22,6 +22,8 @@ export interface CreateRepositoryOptions {
   files?: Record<string, string>;
   /** Whether the repository starts initialized (has run `git init`). */
   initialized?: boolean;
+  /** Seed a simulated remote (GitHub) repository with these files/options. */
+  remote?: CreateRepositoryOptions;
 }
 
 const DEFAULT_AUTHOR: GitAuthor = { name: "Panda", email: "panda@example.com" };

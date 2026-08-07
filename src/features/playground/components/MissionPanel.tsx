@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Award, Check, ChevronDown, Clock, Copy, Flag, Lightbulb, PartyPopper, Target, TerminalSquare, AlertTriangle } from "lucide-react";
 import { objectiveStatuses } from "../taskValidator";
-import { usePlaygroundRepository } from "../usePlayground";
+import { usePlaygroundRepository, usePlaygroundRemote } from "../usePlayground";
 import { usePlaygroundStore } from "../playgroundStore";
 import { useLessonId } from "@/features/lesson/lessonModeContext";
 import { useProgressStore } from "@/features/progress/progressStore";
@@ -20,14 +20,15 @@ export interface MissionPanelProps {
  */
 export function MissionPanel({ xpReward, durationMinutes, className }: MissionPanelProps) {
   const repo = usePlaygroundRepository();
+  const remote = usePlaygroundRemote();
   const config = usePlaygroundStore((state) => state.config);
   const completedObjectives = usePlaygroundStore((state) => state.completedObjectives);
   const lessonId = useLessonId();
   const markInteractive = useProgressStore((state) => state.markInteractive);
 
   const statuses = useMemo(
-    () => (repo && config ? objectiveStatuses(repo, config.objectives) : []),
-    [repo, config],
+    () => (repo && config ? objectiveStatuses(repo, config.objectives, remote) : []),
+    [repo, config, remote],
   );
   const objectives = useMemo(() => config?.objectives ?? [], [config]);
   const hints = useMemo(() => config?.hints ?? [], [config]);

@@ -64,9 +64,9 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
   {
     id: "git-basics",
     emoji: "🏁",
-    title: "Completed Git Basics",
-    description: "Finish every lesson in the Git Basics module.",
-    test: (ctx) => ctx.modulesComplete["git-basics"] === true,
+    title: "Completed Core Commands",
+    description: "Finish every lesson in the Core Commands module.",
+    test: (ctx) => ctx.modulesComplete["core-commands"] === true,
   },
 ];
 

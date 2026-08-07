@@ -14,21 +14,21 @@ export const lesson09: ContentLesson = {
   description:
     "The one command you'll type a hundred times a day. Learn to read git status like a dashboard, not a wall of text.",
   meta: {
-    module: "git-basics",
-    order: 4,
+    module: "core-commands",
+    order: 2,
     difficulty: "beginner",
     durationMinutes: 7,
     tags: ["basics", "status"],
     summary: [
       "git status answers: what's happening in my project?",
       "Three sections: to commit, not staged, untracked.",
-      "It never changes anything — it only looks.",
+      "It never changes anything. It only looks.",
       "A clean status means everything is safely saved.",
     ],
     whyItMatters:
       "Status is how you know where you are. Developers type it constantly because it's the dashboard that tells you what to do next.",
     motivation:
-      "You can read Git's dashboard now. Up next: the command that picks what goes into the snapshot — git add, done properly.",
+      "You can read Git's dashboard now. Up next: the command that picks what goes into the snapshot. That's git add, done properly.",
   },
   learningGoals: [
     "Run git status and understand every line",
@@ -132,7 +132,7 @@ export const lesson09: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end, running git status will feel like checking your phone — you'll glance at it and instantly know what's going on.",
+      text: "By the end, running git status will feel like checking your phone. You'll glance at it and instantly know what's going on.",
     },
     {
       type: "paragraph",
@@ -144,7 +144,7 @@ export const lesson09: ContentLesson = {
       id: "status-story",
       tone: "info",
       title: "It only looks, never touches",
-      text: "git status is a safe command. It never changes, deletes or saves anything. It just reads the rooms and reports. Type it as often as you like — it can't hurt you.",
+      text: "git status is a safe command. It never changes, deletes or saves anything. It just reads the rooms and reports. Type it as often as you like. It can't hurt you.",
     },
 
     // ---------------------------------------------------------------
@@ -258,7 +258,7 @@ export const lesson09: ContentLesson = {
       type: "warning",
       id: "mistake-panic",
       title: "Don't panic at a long status",
-      text: "A long status isn't a problem — it's information. Your project isn't broken. Just read the rooms: what's staged, what's changed, what's new. Then decide.",
+      text: "A long status isn't a problem. It's information. Your project isn't broken. Just read the rooms: what's staged, what's changed, what's new. Then decide.",
     },
     {
       type: "tip",
@@ -281,7 +281,7 @@ export const lesson09: ContentLesson = {
       id: "practice-mission",
       description:
         "git status groups files into three sections. What are they?",
-      hint: "Think about which room each file is in — staging area, working tree with an old snapshot, or brand new.",
+      hint: "Think about which room each file is in: the staging area, the working tree with an old snapshot, or brand new.",
       exampleAnswer:
         "All three are files I've edited or created. The staged one is waiting in the staging area for a commit. The unstaged one has changes Git sees but I haven't picked. The untracked one is brand new with no history yet.",
     },
@@ -302,7 +302,7 @@ export const lesson09: ContentLesson = {
       id: "takeaways",
       items: [
         "git status is Git's dashboard.",
-        "It only reads — it never changes anything.",
+        "It only reads. It never changes anything.",
         "Three sections: staged, not staged, untracked.",
         "A clean status means everything is safe.",
         "Check it before and after every commit.",
@@ -311,7 +311,7 @@ export const lesson09: ContentLesson = {
     {
       type: "paragraph",
       id: "close-question",
-      text: "Now the command that fills that staging area. git add — and the trap of git add .",
+      text: "Now the command that fills that staging area. git add, and the trap of git add .",
     },
     {
       type: "callout",

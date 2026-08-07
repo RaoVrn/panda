@@ -12,15 +12,15 @@ export const lesson02: ContentLesson = {
   slug: "why-git",
   title: "Why Git?",
   description:
-    "Before Git, keeping track of work was chaos. Meet the three problems Git was invented to solve — you've probably felt all three.",
+    "Before Git, keeping track of work was chaos. Meet the three problems Git was invented to solve. You've probably felt all three.",
   meta: {
-    module: "introduction",
+    module: "git-fundamentals",
     order: 2,
     difficulty: "beginner",
     durationMinutes: 8,
     tags: ["basics", "history"],
     summary: [
-      "The old way — renaming files — breaks down fast.",
+      "The old way, renaming files, breaks down fast.",
       "Git never lets you lose your work.",
       "Git lets you try things without fear.",
       "Git lets people edit together without stepping on each other.",
@@ -40,7 +40,7 @@ export const lesson02: ContentLesson = {
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end of this lesson you'll be able to explain why Git exists to someone who has never heard of it — using your own messy folders as proof.",
+      text: "By the end of this lesson you'll be able to explain why Git exists to someone who has never heard of it, using your own messy folders as proof.",
     },
     {
       type: "paragraph",
@@ -63,7 +63,7 @@ export const lesson02: ContentLesson = {
     {
       type: "paragraph",
       id: "rename-question",
-      text: "That moment — staring at five files that all look the same and having no idea which one is latest — is the exact moment version control was born.",
+      text: "That moment, staring at five files that all look the same and having no idea which one is latest, is the exact moment version control was born.",
     },
     {
       type: "callout",
@@ -142,7 +142,7 @@ export const lesson02: ContentLesson = {
       id: "losing-connect",
       tone: "success",
       title: "One mistake, zero panic",
-      text: "The snapshot from yesterday still exists. You jump back to it, and the mess is gone. Git doesn't prevent mistakes — it makes them harmless. That freedom is why developers try bold things.",
+      text: "The snapshot from yesterday still exists. You jump back to it, and the mess is gone. Git doesn't prevent mistakes. It makes them harmless. That freedom is why developers try bold things.",
     },
 
     // ---------------------------------------------------------------
@@ -189,7 +189,12 @@ export const lesson02: ContentLesson = {
     {
       type: "paragraph",
       id: "together-story",
-      text: "Option A: email the file back and forth. Someone always has the older copy, and you can't both type at once. Option B: one person owns the file and the other waits. Both are awful. Git's answer: everyone has their own full copy, everyone works at the same time, and Git carefully stitches the changes together.",
+      text: "Option A: email the file back and forth. Someone always has the older copy, and you can't both type at once. Option B: one person owns the file and the other waits. Both are awful.",
+    },
+    {
+      type: "paragraph",
+      id: "together-answer",
+      text: "Git's answer: everyone has their own full copy, everyone works at the same time, and Git carefully stitches the changes together.",
     },
     {
       type: "callout",
@@ -213,7 +218,7 @@ export const lesson02: ContentLesson = {
       id: "practice-mission",
       description:
         "Two copies of a project don't match. Which of Git's three problems is this?",
-      hint: "Two people changed the same file at the same time. That's the working-together problem — the same one Git solves.",
+      hint: "Two people changed the same file at the same time. That's the working-together problem, and it's the same one Git solves.",
       exampleAnswer:
         "This is the sharing problem. We both edited our own copies and now they don't match. Git solves it by letting everyone work on their own copy and then carefully merging the changes together.",
     },
@@ -230,13 +235,19 @@ export const lesson02: ContentLesson = {
       text: "What to remember",
     },
     {
+      type: "tip",
+      id: "tip-why-git",
+      title: "Quick tip",
+      text: "You don't need to memorize commands yet. Focus on the WHY: Git exists so you can never lose your work.",
+    },
+    {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
         "Renaming files to keep versions is a trap.",
-        "Problem 1: losing work — Git is your time machine.",
-        "Problem 2: experimenting — Git makes mistakes harmless.",
-        "Problem 3: teamwork — Git joins everyone's changes.",
+        "Problem 1: losing work. Git is your time machine.",
+        "Problem 2: experimenting. Git makes mistakes harmless.",
+        "Problem 3: teamwork. Git joins everyone's changes.",
         "Understand these problems, and Git's commands make sense.",
       ],
     },

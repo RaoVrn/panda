@@ -382,7 +382,7 @@ export function FilesStatusPanel({ className }: FilesStatusPanelProps) {
         <p className="mt-1.5 truncate px-0.5 font-mono text-[9px] text-text-muted">
           {repo.initialized
             ? latest
-              ? `${latest.hash.slice(0, 7)} — ${latest.message}`
+              ? `${latest.hash.slice(0, 7)} · ${latest.message}`
               : `${counts.tracked} tracked · no commits yet`
             : "run git init to begin"}
         </p>

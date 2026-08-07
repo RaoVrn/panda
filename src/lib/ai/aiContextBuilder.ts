@@ -87,7 +87,7 @@ export function buildContextSnippet(context: LessonContext): string {
   }
 
   return (
-    "\n\nCurrent lesson (structured from the course — use it to ground answers about the lesson; it adds to your knowledge, never limits it):\n" +
+    "\n\nCurrent lesson (structured from the course. Use it to ground answers about the lesson; it adds to your knowledge, never limits it):\n" +
     lines.join("\n") +
     "\n\nThe learner can see this on screen. Never quote these notes."
   );
