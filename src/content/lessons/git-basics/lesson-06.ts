@@ -251,6 +251,12 @@ export const lesson06: ContentLesson = {
     // 4 · Common mistake.
     // ---------------------------------------------------------------
     {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
       type: "warning",
       id: "mistake",
       title: "Don't go digging in .git",

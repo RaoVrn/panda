@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowBigRight,
   Boxes,
@@ -17,7 +17,7 @@ import { usePlaygroundStore } from "../playgroundStore";
 import { PlaygroundPanel } from "./Panel";
 import { cn } from "@/lib/utils";
 
-const spring = { type: "spring" as const, stiffness: 380, damping: 28 };
+const spring = { type: "spring" as const, stiffness: 380, damping: 30 };
 
 /* ------------------------------------------------------------------ */
 /* Column                                                              */
@@ -47,7 +47,7 @@ function Column({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border transition-[opacity,border-color,box-shadow] duration-300",
+        "relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border transition-[opacity,border-color,box-shadow] duration-300",
         highlighted
           ? "border-accent/25 bg-accent/5 shadow-[0_0_8px_rgba(52,179,160,0.05)]"
           : dimmed
@@ -55,6 +55,15 @@ function Column({
             : "border-white/[0.02] bg-white/[0.01]",
       )}
     >
+      {highlighted && (
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-0.5 bg-accent"
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        />
+      )}
       <header className="flex items-center gap-2.5 border-b border-white/[0.03] bg-white/[0.01] px-4 py-3">
         <span className={cn("size-2 shrink-0 rounded-full", dotColor)} aria-hidden="true" />
         <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-card text-accent-hover">
@@ -126,6 +135,9 @@ function FileChip({
       type="button"
       layout
       layoutId={`play-file-${path}`}
+      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
       transition={spring}
       onClick={onClick}
       disabled={!onClick}
@@ -234,18 +246,20 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
         >
           {working.length === 0 ? (
             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-white/[0.04] py-4 text-center text-[12px] text-text-muted">
-              Add or edit files to see them here.
+              No changes here yet. Edit or add a file to see it appear.
             </div>
           ) : (
-            working.map((row) => (
-              <FileChip
-                key={row.path}
-                path={row.path}
-                deleted={row.deleted}
-                onClick={() => stage(row.path)}
-                hint={`git add ${row.path}`}
-              />
-            ))
+            <AnimatePresence initial={false} mode="popLayout">
+              {working.map((row) => (
+                <FileChip
+                  key={row.path}
+                  path={row.path}
+                  deleted={row.deleted}
+                  onClick={() => stage(row.path)}
+                  hint={`git add ${row.path}`}
+                />
+              ))}
+            </AnimatePresence>
           )}
         </Column>
 
@@ -263,18 +277,22 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
         >
           {staged.length === 0 ? (
             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-white/[0.04] py-4 text-center text-[12px] text-text-muted">
-              {repo.initialized ? "Use git add to choose files for your next snapshot." : "Run git init to get started."}
+              {repo.initialized
+                ? "Nothing staged yet. Run git add to choose files for your next snapshot."
+                : "Run git init to get started."}
             </div>
           ) : (
-            staged.map((row) => (
-              <FileChip
-                key={row.path}
-                path={row.path}
-                staged
-                onClick={() => unstage(row.path)}
-                hint={`git restore --staged ${row.path}`}
-              />
-            ))
+            <AnimatePresence initial={false} mode="popLayout">
+              {staged.map((row) => (
+                <FileChip
+                  key={row.path}
+                  path={row.path}
+                  staged
+                  onClick={() => unstage(row.path)}
+                  hint={`git restore --staged ${row.path}`}
+                />
+              ))}
+            </AnimatePresence>
           )}
         </Column>
 
@@ -291,25 +309,31 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
         >
           {commits.length === 0 ? (
             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-white/[0.04] py-4 text-center text-[12px] text-text-muted">
-              Use git commit to save your work as a permanent snapshot.
+              No commits yet. Stage a change, then run git commit to save it as a snapshot.
             </div>
           ) : (
             <>
               <div className="mb-2 max-h-[120px] space-y-1 overflow-y-auto">
-                {commits.map((commit) => (
-                  <div
-                    key={commit.hash}
-                    className="flex items-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.01] px-3 py-2"
-                  >
-                    <GitCommitHorizontal className="size-3.5 shrink-0 text-[#3fb950]" aria-hidden="true" />
-                    <span className="min-w-0 flex-1 truncate text-[12px] text-text-secondary">
-                      {commit.message}
-                    </span>
-                    <span className="shrink-0 font-mono text-[10px] text-text-muted">
-                      {commit.hash.slice(0, 5)}
-                    </span>
-                  </div>
-                ))}
+                <AnimatePresence initial={false}>
+                  {commits.map((commit) => (
+                    <motion.div
+                      key={commit.hash}
+                      layout
+                      initial={{ opacity: 0, y: -10, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.28, ease: "easeOut" }}
+                      className="flex items-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.01] px-3 py-2"
+                    >
+                      <GitCommitHorizontal className="size-3.5 shrink-0 text-[#3fb950]" aria-hidden="true" />
+                      <span className="min-w-0 flex-1 truncate text-[12px] text-text-secondary">
+                        {commit.message}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] text-text-muted">
+                        {commit.hash.slice(0, 5)}
+                      </span>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
               <div className="mt-auto flex flex-col gap-1.5 border-t border-white/[0.03] pt-2">
                 <input
@@ -352,27 +376,39 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
             </span>
             {repo.initialized ? (
               <>
-                <p className="text-[13px] font-semibold text-text">
-                  <span className="text-accent-hover">HEAD</span> → {repo.branch}
-                </p>
-                {latest ? (
-                  <div className="space-y-0.5">
-                    <p className="font-mono text-[11px] text-text-muted">{latest.hash.slice(0, 7)}</p>
-                    <p className="max-w-full truncate text-[12px] text-text-secondary">{latest.message}</p>
-                  </div>
-                ) : (
-                  <p className="text-[12px] text-text-muted">unborn, no commits yet</p>
-                )}
-                <span
+                <motion.div
+                  key={latest?.hash ?? "unborn"}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="flex flex-col items-center gap-2 text-center"
+                >
+                  <p className="text-[13px] font-semibold text-text">
+                    <span className="text-accent-hover">HEAD</span> → {repo.branch}
+                  </p>
+                  {latest ? (
+                    <div className="space-y-0.5">
+                      <p className="font-mono text-[11px] text-text-muted">{latest.hash.slice(0, 7)}</p>
+                      <p className="max-w-full truncate text-[12px] text-text-secondary">{latest.message}</p>
+                    </div>
+                  ) : (
+                    <p className="text-[12px] text-text-muted">unborn, no commits yet</p>
+                  )}
+                </motion.div>
+                <motion.span
+                  key={staged.length + working.length === 0 ? "clean" : "dirty"}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
                   className={cn(
-                    "mt-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    "rounded-full px-2 py-0.5 text-[10px] font-semibold",
                     staged.length + working.length === 0
                       ? "bg-[#3fb950]/15 text-[#3fb950]"
                       : "bg-warning/15 text-warning",
                   )}
                 >
                   {working.length + staged.length === 0 ? "working tree clean" : "uncommitted changes"}
-                </span>
+                </motion.span>
               </>
             ) : (
               <>

@@ -255,6 +255,12 @@ export const lesson09: ContentLesson = {
     // 3 · Common mistakes.
     // ---------------------------------------------------------------
     {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
       type: "warning",
       id: "mistake-panic",
       title: "Don't panic at a long status",

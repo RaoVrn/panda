@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   Check,
@@ -281,11 +281,17 @@ export function RepositoryInspector({ className }: RepositoryInspectorProps) {
             ) : compactHistory ? (
               /* Compact list for ≤2 commits */
               <ul className="space-y-2">
+                <AnimatePresence initial={false}>
                 {commits.map((commit) => {
                   const isHead = commit.hash === repo.head;
                   const expanded = commitOpen === commit.hash;
                   return (
-                    <li key={commit.hash}>
+                    <motion.li
+                      key={commit.hash}
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                    >
                       <button
                         type="button"
                         onClick={() => setCommitOpen((c) => (c === commit.hash ? null : commit.hash))}
@@ -315,9 +321,10 @@ export function RepositoryInspector({ className }: RepositoryInspectorProps) {
                           </div>
                         </motion.div>
                       )}
-                    </li>
+                    </motion.li>
                   );
                 })}
+                </AnimatePresence>
               </ul>
             ) : (
               /* Full timeline for >2 commits */
@@ -327,7 +334,7 @@ export function RepositoryInspector({ className }: RepositoryInspectorProps) {
                     const isHead = commit.hash === repo.head;
                     const expanded = commitOpen === commit.hash;
                     return (
-                      <div key={commit.hash} className="flex shrink-0 items-start">
+                      <div key={commit.hash} className="relative flex shrink-0 items-start">
                         <div className="flex flex-col items-center">
                           <motion.button
                             type="button" onClick={() => setCommitOpen((c) => (c === commit.hash ? null : commit.hash))}

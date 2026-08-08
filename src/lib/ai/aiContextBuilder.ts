@@ -62,10 +62,13 @@ export function buildContextSnippet(context: LessonContext): string {
   lines.push(...lesson);
 
   const live = [
+    context.mode &&
+      `Mode: ${context.mode === "interactive" ? "PLAYGROUND (live repository — learner is doing a hands-on mission)" : "READ (lesson text — learner is reading)"}`,
     context.currentSectionText &&
       `Section content (what the learner is reading):\n${context.currentSectionText}`,
     context.selectedText && `Selected: """${context.selectedText}"""`,
     context.objective && `Current objective: ${context.objective}`,
+    context.missionProgress && `Mission progress: ${context.missionProgress}`,
     context.terminal && `Last command: ${context.terminal}`,
     context.terminalState && `Terminal state:\n${context.terminalState}`,
     context.sandbox && `Sandbox:\n${context.sandbox}`,
@@ -78,7 +81,6 @@ export function buildContextSnippet(context: LessonContext): string {
       `Course: ${context.completedCount}/${context.totalCount ?? "?"} lessons done`,
     context.explanationStyle && `AI explanation style: ${context.explanationStyle}`,
     context.theme && `Theme: ${context.theme}`,
-    context.lessonMode && `Lesson mode: ${context.lessonMode}`,
     context.animationSpeed && `Animation speed: ${context.animationSpeed}`,
     context.memory && `Already covered: ${context.memory}`,
   ].filter(Boolean) as string[];

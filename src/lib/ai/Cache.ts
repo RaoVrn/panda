@@ -33,6 +33,7 @@ function fingerprint(context: LessonContext): string {
     context.selectedText ?? "",
     context.terminal ?? "",
     context.objective ?? "",
+    context.missionProgress ?? "",
     context.terminalState ?? "",
     context.sandbox ?? "",
     context.currentSectionText ?? "",

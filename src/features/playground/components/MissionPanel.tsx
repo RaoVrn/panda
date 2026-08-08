@@ -83,12 +83,16 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
   const active = objectives.filter((_, i) => !doneFor(objectives[i]?.id ?? "", i));
   const completedList = objectives.filter((_, i) => doneFor(objectives[i]?.id ?? "", i));
 
-  // Feed the learner's current objective to Panda AI so it never needs asking.
+  // Feed the learner's current objective + mission progress to Panda AI so it
+  // never needs asking where the learner is or what's left.
   useEffect(() => {
     if (currentStep) {
-      useAiContextStore.getState().report({ objective: currentStep.label });
+      useAiContextStore.getState().report({
+        objective: currentStep.label,
+        missionProgress: `${doneCount} of ${total} objectives done`,
+      });
     }
-  }, [currentStep]);
+  }, [currentStep, doneCount, total]);
 
   const markMissionComplete = useProgressStore((state) => state.recordMissionComplete);
 
@@ -115,27 +119,43 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
 
         {/* Stats row */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-muted">
-          <span className="tabular-nums">{doneCount}/{total}</span>
+          <motion.span key={doneCount} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.18 }} className="tabular-nums inline-block">
+            {doneCount}/{total}
+          </motion.span>
           {(xpReward ?? 0) > 0 && (<span className="flex items-center gap-1 font-medium text-warning"><Award className="size-3" />+{xpReward}</span>)}
           {(durationMinutes ?? 0) > 0 && (<span className="flex items-center gap-1"><Clock className="size-3" />~{durationMinutes}m</span>)}
-          {currentStep && <span className="flex items-center gap-1"><Target className="size-3 text-accent-hover" />Next: <span className="font-medium text-text-secondary">{currentStep.label}</span></span>}
+          {currentStep && (
+            <motion.span key={currentStep.label} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="flex items-center gap-1">
+              <Target className="size-3 text-accent-hover" />Next: <span className="font-medium text-text-secondary">{currentStep.label}</span>
+            </motion.span>
+          )}
         </div>
 
         {/* Active objectives — the ones that stand out */}
         <ul className="space-y-1">
-          {active.map((objective) => {
-            const actualIndex = objectives.indexOf(objective);
-            const isCurrent = currentStep?.index === actualIndex;
-            return (
-              <li key={objective.id} className={cn("flex items-start gap-2 rounded-lg px-2 py-1.5 transition-colors", isCurrent ? "bg-accent/[0.06] border border-accent/20" : "bg-white/[0.02] border border-white/[0.03]")}>
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border-strong bg-card" />
-                <div className="min-w-0 flex-1">
-                  <p className={cn("text-[13px] leading-snug", isCurrent ? "text-text" : "text-text-secondary")}>{objective.label}</p>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-text-muted">{isCurrent ? "your turn" : "pending"}</p>
-                </div>
-              </li>
-            );
-          })}
+          <AnimatePresence initial={false}>
+            {active.map((objective) => {
+              const actualIndex = objectives.indexOf(objective);
+              const isCurrent = currentStep?.index === actualIndex;
+              return (
+                <motion.li
+                  layout
+                  key={objective.id}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: 8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className={cn("flex items-start gap-2 rounded-lg px-2 py-1.5 transition-colors", isCurrent ? "bg-accent/[0.06] border border-accent/20" : "bg-white/[0.02] border border-white/[0.03]")}
+                >
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border-strong bg-card" />
+                  <div className="min-w-0 flex-1">
+                    <p className={cn("text-[13px] leading-snug", isCurrent ? "text-text" : "text-text-secondary")}>{objective.label}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-wide text-text-muted">{isCurrent ? "your turn" : "pending"}</p>
+                  </div>
+                </motion.li>
+              );
+            })}
+          </AnimatePresence>
         </ul>
 
         {/* Completed — collapsed */}

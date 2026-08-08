@@ -24,7 +24,7 @@ import { summarizeRepository } from "./summarize";
 import { objectiveStatuses } from "./taskValidator";
 import {
   AREA_HIGHLIGHT_MS,
-  DEFAULT_EVENT_TOASTS,
+  buildEventToast,
   EVENT_AREA_MAP,
   TOAST_DURATION_MS,
   getErrorHint,
@@ -124,6 +124,52 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
     }
   };
 
+  // Engine event → toasts + column highlights. Extracted so it can be re-attached
+  // if a temporary unmount (Read ⇄ Interactive toggle) detaches the subscription
+  // while the sandbox engine is kept alive.
+  const subscribeEvents = (engine: GitSimulation): (() => void) =>
+    engine.onEvent((event: GitEvent) => {
+      const state = get();
+      if (!state.config) return;
+
+      // Only handle events from the CURRENT engine (ignore stragglers).
+      const areaKeys = EVENT_AREA_MAP[event.type];
+      const message = buildEventToast(event, state.config.toasts);
+
+      const updates: Partial<PlaygroundState> = {};
+
+      if (message) {
+        updates.toasts = [
+          ...state.toasts,
+          { id: nextToastId(), message, kind: "success" },
+        ];
+      }
+      if (areaKeys && areaKeys.length > 0) {
+        updates.activeAreas = areaKeys;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        set({ toasts: [...(updates.toasts ?? state.toasts)], activeAreas: [...(updates.activeAreas ?? state.activeAreas)] });
+        if (updates.activeAreas) {
+          window.setTimeout(() => {
+            if (get().engine === engine) {
+              set({ activeAreas: [] });
+            }
+          }, AREA_HIGHLIGHT_MS);
+        }
+      }
+
+      // Auto-dismiss toasts
+      if (message) {
+        const toastId = updates.toasts?.[updates.toasts.length - 1]?.id;
+        if (toastId) {
+          window.setTimeout(() => {
+            set((s) => ({ toasts: s.toasts.filter((t) => t.id !== toastId) }));
+          }, TOAST_DURATION_MS);
+        }
+      }
+    });
+
   return {
     lessonId: "",
     engine: null,
@@ -138,7 +184,15 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
 
     mount: (lesson) => {
       const current = get();
-      if (current.lessonId === lesson.id && current.engine) return;
+      if (current.lessonId === lesson.id && current.engine) {
+        // Same lesson already mounted. A temporary unmount (Read ⇄ Interactive
+        // toggle) keeps the engine but detaches its event subscription; re-attach
+        // it so toasts + column highlights keep working.
+        if (!current._unsubEvents) {
+          set({ _unsubEvents: subscribeEvents(current.engine) });
+        }
+        return;
+      }
       if (!lesson.playground) return;
 
       // Unsubscribe previous event handler
@@ -149,48 +203,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
       runRemoteSetup(engine, lesson.playground.remoteSetup);
 
       // Subscribe to engine events → toasts + area highlights
-      const unsub = engine.onEvent((event: GitEvent) => {
-        const state = get();
-        if (!state.config) return;
-
-        // Only handle events from the CURRENT engine (ignore stragglers)
-        const toastMessages = state.config.toasts;
-        const areaKeys = EVENT_AREA_MAP[event.type];
-        const message = toastMessages?.[event.type] ?? DEFAULT_EVENT_TOASTS[event.type];
-
-        const updates: Partial<PlaygroundState> = {};
-
-        if (message) {
-          updates.toasts = [
-            ...state.toasts,
-            { id: nextToastId(), message, kind: "success" },
-          ];
-        }
-        if (areaKeys && areaKeys.length > 0) {
-          updates.activeAreas = areaKeys;
-        }
-
-        if (Object.keys(updates).length > 0) {
-          set({ toasts: [...(updates.toasts ?? state.toasts)], activeAreas: [...(updates.activeAreas ?? state.activeAreas)] });
-          if (updates.activeAreas) {
-            window.setTimeout(() => {
-              if (get().engine === engine) {
-                set({ activeAreas: [] });
-              }
-            }, AREA_HIGHLIGHT_MS);
-          }
-        }
-
-        // Auto-dismiss toasts
-        if (message) {
-          const toastId = updates.toasts?.[updates.toasts.length - 1]?.id;
-          if (toastId) {
-            window.setTimeout(() => {
-              set((s) => ({ toasts: s.toasts.filter((t) => t.id !== toastId) }));
-            }, TOAST_DURATION_MS);
-          }
-        }
-      });
+      const unsub = subscribeEvents(engine);
 
       const completed = latchObjectives(engine, lesson.playground.objectives, []);
       report(engine.getState());

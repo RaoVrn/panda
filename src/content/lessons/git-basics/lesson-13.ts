@@ -240,6 +240,12 @@ export const lesson13: ContentLesson = {
     // 3 · Common mistake.
     // ---------------------------------------------------------------
     {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
       type: "warning",
       id: "mistake",
       title: "\"git diff shows nothing, but I edited a file!\"",

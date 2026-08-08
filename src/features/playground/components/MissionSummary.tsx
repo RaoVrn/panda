@@ -83,16 +83,30 @@ export function MissionSummary({ xpReward, durationMinutes, className }: Mission
           />
         </div>
         <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-secondary">
-          {doneCount}/{total} · {pct}%
+          <motion.span
+            key={doneCount}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="inline-block"
+          >
+            {doneCount}/{total} · {pct}%
+          </motion.span>
         </span>
       </div>
 
       {next && (
         <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-text-muted">
           <Target className="size-3 shrink-0 text-accent-hover" aria-hidden="true" />
-          <span className="truncate">
+          <motion.span
+            key={next}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="truncate"
+          >
             Next: <span className="font-medium text-text-secondary">{next}</span>
-          </span>
+          </motion.span>
         </span>
       )}
 

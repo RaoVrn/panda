@@ -160,6 +160,12 @@ export const lesson07: ContentLesson = {
     // 3 · Common mistake.
     // ---------------------------------------------------------------
     {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
       type: "warning",
       id: "mistake",
       title: "\"Why isn't Git tracking my new file?\"",

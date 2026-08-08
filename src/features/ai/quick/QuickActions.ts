@@ -37,6 +37,11 @@ export function buildQuickActions(
       prompt: `Explain this: ${ctx.selectedText.slice(0, 140)}`,
     });
   }
+  // In the Playground, coach the mission instead of generic chips.
+  if (ctx.mode === "interactive" && (ctx.objective || ctx.terminalState)) {
+    items.push({ label: "What should I do next?", prompt: "What should I do next?" });
+    items.push({ label: "Explain my terminal", prompt: "Explain my terminal" });
+  }
   if (ctx.terminalState) {
     items.push({ label: "What did I do wrong?", prompt: "What did I do wrong?" });
   }
@@ -62,6 +67,15 @@ export function buildQuickActions(
 /** Empty-state example prompts — "ask anything about this lesson". */
 export function buildEmptyState(ctx: LessonContext): Recommendation[] {
   const title = ctx.lessonTitle ?? "this lesson";
+  // In the Playground, lead with mission coaching.
+  if (ctx.mode === "interactive" && ctx.objective) {
+    return [
+      { label: "What should I do next?", prompt: "What should I do next?" },
+      { label: "Give me a hint", prompt: "Hint" },
+      { label: "Explain my terminal", prompt: "Explain my terminal" },
+      { label: "What did I do wrong?", prompt: "What did I do wrong?" },
+    ];
+  }
   return [
     { label: `Why does ${title} exist?`, prompt: `Why does ${title} exist?` },
     { label: "Explain like I'm 10", prompt: "Explain like I'm 10" },
@@ -72,6 +86,16 @@ export function buildEmptyState(ctx: LessonContext): Recommendation[] {
 
 /** A single proactive nudge, or null when the learner is fine. */
 export function buildNotice(ctx: LessonContext): string | null {
+  // In the Playground: nudge toward the next objective when the learner
+  // seems quiet or has been on the same mission for a while.
+  if (
+    ctx.mode === "interactive" &&
+    ctx.objective &&
+    ctx.timeOnSectionSeconds &&
+    ctx.timeOnSectionSeconds >= 90
+  ) {
+    return `Stuck on "${ctx.objective}"? I can give you a hint.`;
+  }
   if (
     ctx.timeOnSectionSeconds &&
     ctx.timeOnSectionSeconds >= 300 &&

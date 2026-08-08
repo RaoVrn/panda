@@ -76,6 +76,8 @@ export interface LessonContext {
   terminal?: string;
   /** The learner's current playground objective (the one they're working on). */
   objective?: string;
+  /** Compact mission progress, e.g. "2 of 3 objectives done". */
+  missionProgress?: string;
   /** What the learner is currently editing / the last saved snapshot. */
   editor?: string;
   /** Current sandbox/editor contents, capped for prompt safety. */

@@ -184,7 +184,7 @@ export const lesson04: ContentLesson = {
       type: "heading",
       id: "section-mistake",
       level: 2,
-      text: "One common mistake",
+      text: "Common beginner mistake",
     },
     {
       type: "warning",

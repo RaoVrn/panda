@@ -201,7 +201,7 @@ export const lesson10: ContentLesson = {
       type: "heading",
       id: "section-secret",
       level: 2,
-      text: "The one mistake to never make",
+      text: "Common beginner mistake",
     },
     {
       type: "paragraph",

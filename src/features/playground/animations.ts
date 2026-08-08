@@ -8,7 +8,7 @@
  * Every lesson can override the toast messages via `ContentLessonPlayground.toasts`.
  */
 
-import type { GitEventType } from "@/lib/git";
+import type { GitEvent, GitEventType } from "@/lib/git";
 
 /** Which visualizer columns to highlight when an event fires. */
 export const EVENT_AREA_MAP: Partial<Record<GitEventType, string[]>> = {
@@ -25,21 +25,61 @@ export const EVENT_AREA_MAP: Partial<Record<GitEventType, string[]>> = {
   STATUS_CHANGED: [],
 };
 
-/** Default one-sentence explanations shown as toasts after an event. */
-export const DEFAULT_EVENT_TOASTS: Partial<Record<GitEventType, string>> = {
-  REPOSITORY_INITIALIZED: "Git is now tracking this folder.",
-  FILE_STAGED: "Git is preparing this file for the next snapshot.",
-  FILE_UNSTAGED: "The file is back in the working tree.",
-  FILE_RESTORED: "The working tree now matches the last commit.",
-  COMMIT_CREATED: "Git saved a new permanent snapshot.",
-  HEAD_CHANGED: "HEAD now points to the latest snapshot.",
-};
-
 /** How long (ms) column highlights persist. */
 export const AREA_HIGHLIGHT_MS = 900;
 
 /** How long (ms) explanation toasts stay visible. */
 export const TOAST_DURATION_MS = 2800;
+
+/** Short, human-friendly file name for toasts (drops the folder path). */
+function shortName(path?: string): string {
+  if (!path) return "This file";
+  const name = path.split("/").pop() ?? path;
+  return name;
+}
+
+/**
+ * Build a beginner-friendly, one-sentence toast that explains what a Git event
+ * just changed — including the file it touched, so feedback feels concrete
+ * ("app.js is now staged") rather than generic ("a file was staged").
+ */
+export function buildEventToast(
+  event: GitEvent,
+  overrides: Partial<Record<GitEventType, string>> = {},
+): string | undefined {
+  const custom = overrides[event.type];
+  if (custom) return custom;
+
+  const name = shortName(event.path);
+  switch (event.type) {
+    case "REPOSITORY_INITIALIZED":
+      return "Git is now tracking this folder.";
+    case "FILE_STAGED":
+      return `${name} is staged and ready for the next snapshot.`;
+    case "FILE_UNSTAGED":
+      return `${name} is back in the working tree.`;
+    case "FILE_ADDED":
+      return `${name} was created in the working tree.`;
+    case "FILE_MODIFIED":
+      return `${name} was updated.`;
+    case "FILE_DELETED":
+      return `${name} was removed.`;
+    case "FILE_RESTORED":
+      return `${name} now matches the last snapshot.`;
+    case "COMMIT_CREATED": {
+      const message = event.payload?.message;
+      return message ? `Snapshot saved: "${message}".` : "Git saved a new permanent snapshot.";
+    }
+    case "HEAD_CHANGED":
+      return "HEAD now points to the latest snapshot.";
+    case "BRANCH_CHANGED":
+      return "You're on a new branch now.";
+    case "STASH_CHANGED":
+      return "Your stash was updated.";
+    default:
+      return undefined;
+  }
+}
 
 /** Friendly explanations for common Git errors. */
 export const ERROR_HINTS: Record<string, string> = {
