@@ -5,6 +5,7 @@ import { getLesson } from "@/content/lessons";
 import { useLessonId } from "@/features/lesson/lessonModeContext";
 import { usePlaygroundStore } from "../playgroundStore";
 import { usePlaygroundRepository } from "../usePlayground";
+import { closestCommand, getErrorHint } from "../animations";
 import { cn } from "@/lib/utils";
 
 const PROMPT = "$";
@@ -129,6 +130,21 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
       } else {
         setLines((prev) => [...prev, { id: ++lineSeq, kind: "cmd", text: value }]);
         if (output.text) appendOutput(output.text, output.kind);
+        // Inline coaching: when a command fails, explain why and how to fix it
+        // right where the error appeared — not just as a toast.
+        if (output.kind === "error") {
+          const hint = getErrorHint(output.text);
+          const suggestion = /unknown git command|command not found/i.test(output.text)
+            ? closestCommand(value)
+            : undefined;
+          if (hint) setLines((prev) => [...prev, { id: ++lineSeq, kind: "warning", text: `→ ${hint}` }]);
+          if (suggestion) {
+            setLines((prev) => [
+              ...prev,
+              { id: ++lineSeq, kind: "warning", text: `→ Did you mean: git ${suggestion}?` },
+            ]);
+          }
+        }
       }
 
       setHistory((prev) => [...prev, value]);

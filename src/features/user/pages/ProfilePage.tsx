@@ -9,6 +9,14 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/layout/PageHeader";
 
+function formatTime(totalSeconds: number): string {
+  const minutes = Math.round(totalSeconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return `${hours}h ${rest}m`;
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border-subtle bg-base-subtle/40 px-4 py-3 text-center">
@@ -96,8 +104,14 @@ export function ProfilePage() {
             label="Quiz accuracy"
             value={stats.quizAccuracy === null ? "—" : `${stats.quizAccuracy}%`}
           />
+          <Stat label="Missions" value={`${stats.missionsCompleted}`} />
+          <Stat label="Commands" value={`${stats.commandsExecuted}`} />
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="AI questions" value={`${stats.aiQuestionsAsked}`} />
           <Stat label="Practices" value={`${stats.practiceCount}`} />
+          <Stat label="Time learning" value={formatTime(stats.timeSpentSeconds)} />
+          <Stat label="Lessons started" value={`${stats.lessonsStarted}`} />
         </div>
 
         {!hasProgress && (

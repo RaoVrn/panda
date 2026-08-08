@@ -31,6 +31,8 @@ function fingerprint(context: LessonContext): string {
     context.currentBlockType ?? "",
     context.currentBlockText ?? "",
     context.selectedText ?? "",
+    context.terminal ?? "",
+    context.objective ?? "",
     context.terminalState ?? "",
     context.sandbox ?? "",
     context.currentSectionText ?? "",

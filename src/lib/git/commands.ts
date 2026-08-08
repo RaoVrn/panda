@@ -201,9 +201,11 @@ export function runCommand(
     return { state: next, events, output: ok(`Initialized empty Git repository in ${next.pwd}/.git/`, "success") };
   }
 
-  if (!next.initialized) return { state: repo, events, output: notARepo() };
-
-  // ------------------------------------------------------- git config
+  // --------------------------------------------------- git --version / git config
+  // These work anywhere, not just inside a repository (like real Git).
+  if (sub === "--version" || sub === "-v") {
+    return { state: repo, events, output: ok("git version 2.39.2", "success") };
+  }
   const configList = /^git config(?: --global)? --list$/;
   if (configList.test(trimmed)) {
     const lines = [`user.name=${next.author.name}`, `user.email=${next.author.email}`];
@@ -230,6 +232,8 @@ export function runCommand(
     const value = configGet[1] === "name" ? next.author.name : next.author.email;
     return { state: repo, events, output: ok(value, "output") };
   }
+
+  if (!next.initialized) return { state: repo, events, output: notARepo() };
 
   // ---------------------------------------------------------- git status
   if (sub === "status") {
@@ -353,11 +357,15 @@ export function runCommand(
   const logMatch = trimmed.match(/^git log(?:\s+(--oneline))?(?:\s+([\w/.-]+))?$/);
   if (logMatch) {
     const oneline = logMatch[1] === "--oneline";
-    const target = logMatch[2] ? resolveRev(next, logMatch[2]!) : next.head;
-    if (target === undefined || target === null) {
-      return { state: repo, events, output: ok(`fatal: ambiguous argument '${logMatch[2]}': unknown revision`, "error") };
-    }
+    const explicit = logMatch[2];
+    const target = explicit ? resolveRev(next, explicit) : next.head;
     if (next.commits.length === 0) {
+      return { state: repo, events, output: ok(`fatal: your current branch '${next.branch}' does not have any commits yet`, "error") };
+    }
+    if (explicit && (target === undefined || target === null)) {
+      return { state: repo, events, output: ok(`fatal: ambiguous argument '${explicit}': unknown revision`, "error") };
+    }
+    if (target === undefined || target === null) {
       return { state: repo, events, output: ok(`fatal: your current branch '${next.branch}' does not have any commits yet`, "error") };
     }
     const lines: string[] = [];

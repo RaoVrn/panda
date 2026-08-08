@@ -19,6 +19,7 @@ import { createGitSimulation } from "@/lib/git";
 import type { GitCommandOutput, GitEvent, GitSimulation } from "@/lib/git";
 import type { ContentLesson, ContentLessonPlayground, ContentPlaygroundObjective } from "@/content/schema";
 import { useAiContextStore } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 import { summarizeRepository } from "./summarize";
 import { objectiveStatuses } from "./taskValidator";
 import {
@@ -213,6 +214,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
       const { output } = engine.run(command);
       const history = [...get().history, command];
       report(engine.getState(), command, output, history);
+      useProgressStore.getState().recordCommand();
 
       // Error hint toast
       let additionalToasts: PlaygroundToast[] = [];

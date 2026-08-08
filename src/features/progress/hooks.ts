@@ -77,6 +77,11 @@ export function useProfileStats(): ProfileStats {
   const correctQuizAnswers = useProgressStore((state) => state.totalQuizCorrect);
   const aiQuestionsAsked = useProgressStore((state) => state.aiQuestions);
   const practiceCount = useProgressStore((state) => state.practiceCount);
+  const commandsExecuted = useProgressStore((state) => state.commandsExecuted);
+  const missionsCompleted = useProgressStore((state) => state.missionsCompleted);
+  const timeSpentSeconds = useProgressStore((state) =>
+    Object.values(state.lessonTimeSpent).reduce((sum, seconds) => sum + seconds, 0),
+  );
   return useMemo(
     () => ({
       lessonsCompleted,
@@ -85,6 +90,9 @@ export function useProfileStats(): ProfileStats {
       correctQuizAnswers,
       aiQuestionsAsked,
       practiceCount,
+      commandsExecuted,
+      missionsCompleted,
+      timeSpentSeconds,
       quizAccuracy:
         totalQuizQuestions > 0
           ? Math.round((correctQuizAnswers / totalQuizQuestions) * 100)
@@ -97,6 +105,9 @@ export function useProfileStats(): ProfileStats {
       correctQuizAnswers,
       aiQuestionsAsked,
       practiceCount,
+      commandsExecuted,
+      missionsCompleted,
+      timeSpentSeconds,
     ],
   );
 }

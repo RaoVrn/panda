@@ -74,6 +74,8 @@ export interface LessonContext {
   visualization?: string;
   /** The last command shown/typed in the terminal sandbox. */
   terminal?: string;
+  /** The learner's current playground objective (the one they're working on). */
+  objective?: string;
   /** What the learner is currently editing / the last saved snapshot. */
   editor?: string;
   /** Current sandbox/editor contents, capped for prompt safety. */

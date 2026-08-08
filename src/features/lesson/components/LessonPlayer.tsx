@@ -9,6 +9,7 @@ import {
   type LessonModeValue,
 } from "@/features/lesson/lessonModeContext";
 import { LessonModeToggle } from "@/features/lesson/components/LessonModeToggle";
+import { LessonProgression } from "@/features/lesson/components/LessonProgression";
 import { useReadingStore } from "@/stores/readingStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { ViewportObserver } from "@/features/ai/context/ViewportObserver";
@@ -49,6 +50,28 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
   useEffect(() => {
     if (mode === "interactive") markInteractive(lessonId);
   }, [mode, lessonId, markInteractive]);
+
+  // Activity tracking: accumulate seconds spent on this lesson.
+  const recordLessonTime = useProgressStore((state) => state.recordLessonTime);
+  useEffect(() => {
+    let start = Date.now();
+    let pending = 0;
+    const tick = () => {
+      const now = Date.now();
+      pending += Math.max(0, Math.floor((now - start) / 1000));
+      start = now;
+      if (pending >= 15) {
+        recordLessonTime(lessonId, pending);
+        pending = 0;
+      }
+    };
+    const id = window.setInterval(tick, 15000);
+    return () => {
+      window.clearInterval(id);
+      tick();
+      if (pending > 0) recordLessonTime(lessonId, pending);
+    };
+  }, [lessonId, recordLessonTime]);
 
   const modeValue = useMemo<LessonModeValue>(
     () => ({ mode, setMode }),
@@ -111,13 +134,16 @@ export function LessonPlayer({ lessonId, totalBlocks, children }: LessonPlayerPr
         <div ref={rootRef} className="relative">
           <div className="sticky top-0 z-20 mb-6 border-b border-border-subtle bg-base/85 backdrop-blur-sm">
             <div className="flex items-center justify-between gap-3 px-1 py-2">
-              <p className="text-xs text-text-muted">
-                {mode === "read" ? "Read" : "Interactive"} mode
-                <span aria-hidden="true" className="mx-2 text-border-strong">
-                  ·
-                </span>
-                <span className="tabular-nums">{pct}% read</span>
-              </p>
+              <div className="min-w-0">
+                <p className="text-xs text-text-muted">
+                  {mode === "read" ? "Read" : "Interactive"} mode
+                  <span aria-hidden="true" className="mx-2 text-border-strong">
+                    ·
+                  </span>
+                  <span className="tabular-nums">{pct}% read</span>
+                </p>
+                <LessonProgression lessonId={lessonId} />
+              </div>
               <LessonModeToggle mode={mode} onChange={setMode} />
             </div>
             <div className="h-0.5 w-full bg-transparent" aria-hidden="true">

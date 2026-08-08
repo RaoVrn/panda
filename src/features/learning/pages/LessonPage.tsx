@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   getLessonBySlug,
   nextLesson,
@@ -17,9 +17,23 @@ import { useLessonModeStore } from "@/stores/lessonModeStore";
 export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const scroll = <ScrollToTop />;
 
   const lesson = slug ? getLessonBySlug(slug) : undefined;
+
+  // Deep link from search: /lesson/:slug?focus=<blockId> scrolls to that block.
+  const focusId = searchParams.get("focus");
+  useEffect(() => {
+    if (!focusId || !lesson) return;
+    const mode = useLessonModeStore.getState().mode;
+    if (mode !== "read") useLessonModeStore.getState().setMode("read");
+    const id = window.setTimeout(() => {
+      const el = document.querySelector<HTMLElement>(`[data-block-id="${focusId}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [focusId, lesson]);
 
   // The interactive playground gets a wider canvas for its IDE workspace.
   const playgroundMode = useLessonModeStore((state) => state.mode) === "interactive";

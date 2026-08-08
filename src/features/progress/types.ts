@@ -55,6 +55,12 @@ export interface ProfileStats {
   aiQuestionsAsked: number;
   practiceCount: number;
   quizAccuracy: number | null;
+  /** Total Git commands executed in terminals + playgrounds. */
+  commandsExecuted: number;
+  /** Total playground missions fully completed. */
+  missionsCompleted: number;
+  /** Total seconds actively spent on lessons. */
+  timeSpentSeconds: number;
 }
 
 export type ToastType = "xp" | "achievement" | "levelup" | "section";

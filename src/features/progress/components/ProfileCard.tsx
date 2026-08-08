@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import {
   CheckCircle2,
+  Clock,
   Flame,
   MessageSquare,
   Settings,
   Target,
+  Terminal,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -103,8 +105,8 @@ export function ProfileCard({ className }: { className?: string }) {
         />
         <Stat
           icon={<Target className="size-3.5" aria-hidden="true" />}
-          label="Quiz accuracy"
-          value={stats.quizAccuracy === null ? "Not yet" : `${stats.quizAccuracy}%`}
+          label="Missions completed"
+          value={`${stats.missionsCompleted}`}
         />
         <Stat
           icon={<Zap className="size-3.5" aria-hidden="true" />}
@@ -112,16 +114,29 @@ export function ProfileCard({ className }: { className?: string }) {
           value={`${level.xp}`}
         />
         <Stat
+          icon={<Terminal className="size-3.5" aria-hidden="true" />}
+          label="Commands run"
+          value={`${stats.commandsExecuted}`}
+        />
+        <Stat
+          icon={<Clock className="size-3.5" aria-hidden="true" />}
+          label="Time learning"
+          value={formatTime(stats.timeSpentSeconds)}
+        />
+        <Stat
           icon={<MessageSquare className="size-3.5" aria-hidden="true" />}
           label="AI questions asked"
           value={`${stats.aiQuestionsAsked}`}
         />
-        <Stat
-          icon={<Trophy className="size-3.5" aria-hidden="true" />}
-          label="Badges earned"
-          value={`${achievementCount}`}
-        />
       </div>
     </div>
   );
+}
+
+function formatTime(totalSeconds: number): string {
+  const minutes = Math.round(totalSeconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return `${hours}h ${rest}m`;
 }

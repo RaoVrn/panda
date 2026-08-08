@@ -51,6 +51,14 @@ interface ProgressState {
   practiceCount: number;
   totalQuizCorrect: number;
   totalQuizQuestions: number;
+  /** Total Git commands executed across all terminals/playgrounds. */
+  commandsExecuted: number;
+  /** Total playground missions fully completed. */
+  missionsCompleted: number;
+  /** Lessons whose playground mission has been completed (idempotence). */
+  missionsDone: Record<string, boolean>;
+  /** Seconds actively spent per lesson (accumulated in the lesson player). */
+  lessonTimeSpent: Record<string, number>;
   toasts: ProgressToast[];
 
   startLesson: (lessonId: string) => void;
@@ -60,6 +68,9 @@ interface ProgressState {
   recordQuizResult: (lessonId: string, correct: number, total: number) => void;
   recordPractice: (lessonId: string) => void;
   recordAiQuestion: () => void;
+  recordCommand: () => void;
+  recordMissionComplete: (lessonId: string) => void;
+  recordLessonTime: (lessonId: string, seconds: number) => void;
   dismissToast: (id: number) => void;
   reset: () => void;
 }
@@ -179,6 +190,10 @@ export const useProgressStore = create<ProgressState>()(
         practiceCount: 0,
         totalQuizCorrect: 0,
         totalQuizQuestions: 0,
+        commandsExecuted: 0,
+        missionsCompleted: 0,
+        missionsDone: {},
+        lessonTimeSpent: {},
         toasts: [],
 
         startLesson: (lessonId) =>
@@ -297,6 +312,28 @@ export const useProgressStore = create<ProgressState>()(
           unlockAchievements();
         },
 
+        recordCommand: () => {
+          set((state) => ({ commandsExecuted: state.commandsExecuted + 1 }));
+        },
+
+        recordMissionComplete: (lessonId) => {
+          if (get().missionsDone[lessonId]) return;
+          set((state) => ({
+            missionsCompleted: state.missionsCompleted + 1,
+            missionsDone: { ...state.missionsDone, [lessonId]: true },
+          }));
+        },
+
+        recordLessonTime: (lessonId, seconds) => {
+          if (seconds <= 0) return;
+          set((state) => ({
+            lessonTimeSpent: {
+              ...state.lessonTimeSpent,
+              [lessonId]: (state.lessonTimeSpent[lessonId] ?? 0) + seconds,
+            },
+          }));
+        },
+
         dismissToast: (id) =>
           set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 
@@ -316,6 +353,10 @@ export const useProgressStore = create<ProgressState>()(
             practiceCount: 0,
             totalQuizCorrect: 0,
             totalQuizQuestions: 0,
+            commandsExecuted: 0,
+            missionsCompleted: 0,
+            missionsDone: {},
+            lessonTimeSpent: {},
             toasts: [],
             streakCurrent: 0,
             lastStudyDate: null,
@@ -324,7 +365,7 @@ export const useProgressStore = create<ProgressState>()(
     },
     {
       name: "panda-progress",
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => toZustandStorage(localStorageAdapter)),
       partialize: (state) => ({
         xp: state.xp,
@@ -343,11 +384,22 @@ export const useProgressStore = create<ProgressState>()(
         practiceCount: state.practiceCount,
         totalQuizCorrect: state.totalQuizCorrect,
         totalQuizQuestions: state.totalQuizQuestions,
+        commandsExecuted: state.commandsExecuted,
+        missionsCompleted: state.missionsCompleted,
+        missionsDone: state.missionsDone,
+        lessonTimeSpent: state.lessonTimeSpent,
       }),
       migrate: (persisted, version) => {
-        if (version >= 2) return persisted as ProgressState;
-        const old = persisted as { completedLessonIds?: string[] };
-        return { completedLessonIds: old.completedLessonIds ?? [] } as ProgressState;
+        if (version >= 3) return persisted as ProgressState;
+        const prev = (persisted ?? {}) as Partial<ProgressState>;
+        return {
+          ...prev,
+          completedLessonIds: prev.completedLessonIds ?? [],
+          commandsExecuted: prev.commandsExecuted ?? 0,
+          missionsCompleted: prev.missionsCompleted ?? 0,
+          missionsDone: prev.missionsDone ?? {},
+          lessonTimeSpent: prev.lessonTimeSpent ?? {},
+        } as ProgressState;
       },
     },
   ),

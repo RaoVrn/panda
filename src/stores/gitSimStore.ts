@@ -21,6 +21,7 @@ import {
 } from "@/features/lesson/components/interactive/gitEngine";
 import { summarizeGitState } from "@/features/ai/context/SandboxContext";
 import { useAiContextStore } from "@/stores/aiContextStore";
+import { useProgressStore } from "@/features/progress/progressStore";
 
 export interface GitSimSeed {
   files?: Record<string, string>;
@@ -75,6 +76,8 @@ export const useGitSimStore = create<GitSimState>()((set, get) => ({
       terminal: command,
       terminalState: summarizeGitState(result.state, command, result.output, history),
     });
+    // Activity tracking: count every command the learner runs.
+    useProgressStore.getState().recordCommand();
     set({
       state: result.state,
       lastOutput: result.output,

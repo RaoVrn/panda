@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Award, Check, ChevronDown, Clock, Copy, Flag, Lightbulb, PartyPopper, Target, TerminalSquare, AlertTriangle } from "lucide-react";
 import { objectiveStatuses } from "../taskValidator";
-import { usePlaygroundRepository, usePlaygroundRemote } from "../usePlayground";
+import { buildContextualHint } from "../contextualHint";
+import { usePlaygroundRepository, usePlaygroundRemote, usePlaygroundSession } from "../usePlayground";
+import { useAiContextStore } from "@/stores/aiContextStore";
 import { usePlaygroundStore } from "../playgroundStore";
 import { useLessonId } from "@/features/lesson/lessonModeContext";
 import { useProgressStore } from "@/features/progress/progressStore";
@@ -58,7 +60,20 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
     return index === -1 ? null : { index, label: objectives[index]?.label ?? "" };
   }, [objectives, doneFor]);
 
-  const currentHint = currentStep ? hints[currentStep.index] ?? hints[0] : undefined;
+  // Contextual hint: derived from the live repository state + last command,
+  // falling back to the lesson's static hint for the current step.
+  const session = usePlaygroundSession();
+  const currentHint = useMemo(() => {
+    if (!currentStep || !repo) return undefined;
+    const objective = objectives[currentStep.index];
+    if (!objective) return undefined;
+    return buildContextualHint(
+      objective,
+      repo,
+      { lastCommand: session.lastCommand, lastOutput: session.lastOutput, history: session.history },
+      hints[currentStep.index] ?? hints[0],
+    );
+  }, [currentStep, repo, objectives, hints, session]);
   const [hintOpen, setHintOpen] = useState(false);
   const [hintsExpanded, setHintsExpanded] = useState(false);
   const [solutionOpen, setSolutionOpen] = useState(false);
@@ -68,9 +83,21 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
   const active = objectives.filter((_, i) => !doneFor(objectives[i]?.id ?? "", i));
   const completedList = objectives.filter((_, i) => doneFor(objectives[i]?.id ?? "", i));
 
+  // Feed the learner's current objective to Panda AI so it never needs asking.
   useEffect(() => {
-    if (allDone) markInteractive(lessonId);
-  }, [allDone, lessonId, markInteractive]);
+    if (currentStep) {
+      useAiContextStore.getState().report({ objective: currentStep.label });
+    }
+  }, [currentStep]);
+
+  const markMissionComplete = useProgressStore((state) => state.recordMissionComplete);
+
+  useEffect(() => {
+    if (allDone) {
+      markInteractive(lessonId);
+      markMissionComplete(lessonId);
+    }
+  }, [allDone, lessonId, markInteractive, markMissionComplete]);
 
   return (
     <section className={cn("overflow-hidden rounded-2xl border bg-card/95 shadow-[0_1px_2px_rgba(0,0,0,0.2)]", allDone ? "border-[#3fb950]/20" : "border-white/[0.03]", className)}>

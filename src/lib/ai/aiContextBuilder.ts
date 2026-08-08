@@ -65,6 +65,8 @@ export function buildContextSnippet(context: LessonContext): string {
     context.currentSectionText &&
       `Section content (what the learner is reading):\n${context.currentSectionText}`,
     context.selectedText && `Selected: """${context.selectedText}"""`,
+    context.objective && `Current objective: ${context.objective}`,
+    context.terminal && `Last command: ${context.terminal}`,
     context.terminalState && `Terminal state:\n${context.terminalState}`,
     context.sandbox && `Sandbox:\n${context.sandbox}`,
     context.quiz && `Quiz state: ${context.quiz}`,

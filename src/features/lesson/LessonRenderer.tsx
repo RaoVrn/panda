@@ -6,6 +6,7 @@ import { LessonTitle } from "@/features/lesson/components/LessonTitle";
 import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
 import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb";
 import { LessonNav } from "@/features/lesson/components/LessonNav";
+import { PrerequisiteNote } from "@/features/lesson/components/PrerequisiteNote";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
 import { PlaygroundWorkspace } from "@/features/playground/components/PlaygroundWorkspace";
 import { PlaygroundUnavailable } from "@/features/playground/components/PlaygroundUnavailable";
@@ -144,6 +145,7 @@ export function LessonRenderer({
             <div className="mb-8">
               <LessonBreadcrumb lesson={lesson} />
             </div>
+            <PrerequisiteNote lesson={lesson} />
             <LessonTitle lesson={lesson} />
             {lesson.blocks.map((block, index) => (
               <BlockTracker
