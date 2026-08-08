@@ -12,6 +12,48 @@ import { fileStatusOf, statusRows } from "@/lib/git";
 import type { GitRepository } from "@/lib/git";
 import type { PlaygroundCheck } from "@/content/schema";
 
+/** Commits reachable from HEAD, oldest-first (matches what `git log` shows). */
+function reachableCommits(repo: GitRepository): GitRepository["commits"] {
+  if (!repo.head) return [];
+  const byHash = new Map(repo.commits.map((c) => [c.hash, c]));
+  const ordered: GitRepository["commits"] = [];
+  const seen = new Set<string>();
+  const stack: string[] = [];
+  let current: string | null = repo.head;
+  while (current && !seen.has(current)) {
+    stack.push(current);
+    seen.add(current);
+    const commit = byHash.get(current);
+    current = commit?.parents[0] ?? null;
+  }
+  for (const hash of stack.reverse()) {
+    const commit = byHash.get(hash);
+    if (commit) ordered.push(commit);
+  }
+  return ordered;
+}
+
+/** Whether `ancestorHash` is reachable from `descendantHash` in the commit graph. */
+function isAncestor(
+  commits: GitRepository["commits"],
+  ancestorHash: string,
+  descendantHash: string,
+): boolean {
+  if (ancestorHash === descendantHash) return true;
+  const byHash = new Map(commits.map((c) => [c.hash, c]));
+  const stack = [descendantHash];
+  const seen = new Set<string>();
+  while (stack.length > 0) {
+    const hash = stack.pop()!;
+    if (hash === ancestorHash) return true;
+    if (seen.has(hash)) continue;
+    seen.add(hash);
+    const commit = byHash.get(hash);
+    if (commit) stack.push(...commit.parents);
+  }
+  return false;
+}
+
 /** Whether one check passes for the given repository state. */
 export function evaluateCheck(
   repo: GitRepository,
@@ -21,6 +63,12 @@ export function evaluateCheck(
   switch (check.kind) {
     case "initialized":
       return repo.initialized;
+
+    case "authorName":
+      return repo.author.name === check.name;
+
+    case "authorEmail":
+      return repo.author.email === check.email;
 
     case "fileExists":
       return repo.workingTree.has(check.path);
@@ -56,7 +104,10 @@ export function evaluateCheck(
       return statusRows(repo).every((row) => !row.staged && !row.modified && !row.deleted && !row.untracked);
 
     case "commitCountAtLeast":
-      return repo.commits.length >= check.count;
+      return reachableCommits(repo).length >= check.count;
+
+    case "commitCountEquals":
+      return reachableCommits(repo).length === check.count;
 
     case "commitTouchesFile":
       return repo.commits.some((commit) =>
@@ -69,13 +120,17 @@ export function evaluateCheck(
       );
 
     case "latestCommitMessage": {
-      const latest = repo.commits[repo.commits.length - 1];
+      const reachable = reachableCommits(repo);
+      const latest = reachable[reachable.length - 1] ?? repo.commits[repo.commits.length - 1];
       if (!latest) return false;
       return check.message === undefined || latest.message === check.message;
     }
 
     case "anyCommitMessage":
       return repo.commits.some((commit) => commit.message === check.message);
+
+    case "anyCommitMessageContains":
+      return repo.commits.some((commit) => commit.message.includes(check.text));
 
     case "branch":
       return repo.branch === check.name;
@@ -89,11 +144,31 @@ export function evaluateCheck(
     case "branchAtCommit":
       return repo.branches.get(check.name) === check.hash;
 
+    case "branchDescendantOf":
+      if (!repo.branches.has(check.name) || !repo.branches.has(check.ancestor)) return false;
+      return isAncestor(repo.commits, repo.branches.get(check.ancestor) ?? "", repo.branches.get(check.name) ?? "");
+
     case "reflogHas":
       return repo.reflog.some((entry) => entry.message.includes(check.text));
 
     case "detachedHead":
       return repo.detached;
+
+    case "stashCountAtLeast":
+      return repo.stash.length >= check.count;
+
+    case "stashEmpty":
+      return repo.stash.length === 0;
+
+    case "tagExists":
+      return repo.tags.has(check.name);
+
+    case "tagNotExists":
+      return !repo.tags.has(check.name);
+
+    case "remoteTagExists":
+      if (!remote) return false;
+      return remote.tags.has(check.name);
 
     case "remoteExists":
       return repo.remotes.has(check.name);

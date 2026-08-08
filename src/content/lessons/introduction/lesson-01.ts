@@ -469,6 +469,22 @@ export const lesson01: ContentLesson = {
     // ---------------------------------------------------------------
 
     // ---------------------------------------------------------------
+    // 9 · Common mistake.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
+      type: "warning",
+      id: "mistake-warning",
+      title: "Saving your file is not saving your snapshot",
+      text: "Ctrl+S saves the file on your computer. It does NOT save a Git snapshot. Git only remembers a moment when you run git commit. Save the file in your editor all you want, but your snapshot needs a commit.",
+    },
+
+    // ---------------------------------------------------------------
     // 10 · What to remember + gentle close.
     // ---------------------------------------------------------------
     {

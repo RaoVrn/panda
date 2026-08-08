@@ -36,6 +36,54 @@ export const lessonRepositoryVsWorkingTree: ContentLesson = {
     "Know what Git watches in each room",
   ],
   xpReward: 45,
+  playground: {
+    seed: {
+      files: {
+        "README.md": "My project\n",
+        "src/main.js": "console.log('hi');\n",
+      },
+      pwd: "~/project",
+      initialized: true,
+    },
+    objectives: [
+      {
+        id: "wake",
+        label: "Turn your folder into a repository",
+        checks: [{ kind: "initialized" }],
+      },
+      {
+        id: "edit",
+        label: "Make a change in the working tree",
+        checks: [{ kind: "fileContent", path: "README.md", contains: "Panda" }],
+      },
+      {
+        id: "save",
+        label: "Save your work into the repository",
+        checks: [{ kind: "commitCountAtLeast", count: 1 }, { kind: "workingTreeClean" }],
+      },
+    ],
+    hints: [
+      "Wake Git up with git init. Now this folder is a repository.",
+      "Edit a file in the working tree: echo 'Built by Panda' >> README.md",
+      "Point at your change with git add .",
+      "Save it into the repository with git commit -m \"Add a note\".",
+    ],
+    solution: [
+      "git init",
+      "echo 'Built by Panda' >> README.md",
+      "git add .",
+      'git commit -m "Add a note"',
+    ],
+    suggestions: ["git init", "echo 'Built by Panda' >> README.md", "git add .", 'git commit -m "Add a note"'],
+    visualizer: { highlight: "repository", banner: "You edit in the working tree, you save into the repository" },
+    shell: {
+      primaryCommand: "git commit",
+      placeholder: "git init",
+      quickActions: ["git init", "echo 'Built by Panda' >> README.md", "git add .", 'git commit -m "Add a note"'],
+      welcomeText: "Two rooms, one project.",
+      helperText: "Turn the folder into a repository, edit in the working tree, then save into the repository.",
+    },
+  },
   blocks: [
     {
       type: "learningGoal",

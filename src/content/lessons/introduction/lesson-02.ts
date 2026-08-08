@@ -36,6 +36,52 @@ export const lesson02: ContentLesson = {
     "Know why teams need version control",
   ],
   xpReward: 50,
+  playground: {
+    seed: {
+      files: {},
+      pwd: "~/project",
+      initialized: true,
+    },
+    objectives: [
+      {
+        id: "old-way",
+        label: "Recreate the old way of saving",
+        checks: [{ kind: "fileExists", path: "report_FINAL_v2.doc" }],
+      },
+      {
+        id: "wake-up",
+        label: "Wake Git up",
+        checks: [{ kind: "initialized" }],
+      },
+      {
+        id: "snapshot",
+        label: "Take one proper snapshot",
+        checks: [{ kind: "commitCountAtLeast", count: 1 }],
+      },
+    ],
+    hints: [
+      "Make the messy files first, like the old way: touch report.doc, touch report_FINAL_v2.doc.",
+      "Git is a better way. Wake it up with git init.",
+      "Point at your files with git add .",
+      "Take one clean snapshot with git commit -m \"My project\".",
+    ],
+    solution: [
+      "touch report.doc",
+      "touch report_FINAL_v2.doc",
+      "git init",
+      "git add .",
+      'git commit -m "My project"',
+    ],
+    suggestions: ["touch report.doc", "touch report_FINAL_v2.doc", "git init", "git add ."],
+    visualizer: { highlight: "repository", banner: "One snapshot beats five confusing filenames" },
+    shell: {
+      primaryCommand: "git commit",
+      placeholder: "git init",
+      quickActions: ["touch report.doc", "touch report_FINAL_v2.doc", "git init", "git add .", 'git commit -m "My project"'],
+      welcomeText: "Feel the old way, then the Git way.",
+      helperText: "Make the messy filenames you used before, then replace them with one clean Git snapshot.",
+    },
+  },
   blocks: [
     {
       type: "learningGoal",
@@ -221,6 +267,22 @@ export const lesson02: ContentLesson = {
       hint: "Two people changed the same file at the same time. That's the working-together problem, and it's the same one Git solves.",
       exampleAnswer:
         "This is the sharing problem. We both edited our own copies and now they don't match. Git solves it by letting everyone work on their own copy and then carefully merging the changes together.",
+    },
+
+    // ---------------------------------------------------------------
+    // 5 · Common mistake.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
+      type: "warning",
+      id: "mistake-warning",
+      title: "Naming files with _final, _v2, _really",
+      text: "It feels like you're keeping versions, but you're really just collecting confusing copies. You don't know which is newest, what changed, or who made it. Git gives you all of that with real snapshots instead.",
     },
 
     // ---------------------------------------------------------------

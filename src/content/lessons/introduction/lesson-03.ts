@@ -36,6 +36,55 @@ export const lesson03: ContentLesson = {
     "Set your Git name and email",
   ],
   xpReward: 40,
+  playground: {
+    seed: {
+      files: {
+        "README.md": "Hello\n",
+      },
+      pwd: "~/project",
+      initialized: true,
+    },
+    objectives: [
+      {
+        id: "name",
+        label: "Tell Git your name",
+        checks: [{ kind: "authorName", name: "Panda" }],
+      },
+      {
+        id: "email",
+        label: "Tell Git your email",
+        checks: [{ kind: "authorEmail", email: "panda@example.com" }],
+      },
+      {
+        id: "sign",
+        label: "Make a snapshot signed with your name",
+        checks: [{ kind: "latestCommitMessage", message: "My first commit" }],
+      },
+    ],
+    hints: [
+      "Introduce yourself with git config --global user.name \"Panda\".",
+      "Add your email with git config --global user.email \"panda@example.com\".",
+      "Check who Git thinks you are with git config --list.",
+      "Now make a signed snapshot: git init, git add ., then git commit -m \"My first commit\".",
+    ],
+    solution: [
+      'git config --global user.name "Panda"',
+      'git config --global user.email "panda@example.com"',
+      "git config --list",
+      "git init",
+      "git add .",
+      'git commit -m "My first commit"',
+    ],
+    suggestions: ['git config --global user.name "Panda"', 'git config --global user.email "panda@example.com"', "git config --list"],
+    visualizer: { highlight: "repository", banner: "Git stamps your name on every snapshot you make" },
+    shell: {
+      primaryCommand: "git config --global user.name",
+      placeholder: "git config",
+      quickActions: ['git config --global user.name "Panda"', 'git config --global user.email "panda@example.com"', "git config --list"],
+      welcomeText: "Introduce yourself to Git.",
+      helperText: "Set your name and email, then make your first signed snapshot.",
+    },
+  },
   blocks: [
     {
       type: "learningGoal",

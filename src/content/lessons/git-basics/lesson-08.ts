@@ -198,6 +198,22 @@ export const lesson08: ContentLesson = {
     },
 
     // ---------------------------------------------------------------
+    // 5 · Common mistake.
+    // ---------------------------------------------------------------
+    {
+      type: "heading",
+      id: "section-mistake",
+      level: 2,
+      text: "Common beginner mistake",
+    },
+    {
+      type: "warning",
+      id: "mistake-warning",
+      title: "Committing files you forgot to stage",
+      text: "Only files in the staging area go into your snapshot. If you change a file but never git add it, it stays behind, and you'll wonder where your work went. Check git status before you commit.",
+    },
+
+    // ---------------------------------------------------------------
 
     // ---------------------------------------------------------------
     // 6 · Takeaways.

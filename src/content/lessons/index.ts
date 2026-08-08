@@ -39,13 +39,13 @@ import { lessonGitClone } from "@/content/lessons/remote-repositories/git-clone"
 import { lessonGitFetch } from "@/content/lessons/remote-repositories/git-fetch";
 import { lessonGitPull } from "@/content/lessons/remote-repositories/git-pull";
 import { lessonGitPush } from "@/content/lessons/remote-repositories/git-push";
-import { lessonPlaceholder_stash } from "@/content/lessons/advanced-git/stash";
-import { lessonPlaceholder_cherry_pick } from "@/content/lessons/advanced-git/cherry-pick";
-import { lessonPlaceholder_reset } from "@/content/lessons/advanced-git/reset";
-import { lessonPlaceholder_revert } from "@/content/lessons/advanced-git/revert";
-import { lessonPlaceholder_rebase } from "@/content/lessons/advanced-git/rebase";
-import { lessonPlaceholder_squash } from "@/content/lessons/advanced-git/squash";
-import { lessonPlaceholder_tags } from "@/content/lessons/advanced-git/tags";
+import { lessonGitStash } from "@/content/lessons/advanced-git/stash";
+import { lessonGitCherryPick } from "@/content/lessons/advanced-git/cherry-pick";
+import { lessonGitReset } from "@/content/lessons/advanced-git/reset";
+import { lessonGitRevert } from "@/content/lessons/advanced-git/revert";
+import { lessonGitRebase } from "@/content/lessons/advanced-git/rebase";
+import { lessonSquash } from "@/content/lessons/advanced-git/squash";
+import { lessonTags } from "@/content/lessons/advanced-git/tags";
 
 /**
  * Registry of all authored lessons. Adding a new lesson to this array (plus
@@ -90,13 +90,13 @@ export const lessons: ContentLesson[] = [
   lessonGitFetch,
   lessonGitPull,
   lessonGitPush,
-  lessonPlaceholder_stash,
-  lessonPlaceholder_cherry_pick,
-  lessonPlaceholder_reset,
-  lessonPlaceholder_revert,
-  lessonPlaceholder_rebase,
-  lessonPlaceholder_squash,
-  lessonPlaceholder_tags,
+  lessonGitStash,
+  lessonGitCherryPick,
+  lessonGitReset,
+  lessonGitRevert,
+  lessonGitRebase,
+  lessonSquash,
+  lessonTags,
 ];
 
 const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));

@@ -320,6 +320,8 @@ export interface FolderTreeNode {
  */
 export type PlaygroundCheck =
   | { kind: "initialized" }
+  | { kind: "authorName"; name: string }
+  | { kind: "authorEmail"; email: string }
   | { kind: "fileExists"; path: string }
   | { kind: "fileNotExists"; path: string }
   | { kind: "fileUntracked"; path: string }
@@ -329,16 +331,24 @@ export type PlaygroundCheck =
   | { kind: "fileContent"; path: string; contains?: string; equals?: string }
   | { kind: "workingTreeClean" }
   | { kind: "commitCountAtLeast"; count: number }
+  | { kind: "commitCountEquals"; count: number }
   | { kind: "commitTouchesFile"; path: string }
   | { kind: "commitDoesNotTouchFile"; path: string }
   | { kind: "latestCommitMessage"; message?: string }
   | { kind: "anyCommitMessage"; message: string }
+  | { kind: "anyCommitMessageContains"; text: string }
   | { kind: "branch"; name: string }
   | { kind: "branchExists"; name: string }
   | { kind: "branchNotExists"; name: string }
   | { kind: "branchAtCommit"; name: string; hash: string }
+  | { kind: "branchDescendantOf"; name: string; ancestor: string }
   | { kind: "reflogHas"; text: string }
   | { kind: "detachedHead" }
+  | { kind: "stashCountAtLeast"; count: number }
+  | { kind: "stashEmpty" }
+  | { kind: "tagExists"; name: string }
+  | { kind: "tagNotExists"; name: string }
+  | { kind: "remoteTagExists"; name: string }
   | { kind: "remoteExists"; name: string }
   | { kind: "remoteNotExists"; name: string }
   | { kind: "remoteHasCommit"; message: string }
