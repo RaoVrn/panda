@@ -115,7 +115,7 @@ export function SearchPage() {
       <PageHeader
         title="Search"
         subtitle="Find lessons, commands, concepts and missions across the course."
-        back={{ to: "/course", label: "Dashboard" }}
+        back={{ to: "/dashboard", label: "Dashboard" }}
       />
 
       <SearchInput
@@ -149,7 +149,7 @@ export function SearchPage() {
                 {groups!.moduleHits.map((hit) => (
                   <Link
                     key={hit.text}
-                    to="/course"
+                    to="/dashboard"
                     className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-base-subtle px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-border-strong hover:text-text"
                   >
                     <BookOpen className="size-3.5 text-accent-hover" aria-hidden="true" />

@@ -1,142 +1,117 @@
-import type { ReactNode } from "react";
+import { useMemo } from "react";
+import { Flame } from "lucide-react";
+import { useAuth } from "@/features/user/auth/authContext";
+import { useProfile } from "@/features/user/hooks/useProfile";
+import { Avatar } from "@/features/user/components/Avatar";
+import { allLessons } from "@/content/lessons";
 import {
-  CheckCircle2,
-  Clock,
-  Flame,
-  MessageSquare,
-  Settings,
-  Target,
-  Terminal,
-  Trophy,
-  Zap,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { ACHIEVEMENTS } from "../achievements";
-import { useLevel, useProfileStats, useStreak, useUnlockedAchievements } from "../hooks";
-import { rankForXp } from "../ranks";
-import { Logo } from "@/components/brand/Logo";
+  useLevel,
+  useProfileStats,
+  useStreak,
+} from "@/features/progress/hooks";
+import { rankForXp } from "@/features/progress/ranks";
 import { cn } from "@/lib/utils";
 
-function Stat({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-border-subtle bg-base-subtle/40 px-3 py-2">
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-base-subtle text-text-muted">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-text">{value}</p>
-        <p className="truncate text-[11px] text-text-muted">{label}</p>
-      </div>
-    </div>
-  );
-}
-
 /**
- * Lightweight learner profile card. Shows rank, level, XP, streak and the
- * key stats. Everything is local for now; when authentication lands this
- * becomes the signed-in user's summary.
+ * Compact learner profile card. One quiet surface: avatar, name, rank, a
+ * small level ring, XP, streak and a single motivational line. Detailed
+ * statistics live on the dashboard's Activity row instead.
  */
 export function ProfileCard({ className }: { className?: string }) {
+  const { userId } = useAuth();
+  const { data: profile } = useProfile(userId ?? undefined);
   const level = useLevel();
-  const stats = useProfileStats();
   const streak = useStreak();
-  const unlocked = useUnlockedAchievements();
-  const achievementCount = unlocked.length;
+  const stats = useProfileStats();
   const rank = rankForXp(level.xp);
+
+  const name = profile?.name || "Learner";
+  const total = allLessons().length;
+
+  const message = useMemo(() => {
+    if (stats.lessonsCompleted === 0) {
+      return "Every journey starts with one commit.";
+    }
+    if (stats.lessonsCompleted >= total) {
+      return "You finished every lesson. Incredible work.";
+    }
+    if (streak.current >= 3) {
+      return `${streak.current} days in a row. Keep the streak alive.`;
+    }
+    return "One bamboo at a time.";
+  }, [stats.lessonsCompleted, total, streak]);
+
+  const ringSize = 46;
+  const ringStroke = 4;
+  const radius = (ringSize - ringStroke) / 2;
+  const circumference = 2 * Math.PI * radius;
 
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border-subtle bg-card shadow-card",
+        "rounded-2xl border border-border-subtle bg-card p-5 shadow-card",
         className,
       )}
     >
-      <div className="flex items-center gap-3 border-b border-border-subtle bg-base-subtle/50 px-4 py-3">
-        <span
-          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft"
-          aria-hidden="true"
-        >
-          <Logo size={26} />
-        </span>
+      <div className="flex items-center gap-3">
+        <Avatar profile={profile} size={48} />
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-text">
-            <span aria-hidden="true">{rank.emoji}</span>
-            {rank.title}
-          </p>
-          <p className="mt-0.5 text-xs text-text-muted">
-            Level {level.level} · {level.xp} XP · {streak.current} day
-            {streak.current === 1 ? "" : "s"} streak
+          <p className="truncate text-sm font-semibold text-text">{name}</p>
+          <p className="mt-0.5 truncate text-xs text-text-muted">
+            <span aria-hidden="true">{rank.emoji}</span> {rank.title}
           </p>
         </div>
-        <span className="ml-auto flex shrink-0 items-center gap-1">
-          <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-1 text-[11px] font-medium text-accent-hover">
-            <Trophy className="size-3" aria-hidden="true" />
-            {achievementCount}/{ACHIEVEMENTS.length}
-          </span>
-          <Link
-            to="/settings"
-            className="flex size-7 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-base-subtle hover:text-text"
-            aria-label="Open settings"
-            title="Settings"
+        <div className="relative ml-auto shrink-0" style={{ width: ringSize, height: ringSize }}>
+          <svg
+            width={ringSize}
+            height={ringSize}
+            className="-rotate-90"
+            aria-hidden="true"
           >
-            <Settings className="size-3.5" aria-hidden="true" />
-          </Link>
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              stroke="var(--color-base-subtle)"
+              strokeWidth={ringStroke}
+            />
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              stroke="var(--color-accent)"
+              strokeWidth={ringStroke}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - level.progress)}
+              className="transition-[stroke-dashoffset] duration-700"
+            />
+          </svg>
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-text"
+            aria-hidden="true"
+          >
+            Lv {level.level}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-4 text-sm">
+        <span className="font-semibold text-text">{level.xp} XP</span>
+        <span className="flex items-center gap-1.5 text-text-secondary">
+          <Flame className="size-4 text-warning" aria-hidden="true" />
+          <span className="font-semibold text-text">{streak.current}</span>
+          <span className="text-text-muted">
+            day{streak.current === 1 ? "" : "s"} streak
+          </span>
         </span>
       </div>
 
-      <div className="grid gap-2 p-4 sm:grid-cols-2">
-        <Stat
-          icon={<Flame className="size-3.5" aria-hidden="true" />}
-          label="Current streak"
-          value={`${streak.current} day${streak.current === 1 ? "" : "s"}`}
-        />
-        <Stat
-          icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />}
-          label="Lessons completed"
-          value={`${stats.lessonsCompleted}`}
-        />
-        <Stat
-          icon={<Target className="size-3.5" aria-hidden="true" />}
-          label="Missions completed"
-          value={`${stats.missionsCompleted}`}
-        />
-        <Stat
-          icon={<Zap className="size-3.5" aria-hidden="true" />}
-          label="Total XP"
-          value={`${level.xp}`}
-        />
-        <Stat
-          icon={<Terminal className="size-3.5" aria-hidden="true" />}
-          label="Commands run"
-          value={`${stats.commandsExecuted}`}
-        />
-        <Stat
-          icon={<Clock className="size-3.5" aria-hidden="true" />}
-          label="Time learning"
-          value={formatTime(stats.timeSpentSeconds)}
-        />
-        <Stat
-          icon={<MessageSquare className="size-3.5" aria-hidden="true" />}
-          label="AI questions asked"
-          value={`${stats.aiQuestionsAsked}`}
-        />
-      </div>
+      <p className="mt-4 text-center text-xs italic leading-relaxed text-text-muted">
+        {message}
+      </p>
     </div>
   );
-}
-
-function formatTime(totalSeconds: number): string {
-  const minutes = Math.round(totalSeconds / 60);
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  return `${hours}h ${rest}m`;
 }

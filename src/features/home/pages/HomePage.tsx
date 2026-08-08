@@ -1,17 +1,22 @@
 import { lazy, Suspense } from "react";
 import { LandingNav } from "@/features/home/components/LandingNav";
 import { Hero } from "@/features/home/components/Hero";
-import { LivePreview } from "@/features/home/components/LivePreview";
+import { ProductShowcase } from "@/features/home/components/ProductShowcase";
 import { SectionSkeleton } from "@/features/home/components/SectionSkeleton";
 
-const FeatureGrid = lazy(() =>
-  import("@/features/home/components/FeatureGrid").then((m) => ({
-    default: m.FeatureGrid,
+const PlaygroundSection = lazy(() =>
+  import("@/features/home/components/PlaygroundSection").then((m) => ({
+    default: m.PlaygroundSection,
   })),
 );
-const HowItWorks = lazy(() =>
-  import("@/features/home/components/HowItWorks").then((m) => ({
-    default: m.HowItWorks,
+const PandaAiSection = lazy(() =>
+  import("@/features/home/components/PandaAiSection").then((m) => ({
+    default: m.PandaAiSection,
+  })),
+);
+const SocialProof = lazy(() =>
+  import("@/features/home/components/SocialProof").then((m) => ({
+    default: m.SocialProof,
   })),
 );
 const WhyPanda = lazy(() =>
@@ -19,9 +24,24 @@ const WhyPanda = lazy(() =>
     default: m.WhyPanda,
   })),
 );
+const LearningFlow = lazy(() =>
+  import("@/features/home/components/LearningFlow").then((m) => ({
+    default: m.LearningFlow,
+  })),
+);
+const FeatureGrid = lazy(() =>
+  import("@/features/home/components/FeatureGrid").then((m) => ({
+    default: m.FeatureGrid,
+  })),
+);
 const Roadmap = lazy(() =>
   import("@/features/home/components/Roadmap").then((m) => ({
     default: m.Roadmap,
+  })),
+);
+const Faq = lazy(() =>
+  import("@/features/home/components/Faq").then((m) => ({
+    default: m.Faq,
   })),
 );
 const FinalCta = lazy(() =>
@@ -41,20 +61,32 @@ export function HomePage() {
       <LandingNav />
       <main>
         <Hero />
-        <LivePreview />
-        <Suspense fallback={<SectionSkeleton rows={2} />}>
-          <FeatureGrid />
+        <ProductShowcase />
+        <Suspense fallback={<SectionSkeleton compact />}>
+          <SocialProof />
         </Suspense>
         <Suspense fallback={<SectionSkeleton />}>
-          <HowItWorks />
+          <PlaygroundSection />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton />}>
+          <PandaAiSection />
         </Suspense>
         <Suspense fallback={<SectionSkeleton />}>
           <WhyPanda />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton compact />}>
+          <LearningFlow />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton rows={2} />}>
+          <FeatureGrid />
         </Suspense>
         <Suspense fallback={<SectionSkeleton rows={2} />}>
           <Roadmap />
         </Suspense>
         <Suspense fallback={<SectionSkeleton compact />}>
+          <Faq />
+        </Suspense>
+        <Suspense fallback={null}>
           <FinalCta />
         </Suspense>
       </main>

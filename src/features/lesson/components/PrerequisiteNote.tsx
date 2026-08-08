@@ -54,7 +54,7 @@ export function PrerequisiteNote({ lesson }: PrerequisiteNoteProps) {
               </Link>
             </span>
           ))}{" "}
-          first. You can keep going — it'll just be easier with that foundation.
+          first. You can keep going, it'll just be easier with that foundation.
         </p>
       </div>
     </div>

@@ -61,7 +61,7 @@ export function AccountPage() {
 
   const onSignOut = async () => {
     await signOut();
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -152,7 +152,7 @@ export function AccountPage() {
             Sign in
           </h2>
           <p className="mt-1.5 text-sm text-text-secondary">
-            {user?.email ?? "—"}
+            {user?.email ?? "N/A"}
             {user?.app_metadata?.provider === "google" ? " · via Google" : ""}
           </p>
           <Button

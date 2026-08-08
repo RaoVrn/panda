@@ -1,8 +1,11 @@
-import type { ReactNode } from "react";
-import { Bell, Moon, Sparkles, Sun } from "lucide-react";
+import { useEffect, type ReactNode } from "react";
+import { Moon, Sparkles, Sun } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/user/auth/authContext";
 import { UserMenu } from "@/features/user/components/UserMenu";
+import { captureLessonContextForGlobal } from "@/features/ai/global/globalContext";
+import { NotificationsButton } from "@/features/notifications/NotificationsButton";
+import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
 import { useTheme } from "@/contexts/useTheme";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { IconButton } from "@/components/ui/IconButton";
@@ -18,19 +21,39 @@ export interface AppHeaderProps {
 
 /**
  * The one header for every page: search, theme toggle, notifications
- * placeholder, Panda AI and the user menu. The avatar menu is ALWAYS top-right.
+ * placeholder, Panda and the user menu. The avatar menu is ALWAYS top-right.
  * The brand shows by default and is hidden on the workspace, where the sidebar
  * owns it, so there's exactly one Panda logo per screen.
  */
 export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
-  const { status } = useAuth();
+  const { status, userId } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const bindNotifications = useNotificationCenter((s) => s.bindUser);
 
-  if (pathname === "/") return null;
+  // Load the signed-in user's notifications whenever the header mounts.
+  useEffect(() => {
+    bindNotifications(userId ?? null);
+  }, [userId, bindNotifications]);
+
+  if (
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/reset-password"
+  ) {
+    return null;
+  }
 
   const authenticated = status === "authenticated";
+
+  // Course search only belongs inside the learning experience.
+  const showSearch =
+    authenticated &&
+    (pathname === "/search" ||
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/lesson"));
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-subtle bg-base/85 backdrop-blur-md">
@@ -38,7 +61,7 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
         {leading && <div className="lg:hidden">{leading}</div>}
         {!hideBrand && (
           <Link
-            to={authenticated ? "/course" : "/"}
+            to={authenticated ? "/dashboard" : "/"}
             className="group flex shrink-0 items-center"
           >
             <span className="transition-transform duration-150 group-hover:scale-105">
@@ -49,17 +72,19 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
 
         {authenticated ? (
           <>
-            <SearchInput
-              className="mx-auto hidden w-full max-w-sm cursor-pointer md:flex"
-              placeholder="Search lessons, commands, concepts..."
-              shortcut="⌘K"
-              aria-label="Search"
-              readOnly
-              onClick={() => navigate("/search")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") navigate("/search");
-              }}
-            />
+            {showSearch && (
+              <SearchInput
+                className="mx-auto hidden w-full max-w-sm cursor-pointer md:flex"
+                placeholder="Search lessons, commands, concepts..."
+                shortcut="⌘K"
+                aria-label="Search"
+                readOnly
+                onClick={() => navigate("/search")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") navigate("/search");
+                }}
+              />
+            )}
 
             <div className="ml-auto flex shrink-0 items-center gap-1">
               <IconButton
@@ -72,22 +97,20 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
                   <Sun className="size-4" aria-hidden="true" />
                 )}
               </IconButton>
-              <IconButton
-                label="Notifications (coming soon)"
-                disabled
-                title="Notifications coming soon"
-                className="hidden sm:inline-flex"
-              >
-                <Bell className="size-4" aria-hidden="true" />
-              </IconButton>
-              <Button
-                variant="ghost"
-                size="sm"
-                href="/ai"
-                leftIcon={<Sparkles className="size-4 text-accent-hover" aria-hidden="true" />}
-              >
-                <span className="hidden sm:inline">Panda AI</span>
-              </Button>
+              <NotificationsButton />
+              {pathname !== "/panda-ai" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    captureLessonContextForGlobal();
+                    navigate("/panda-ai");
+                  }}
+                  leftIcon={<Sparkles className="size-4 text-accent-hover" aria-hidden="true" />}
+                >
+                  <span className="hidden sm:inline">Panda</span>
+                </Button>
+              )}
               <UserMenu />
             </div>
           </>

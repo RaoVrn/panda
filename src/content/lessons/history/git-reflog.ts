@@ -133,7 +133,7 @@ export const lessonGitReflog: ContentLesson = {
     {
       type: "paragraph",
       id: "what-question",
-      text: "Every time HEAD moves — commit, switch, checkout — Git writes an entry. git reflog lists them, newest first.",
+      text: "Every time HEAD moves, whether you commit, switch or checkout, Git writes an entry. git reflog lists them, newest first.",
     },
     {
       type: "terminalSteps",

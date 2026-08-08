@@ -12,7 +12,7 @@ export const lessonGitReset: ContentLesson = {
   slug: "reset",
   title: "git reset",
   description:
-    "git reset moves your branch back to an older commit. Three flavors — soft, mixed, hard — decide how much changes. Learn them calmly.",
+    "git reset moves your branch back to an older commit. Three flavors, soft, mixed and hard, decide how much changes. Learn them calmly.",
   meta: {
     module: "advanced-git",
     order: 3,
@@ -79,7 +79,7 @@ export const lessonGitReset: ContentLesson = {
       "Look at your history with git log --oneline to see the messy commit.",
       "Your last commit added debug.txt. Reset back one step with git reset --hard HEAD~1.",
       "Now debug.txt should be gone and your working tree clean.",
-      "Check that feature.txt is still there — your real work is safe.",
+      "Check that feature.txt is still there, your real work is safe.",
     ],
     solution: ["git log --oneline", "git reset --hard HEAD~1", "git status", "ls"],
     suggestions: ["git log --oneline", "git reset --hard HEAD~1", "git status"],

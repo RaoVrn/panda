@@ -19,6 +19,10 @@ export interface ChatMessage {
   streaming?: boolean;
   /** The lesson location that produced an assistant answer. */
   source?: AiSource;
+  /** Context sources the assistant used, shown as badges above the answer. */
+  badges?: string[];
+  /** Epoch ms, for stable ordering when persisting conversations. */
+  createdAt?: number;
 }
 
 export interface AiSource {
@@ -125,6 +129,23 @@ export interface LessonContext {
   /** Learner's current gamification state. */
   xp?: number;
   level?: number;
+  /* App-wide facts used by the global assistant (no lesson open). */
+  /** "5 of 30 unlocked: First Lesson, Core Commands, ..." */
+  achievementsSummary?: string;
+  /** Course + module overview, e.g. "Learn Git: 6 modules, 45 lessons". */
+  courseOverview?: string;
+  /** Modules fully completed, as titles. */
+  modulesCompleted?: string;
+  /** Current daily streak in days. */
+  streakDays?: number;
+  /** Display name of the signed-in user. */
+  userName?: string;
+  /** Email of the signed-in user. */
+  userEmail?: string;
+  /** The route the assistant was opened from, e.g. "/lesson/git-rebase". */
+  currentRoute?: string;
+  /** Available action destinations, documented for the AI's tool use. */
+  aiTools?: string;
   /* ------------------------------------------------------------ */
   /* Structured lesson data — the single source of truth. These are   */
   /* built from the authored lesson (never scraped from the DOM).      */

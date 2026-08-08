@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
 
@@ -34,7 +35,21 @@ export function AuthField({
   );
 }
 
-/** Premium centered auth card used by sign in / sign up / reset. */
+/** Balanced divider used between the Google option and email sign-in. */
+export function AuthDivider({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-text-muted">
+      <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+      {children}
+      <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+    </div>
+  );
+}
+
+/**
+ * Premium centered auth card used by sign in / sign up / reset. Sized to fit a
+ * single screen on a 13-inch laptop: compact header, tight card, centered.
+ */
 export function AuthShell({
   title,
   subtitle,
@@ -47,28 +62,35 @@ export function AuthShell({
   footer?: ReactNode;
 }) {
   return (
-    <div className="flex min-h-[calc(100dvh-6rem)] flex-col items-center justify-center px-4 py-12">
+    <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-6">
       <div className="w-full max-w-md">
-        <div className="mb-7 flex flex-col items-center gap-2 text-center">
-          <span
-            className="flex size-14 items-center justify-center rounded-2xl bg-accent-soft"
-            aria-hidden="true"
+        <div className="mb-5 flex flex-col items-center">
+          <Link
+            to="/"
+            className="flex size-10 items-center justify-center rounded-xl bg-accent-soft transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            aria-label="Panda home"
           >
-            <Logo size={36} />
-          </span>
-          <p className="mt-1 text-xl font-semibold tracking-tight text-text">Panda</p>
-          <p className="text-sm text-text-muted">Your Git mentor</p>
+            <Logo size={26} />
+          </Link>
+          <p className="mt-2 text-lg font-semibold tracking-tight text-text">Panda</p>
+          <p className="mt-0.5 text-[13px] text-text-muted">Your Git mentor</p>
         </div>
 
-        <div className="rounded-2xl border border-border-subtle bg-card p-8 shadow-card">
-          <h1 className="text-xl font-semibold tracking-tight text-text">{title}</h1>
+        <div className="rounded-2xl border border-border-subtle bg-card p-5 shadow-card">
+          <h1 className="text-lg font-semibold tracking-tight text-text sm:text-xl">
+            {title}
+          </h1>
           {subtitle && (
-            <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">{subtitle}</p>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary sm:text-sm">
+              {subtitle}
+            </p>
           )}
-          <div className={cn("flex flex-col", subtitle ? "mt-6" : "mt-6")}>{children}</div>
+          <div className={cn("flex flex-col gap-2", subtitle ? "mt-5" : "mt-5")}>
+            {children}
+          </div>
         </div>
 
-        {footer && <div className="mt-6 text-center">{footer}</div>}
+        {footer && <div className="mt-4 text-center">{footer}</div>}
       </div>
     </div>
   );

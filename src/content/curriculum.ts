@@ -148,6 +148,22 @@ export function moduleById(id: string): CourseModule | undefined {
   return modules.find((module) => module.id === id);
 }
 
+/** The module that follows another in course order, if any. */
+export function nextModule(moduleId: string): CourseModule | undefined {
+  const current = moduleById(moduleId);
+  if (!current) return undefined;
+  const ordered = modulesForCourse(current.course).sort((a, b) => a.order - b.order);
+  return ordered.find((module) => module.order === current.order + 1);
+}
+
+/** The module that precedes another in course order, if any. */
+export function previousModule(moduleId: string): CourseModule | undefined {
+  const current = moduleById(moduleId);
+  if (!current) return undefined;
+  const ordered = modulesForCourse(current.course).sort((a, b) => a.order - b.order);
+  return ordered.find((module) => module.order === current.order - 1);
+}
+
 export function modulesForCourse(courseId: string): CourseModule[] {
   return modules
     .filter((module) => module.course === courseId)

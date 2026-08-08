@@ -239,7 +239,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
           </span>
           <span className="flex items-center gap-1 rounded-md border border-white/[0.04] bg-white/[0.02] px-2 py-1 font-mono text-[10px] text-[#8b949e]">
             <GitBranch className="size-3 shrink-0" aria-hidden="true" />
-            <span className="max-w-[80px] truncate">{repo ? repo.branch : "—"}</span>
+            <span className="max-w-[80px] truncate">{repo ? repo.branch : "main"}</span>
           </span>
         </span>
 

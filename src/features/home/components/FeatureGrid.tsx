@@ -1,11 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  BookOpen,
-  Brain,
-  GitBranch,
-  MonitorPlay,
+  Boxes,
+  Command,
   FolderTree,
+  GitBranch,
+  Lightbulb,
+  MonitorPlay,
+  MonitorSmartphone,
+  Moon,
   Puzzle,
+  Search,
   Terminal,
   TrendingUp,
 } from "lucide-react";
@@ -21,44 +25,64 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    icon: BookOpen,
-    title: "Beginner Friendly",
-    description: "Every concept explained simply, with zero jargon.",
-  },
-  {
-    icon: GitBranch,
-    title: "Branch Visualizer",
-    description: "See your branches grow in real time as you learn.",
+    icon: Boxes,
+    title: "Visual Repository",
+    description: "Watch your working tree, staging area and history live, side by side.",
   },
   {
     icon: Terminal,
     title: "Interactive Terminal",
-    description: "Type real Git commands in a safe, simulated shell.",
+    description: "Type real Git commands and get real responses. Nothing faked.",
+  },
+  {
+    icon: GitBranch,
+    title: "Branch Graph",
+    description: "See branches split and merge in real time as you work.",
   },
   {
     icon: FolderTree,
-    title: "Directory Explorer",
-    description: "Understand how files and folders really change.",
+    title: "Repository Explorer",
+    description: "Inspect files, statuses, commits and HEAD at a glance.",
   },
   {
-    icon: MonitorPlay,
-    title: "Animated Lessons",
-    description: "Watch concepts unfold step by step, visually.",
-  },
-  {
-    icon: Brain,
-    title: "Panda AI Teacher",
-    description: "Stuck? Panda explains it in your own words.",
+    icon: Lightbulb,
+    title: "AI Mentor",
+    description: "Get hints, analogies and explanations without spoilers.",
   },
   {
     icon: Puzzle,
-    title: "Practice Challenges",
-    description: "Apply what you learned with hands-on exercises.",
+    title: "Mission System",
+    description: "Every lesson ends in a hands-on mission with clear goals.",
+  },
+  {
+    icon: MonitorPlay,
+    title: "Safe Sandbox",
+    description: "Break repositories on purpose. Reset is one click away.",
   },
   {
     icon: TrendingUp,
     title: "Progress Tracking",
-    description: "Watch yourself grow from beginner to confident.",
+    description: "XP, streaks and lessons completed keep you motivated.",
+  },
+  {
+    icon: Search,
+    title: "Instant Search",
+    description: "Find any lesson, command or concept in seconds with ⌘K.",
+  },
+  {
+    icon: Moon,
+    title: "Dark & Light Mode",
+    description: "A comfortable theme for late-night and daytime learning.",
+  },
+  {
+    icon: Command,
+    title: "Keyboard Shortcuts",
+    description: "Move between lessons and search without touching the mouse.",
+  },
+  {
+    icon: MonitorSmartphone,
+    title: "Works Everywhere",
+    description: "A responsive layout for desktop, tablet and phone.",
   },
 ];
 
@@ -67,8 +91,8 @@ export function FeatureGrid() {
     <section className="py-16 sm:py-20">
       <SectionTitle
         eyebrow="Capabilities"
-        title="Everything you need to master Git"
-        description="A complete learning environment designed around one idea: if you can see it, you can understand it."
+        title="A complete learning environment"
+        description="Everything is designed around one idea: if you can see it, you can understand it."
       />
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => (
@@ -87,9 +111,7 @@ export function FeatureGrid() {
               <div className="flex size-10 items-center justify-center rounded-xl bg-base-subtle transition-colors group-hover:bg-accent-soft">
                 <feature.icon className="size-5 text-text-secondary transition-colors group-hover:text-accent-hover" />
               </div>
-              <h3 className="mt-4 text-sm font-semibold text-text">
-                {feature.title}
-              </h3>
+              <h3 className="mt-4 text-sm font-semibold text-text">{feature.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
                 {feature.description}
               </p>

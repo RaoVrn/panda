@@ -25,6 +25,7 @@ import { usePreferencesStore } from "@/features/user/preferences/preferencesStor
 import { useProgressStore } from "@/features/progress/progressStore";
 import { useTheme } from "@/contexts/useTheme";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
+import { useQueryClient } from "@tanstack/react-query";
 import type { AuthStatus } from "@/features/user/types";
 import { AuthContext, type AuthContextValue } from "./authContext";
 
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const { setTheme } = useTheme();
+  const queryClient = useQueryClient();
 
   // Session + auth state listener.
   useEffect(() => {
@@ -48,17 +50,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
       setStatus(data.session?.user ? "authenticated" : "unauthenticated");
+      if (!data.session?.user) queryClient.clear();
     });
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
       setStatus(session?.user ? "authenticated" : "unauthenticated");
+      if (!session?.user) queryClient.clear();
     });
 
     return () => {
       subscription.subscription.unsubscribe();
     };
-  }, [configured]);
+  }, [configured, queryClient]);
 
   const userId = user?.id ?? null;
 
@@ -123,11 +127,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await signInWithEmail(email, password);
       },
       signInWithGoogle,
-      signOut,
+      signOut: async () => {
+        await signOut();
+        queryClient.clear();
+      },
       resetPassword: requestPasswordReset,
       updatePassword,
     }),
-    [status, user, userId, configured],
+    [status, user, userId, configured, queryClient],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

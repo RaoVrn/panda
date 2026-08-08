@@ -56,7 +56,7 @@ export function ProfilePage() {
       <PageHeader
         title="Profile"
         subtitle="Your learning identity."
-        back={{ to: "/course", label: "Dashboard" }}
+        back={{ to: "/dashboard", label: "Dashboard" }}
       />
 
       <div className="flex flex-col items-center gap-4 text-center">
@@ -102,7 +102,7 @@ export function ProfilePage() {
           <Stat label="Badges" value={`${badges.length}/${ACHIEVEMENTS.length}`} />
           <Stat
             label="Quiz accuracy"
-            value={stats.quizAccuracy === null ? "—" : `${stats.quizAccuracy}%`}
+            value={stats.quizAccuracy === null ? "N/A" : `${stats.quizAccuracy}%`}
           />
           <Stat label="Missions" value={`${stats.missionsCompleted}`} />
           <Stat label="Commands" value={`${stats.commandsExecuted}`} />

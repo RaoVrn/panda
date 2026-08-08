@@ -14,7 +14,7 @@ export function LessonBreadcrumb({ lesson }: { lesson: ContentLesson }) {
   return (
     <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-text-muted">
       <Link
-        to="/course"
+        to="/dashboard"
         className="transition-colors hover:text-text"
       >
         {course?.title ?? "Course"}
@@ -22,7 +22,7 @@ export function LessonBreadcrumb({ lesson }: { lesson: ContentLesson }) {
       <ChevronRight className="size-3" aria-hidden="true" />
       {module ? (
         <>
-          <Link to="/course" className="transition-colors hover:text-text">
+          <Link to="/dashboard" className="transition-colors hover:text-text">
             {module.title}
           </Link>
           <ChevronRight className="size-3" aria-hidden="true" />

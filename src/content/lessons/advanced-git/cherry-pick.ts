@@ -12,7 +12,7 @@ export const lessonGitCherryPick: ContentLesson = {
   slug: "cherry-pick",
   title: "git cherry-pick",
   description:
-    "A bug fix lives on another branch and you need it right now. git cherry-pick copies that one commit onto your branch — nothing else.",
+    "A bug fix lives on another branch and you need it right now. git cherry-pick copies that one commit onto your branch, nothing else.",
   meta: {
     module: "advanced-git",
     order: 2,

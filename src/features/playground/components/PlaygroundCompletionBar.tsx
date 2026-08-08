@@ -1,10 +1,10 @@
 import type { ContentLesson } from "@/content/schema";
-import { LessonNav } from "@/features/lesson/components/LessonNav";
+import { LessonNav, type LessonNavTarget } from "@/features/lesson/components/LessonNav";
 
 export interface PlaygroundCompletionBarProps {
   lesson: ContentLesson;
-  previous?: ContentLesson;
-  next?: ContentLesson;
+  previous?: LessonNavTarget;
+  next?: LessonNavTarget;
 }
 
 /**

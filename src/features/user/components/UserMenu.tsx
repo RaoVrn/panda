@@ -23,7 +23,7 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   { label: "Profile", icon: User, to: "/profile" },
   { label: "Settings", icon: Settings, to: "/settings" },
-  { label: "Dashboard", icon: LayoutDashboard, to: "/course" },
+  { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
   { label: "Learning Stats", icon: Flame, to: "/profile#stats" },
 ];
 
@@ -125,7 +125,7 @@ export function UserMenu() {
               <button
                 type="button"
                 role="menuitem"
-                onClick={() => void signOut().then(() => navigate("/"))}
+                onClick={() => void signOut().then(() => navigate("/", { replace: true }))}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-danger transition-colors hover:bg-danger-soft/40"
               >
                 <LogOut className="size-4 shrink-0" aria-hidden="true" />

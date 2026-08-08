@@ -6,6 +6,7 @@ import {
   HelpCircle,
   Moon,
   RotateCcw,
+  Sparkles,
   Sun,
   Trash2,
   Zap,
@@ -13,6 +14,7 @@ import {
 import { useTheme } from "@/contexts/useTheme";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { useOnboardingStore } from "@/features/onboarding/onboardingStore";
 import { useLevel, useProfileStats } from "@/features/progress/hooks";
 import { useAiChatStore } from "@/stores/aiChatStore";
 import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
@@ -75,7 +77,7 @@ export function SettingsPage() {
       <PageHeader
         title="Settings"
         subtitle="Customize Panda for your learning style."
-        back={{ to: "/course", label: "Dashboard" }}
+        back={{ to: "/dashboard", label: "Dashboard" }}
       >
         <div className="flex items-center gap-2">
           {savedAt && (
@@ -213,7 +215,7 @@ export function SettingsPage() {
             <Stat label="Lessons" value={`${stats.lessonsCompleted}`} />
             <Stat
               label="Quiz accuracy"
-              value={stats.quizAccuracy === null ? "—" : `${stats.quizAccuracy}%`}
+              value={stats.quizAccuracy === null ? "N/A" : `${stats.quizAccuracy}%`}
             />
           </div>
         </Card>
@@ -230,6 +232,13 @@ export function SettingsPage() {
           </p>
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button
+              variant="secondary"
+              leftIcon={<Sparkles className="size-4" aria-hidden="true" />}
+              onClick={() => useOnboardingStore.getState().reset()}
+            >
+              Replay welcome tour
+            </Button>
             {aiMessages > 0 && (
               <Button
                 variant="secondary"

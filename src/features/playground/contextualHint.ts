@@ -46,7 +46,7 @@ function guidanceFor(
         const exists = repo.workingTree.has(check.path);
         return exists
           ? `${check.path} exists but isn't staged. Run git add ${check.path}.`
-          : `Stage ${check.path} — first create it, then git add ${check.path}.`;
+          : `Stage ${check.path}. First create it, then git add ${check.path}.`;
       }
       return null;
 
@@ -92,7 +92,7 @@ function guidanceFor(
     case "anyCommitMessage":
     case "anyCommitMessageContains":
       return check.kind === "anyCommitMessage"
-        ? `No commit says "${check.message}" yet. Check the message you used — it must match exactly.`
+        ? `No commit says "${check.message}" yet. Check the message you used, it must match exactly.`
         : `No commit mentions "${check.text}". Make a commit whose message covers that.`;
 
     case "branch":
@@ -147,13 +147,13 @@ function guidanceFor(
       return `Set your Git email with git config --global user.email "${check.email}".`;
 
     case "fileUntracked":
-      return `Keep ${check.path} untracked for now — don't git add it.`;
+      return `Keep ${check.path} untracked for now, don't git add it.`;
 
     case "commitTouchesFile":
       return `Make a commit that changes ${check.path}: edit it, git add it, then commit.`;
 
     case "commitDoesNotTouchFile":
-      return `Don't include ${check.path} in your next commit — leave it unstaged.`;
+      return `Don't include ${check.path} in your next commit, leave it unstaged.`;
 
     case "remoteNotExists":
       return `Remove the ${check.name} remote with git remote remove ${check.name}.`;

@@ -7,6 +7,7 @@
 
 import { aiService, newRequestId } from "./ai-service";
 import { buildSystemPrompt, buildUserPrompt } from "./promptBuilder";
+import { buildGlobalSystemPrompt, buildGlobalUserPrompt } from "./globalPrompt";
 import { getCached, setCached } from "./Cache";
 import { aiLogger } from "./logger";
 import { estimateRequestTokens, formatTokenSummary } from "./TokenEstimator";
@@ -52,6 +53,8 @@ export interface RunTurnOptions {
   action?: StyleAction;
   context: LessonContext;
   history: ChatMessage[];
+  /** "lesson" = contextual tutor; "global" = app-wide assistant. */
+  mode?: "lesson" | "global";
   onToken: (fullText: string) => void;
   onStatus?: (status: AiProgressStatus) => void;
   signal?: AbortSignal;
@@ -67,6 +70,7 @@ export async function runTurn({
   action,
   context,
   history,
+  mode = "lesson",
   onToken,
   onStatus,
   signal,
@@ -81,10 +85,14 @@ export async function runTurn({
   }
 
   const aiHistory = toChatHistory(history);
-  const prompt = buildUserPrompt(userText, context, action);
+  const prompt =
+    mode === "global"
+      ? buildGlobalUserPrompt(userText, context)
+      : buildUserPrompt(userText, context, action);
 
   // Log estimated input tokens so we can spot quota exhaustion early.
-  const systemPrompt = buildSystemPrompt();
+  const systemPrompt =
+    mode === "global" ? buildGlobalSystemPrompt() : buildSystemPrompt();
   const stats = estimateRequestTokens({
     system: systemPrompt,
     history: JSON.stringify(aiHistory),

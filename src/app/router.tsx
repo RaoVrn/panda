@@ -1,27 +1,58 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { HomePage } from "@/features/home/pages/HomePage";
 import { CoursePage } from "@/features/learning/pages/CoursePage";
+import { ModulePage } from "@/features/learning/pages/ModulePage";
 import { LessonPage } from "@/features/learning/pages/LessonPage";
 import { SearchPage } from "@/features/search/pages/SearchPage";
 import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import { AiPage } from "@/features/ai/pages/AiPage";
+import { AchievementsPage } from "@/features/progress/pages/AchievementsPage";
+import { GlobalAiPage } from "@/features/ai/global/GlobalAiPage";
 import { LoginPage } from "@/features/user/pages/LoginPage";
 import { SignUpPage } from "@/features/user/pages/SignUpPage";
 import { ResetPasswordPage } from "@/features/user/pages/ResetPasswordPage";
 import { ProfilePage } from "@/features/user/pages/ProfilePage";
 import { AccountPage } from "@/features/user/pages/AccountPage";
 import { RequireAuth } from "@/features/user/components/RequireAuth";
+import { RedirectIfAuthenticated } from "@/features/user/components/RedirectIfAuthenticated";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppShell />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: "search", element: <SearchPage /> },
-      { path: "login", element: <LoginPage /> },
-      { path: "signup", element: <SignUpPage /> },
+      {
+        index: true,
+        element: (
+          <RedirectIfAuthenticated>
+            <HomePage />
+          </RedirectIfAuthenticated>
+        ),
+      },
+      {
+        path: "search",
+        element: (
+          <RequireAuth>
+            <SearchPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "login",
+        element: (
+          <RedirectIfAuthenticated>
+            <LoginPage />
+          </RedirectIfAuthenticated>
+        ),
+      },
+      {
+        path: "signup",
+        element: (
+          <RedirectIfAuthenticated>
+            <SignUpPage />
+          </RedirectIfAuthenticated>
+        ),
+      },
       { path: "reset-password", element: <ResetPasswordPage /> },
       {
         path: "settings",
@@ -48,10 +79,22 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "ai",
+        path: "achievements",
         element: (
           <RequireAuth>
-            <AiPage />
+            <AchievementsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "ai",
+        element: <Navigate to="/panda-ai" replace />,
+      },
+      {
+        path: "panda-ai",
+        element: (
+          <RequireAuth>
+            <GlobalAiPage />
           </RequireAuth>
         ),
       },
@@ -60,10 +103,22 @@ export const router = createBrowserRouter([
   // The learning workspace is full-bleed and renders its own three-panel shell,
   // so it lives outside the centered AppShell container.
   {
-    path: "/course",
+    path: "/dashboard",
     element: (
       <RequireAuth>
         <CoursePage />
+      </RequireAuth>
+    ),
+  },
+  {
+    path: "/course",
+    element: <Navigate to="/dashboard" replace />,
+  },
+  {
+    path: "/module/:moduleId",
+    element: (
+      <RequireAuth>
+        <ModulePage />
       </RequireAuth>
     ),
   },

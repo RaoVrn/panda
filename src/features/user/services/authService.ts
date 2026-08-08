@@ -33,7 +33,7 @@ export async function signUpWithEmail(
     password,
     options: {
       data: { name: name ?? "" },
-      emailRedirectTo: `${window.location.origin}/account`,
+      emailRedirectTo: `${window.location.origin}/dashboard`,
     },
   });
   if (error) throw error;
@@ -55,7 +55,7 @@ export async function signInWithEmail(
 export async function signInWithGoogle(): Promise<void> {
   const { error } = await client().auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: window.location.origin },
+    options: { redirectTo: `${window.location.origin}/dashboard` },
   });
   if (error) throw error;
 }

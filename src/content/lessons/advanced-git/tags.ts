@@ -28,7 +28,7 @@ export const lessonTags: ContentLesson = {
     whyItMatters:
       "Releases are landmarks. Tags name them so you, your team, and your users always know which version is which.",
     motivation:
-      "You can mark your releases now. That's the whole Advanced Git module — from stashing work to shipping v1.0.",
+      "You can mark your releases now. That's the whole Advanced Git module, from stashing work to shipping v1.0.",
   },
   learningGoals: [
     "Explain what a tag is",
@@ -120,7 +120,7 @@ export const lessonTags: ContentLesson = {
       id: "story",
       tone: "info",
       title: "A bookmark in the book",
-      text: "Think of a recipe book with bookmarks on your favorite pages. A tag is a bookmark in your Git history, stuck on the page that matters — v1.0, first release, whatever you choose.",
+      text: "Think of a recipe book with bookmarks on your favorite pages. A tag is a bookmark in your Git history, stuck on the page that matters, whether it's v1.0, a first release or anything else you choose.",
     },
 
     // ---------------------------------------------------------------
@@ -265,7 +265,7 @@ export const lessonTags: ContentLesson = {
       type: "tip",
       id: "tip-tags",
       title: "Quick tip",
-      text: "Tag releases, not experiments. Name your tags clearly — v1.0, v2.0 — so anyone on the team knows which version is which.",
+      text: "Tag releases, not experiments. Name your tags clearly, like v1.0 and v2.0, so anyone on the team knows which version is which.",
     },
     {
       type: "keyTakeaways",
@@ -288,7 +288,7 @@ export const lessonTags: ContentLesson = {
       id: "next-lesson",
       tone: "success",
       title: "You've finished Advanced Git",
-      text: "Stash, cherry-pick, reset, revert, rebase, squash, and tags — you now handle Git beyond the basics with confidence.",
+      text: "Stash, cherry-pick, reset, revert, rebase, squash, and tags. You now handle Git beyond the basics with confidence.",
     },
   ],
 };

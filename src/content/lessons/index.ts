@@ -124,18 +124,6 @@ export function allLessons(): ContentLesson[] {
   return modules.flatMap((module) => moduleLessons(module.id));
 }
 
-export function nextLesson(currentId: string): ContentLesson | undefined {
-  const lessonsList = allLessons();
-  const index = lessonsList.findIndex((lesson) => lesson.id === currentId);
-  return index >= 0 ? lessonsList[index + 1] : undefined;
-}
-
-export function previousLesson(currentId: string): ContentLesson | undefined {
-  const lessonsList = allLessons();
-  const index = lessonsList.findIndex((lesson) => lesson.id === currentId);
-  return index > 0 ? lessonsList[index - 1] : undefined;
-}
-
 export function isLessonUnlocked(
   lesson: ContentLesson,
   completedLessonIds: string[],

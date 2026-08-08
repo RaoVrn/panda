@@ -1,19 +1,28 @@
-import { useEffect } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft, SearchX } from "lucide-react";
 import {
   getLessonBySlug,
-  nextLesson,
-  previousLesson,
+  moduleLessons,
 } from "@/content/lessons";
+import { moduleOfLesson, nextModule } from "@/content/curriculum";
 import { LearningWorkspace } from "@/features/learning/layout/LearningWorkspace";
 import { LearningCanvas } from "@/features/learning/layout/LearningCanvas";
 import { LessonRenderer } from "@/features/lesson/LessonRenderer";
+import { type LessonNavTarget } from "@/features/lesson/components/LessonNav";
 import { ScrollToTop } from "@/app/ScrollToTop";
 import { useAiContextStore } from "@/stores/aiContextStore";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { useAiChatStore } from "@/stores/aiChatStore";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
+import { Button } from "@/components/ui/Button";
 
+/**
+ * Lesson page. The lesson is resolved deterministically from the URL slug:
+ * a slug always maps to exactly one lesson. Previous/next navigation is
+ * module-scoped (at module boundaries it goes back to the module or forward
+ * to the next module), never a random selection.
+ */
 export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -38,8 +47,34 @@ export function LessonPage() {
   // The interactive playground gets a wider canvas for its IDE workspace.
   const playgroundMode = useLessonModeStore((state) => state.mode) === "interactive";
 
-  // Keyboard navigation: ← previous lesson, → next lesson. Never hijacks
-  // typing inside inputs/textarea/contenteditable.
+  // Module-scoped previous / next, resolved to exact destinations.
+  const nav = useMemo<{ previous?: LessonNavTarget; next?: LessonNavTarget }>(() => {
+    if (!lesson) return {};
+    const module = moduleOfLesson(lesson.id);
+    const moduleLessonList = module ? moduleLessons(module.id) : [];
+    const index = moduleLessonList.findIndex((l) => l.id === lesson.id);
+    const result: { previous?: LessonNavTarget; next?: LessonNavTarget } = {};
+    if (index > 0) {
+      const prev = moduleLessonList[index - 1]!;
+      result.previous = { title: prev.title, to: `/lesson/${prev.slug}` };
+    } else if (module) {
+      result.previous = { title: "Back to module", to: `/module/${module.id}` };
+    }
+    if (index >= 0 && index < moduleLessonList.length - 1) {
+      const next = moduleLessonList[index + 1]!;
+      result.next = { title: next.title, to: `/lesson/${next.slug}` };
+    } else if (module) {
+      const following = nextModule(module.id);
+      if (following) {
+        result.next = { title: `Next: ${following.title}`, to: `/module/${following.id}` };
+      }
+    }
+    return result;
+  }, [lesson]);
+
+  // Keyboard navigation: ← / → within the module. Never hijacks typing.
+  const prevTo = nav.previous?.to;
+  const nextTo = nav.next?.to;
   useEffect(() => {
     if (!lesson) return;
     const onKey = (event: KeyboardEvent) => {
@@ -54,17 +89,12 @@ export function LessonPage() {
       ) {
         return;
       }
-      if (event.key === "ArrowLeft") {
-        const previous = previousLesson(lesson.id);
-        if (previous) navigate(`/lesson/${previous.slug}`);
-      } else if (event.key === "ArrowRight") {
-        const next = nextLesson(lesson.id);
-        if (next) navigate(`/lesson/${next.slug}`);
-      }
+      if (event.key === "ArrowLeft" && prevTo) navigate(prevTo);
+      else if (event.key === "ArrowRight" && nextTo) navigate(nextTo);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lesson, navigate]);
+  }, [lesson, prevTo, nextTo, navigate]);
 
   // Panda AI context is lesson-scoped: clear it when moving between lessons
   // (and when leaving the lesson for the course page).
@@ -86,9 +116,20 @@ export function LessonPage() {
       <LearningWorkspace>
         {scroll}
         <LearningCanvas>
-          <p className="text-text-secondary">
-            We couldn’t find the lesson “{slug}”.
-          </p>
+          <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-base-subtle text-text-muted">
+              <SearchX className="size-6" aria-hidden="true" />
+            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-text">Lesson not found</h1>
+            <p className="max-w-sm text-sm leading-relaxed text-text-secondary">
+              This lesson may have moved or no longer exists.
+            </p>
+            <Link to="/dashboard">
+              <Button variant="secondary" leftIcon={<ArrowLeft className="size-4" aria-hidden="true" />}>
+                Back to dashboard
+              </Button>
+            </Link>
+          </div>
         </LearningCanvas>
       </LearningWorkspace>
     );
@@ -100,8 +141,8 @@ export function LessonPage() {
       <LearningCanvas wide={playgroundMode && Boolean(lesson.playground)}>
         <LessonRenderer
           lesson={lesson}
-          previousLesson={previousLesson(lesson.id)}
-          nextLesson={nextLesson(lesson.id)}
+          previous={nav.previous}
+          next={nav.next}
         />
       </LearningCanvas>
     </LearningWorkspace>

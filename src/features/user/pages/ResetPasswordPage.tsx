@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 const INPUT =
-  "w-full rounded-lg border border-border-subtle bg-base-subtle px-3.5 py-2.5 text-sm text-text placeholder:text-text-muted transition-colors focus:border-border-strong focus:bg-base-subtle focus:outline-none";
+  "h-10 w-full rounded-lg border border-border-subtle bg-base-subtle px-3.5 py-2.5 text-sm text-text placeholder:text-text-muted transition-colors focus:border-border-strong focus:bg-base-subtle focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export function ResetPasswordPage() {
   const { configured, resetPassword, updatePassword } = useAuth();
@@ -96,13 +96,13 @@ export function ResetPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className={cn(INPUT, "h-11 pl-10")}
+                className={cn(INPUT, "pl-10")}
               />
             </span>
           </label>
           {message && <p className="text-sm text-accent-hover">{message}</p>}
           {error && <p className="text-sm text-danger">{error}</p>}
-          <Button type="submit" loading={submitting} className="h-11">
+          <Button type="submit" loading={submitting} className="h-10">
             Send reset link
           </Button>
         </form>
@@ -119,13 +119,13 @@ export function ResetPasswordPage() {
                 required
                 minLength={6}
                 placeholder="At least 6 characters"
-                className={cn(INPUT, "h-11 pl-10")}
+                className={cn(INPUT, "pl-10")}
               />
             </span>
           </label>
           {message && <p className="text-sm text-accent-hover">{message}</p>}
           {error && <p className="text-sm text-danger">{error}</p>}
-          <Button type="submit" loading={submitting} className="h-11">
+          <Button type="submit" loading={submitting} className="h-10">
             Update password
           </Button>
         </form>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -12,8 +13,10 @@ export interface ModalProps {
 }
 
 /**
- * Accessible modal overlay. Closes on Escape or backdrop click, moves focus
- * into the dialog and restores it on close.
+ * Accessible modal overlay. Rendered through a portal to <body> so it is
+ * always centered on the viewport and never clipped or re-positioned by a
+ * transformed/overflowing ancestor (e.g. the dashboard workspace). Closes on
+ * Escape or backdrop click and returns focus on close.
  */
 export function Modal({
   open,
@@ -40,13 +43,13 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <motion.div
             aria-hidden="true"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -71,6 +74,8 @@ export function Modal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
+

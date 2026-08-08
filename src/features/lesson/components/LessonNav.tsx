@@ -1,31 +1,34 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { ContentLesson } from "@/content/schema";
+
+/** A resolved navigation destination (exact URL), never a raw lesson object. */
+export interface LessonNavTarget {
+  title: string;
+  to: string;
+}
 
 export interface LessonNavProps {
-  previous?: ContentLesson;
-  next?: ContentLesson;
+  previous?: LessonNavTarget;
+  next?: LessonNavTarget;
   className?: string;
 }
 
 /**
  * Minimal documentation-style navigation — two equal-width cards at the end
- * of a lesson. No XP, no completion message, no recap: the learner finishes
- * reading and simply moves to the previous or next lesson.
+ * of a lesson. Destinations are resolved by the lesson page (module-scoped
+ * previous/next, or back-to-module / next-module at boundaries), so links are
+ * always deterministic.
  */
 export function LessonNav({ previous, next, className }: LessonNavProps) {
-  const prevLink = previous ? `/lesson/${previous.slug}` : null;
-  const nextLink = next ? `/lesson/${next.slug}` : null;
-
   return (
     <nav
       aria-label="Lesson navigation"
       className={`mt-10 border-t border-border-subtle pt-4 ${className ?? ""}`}
     >
       <div className="grid grid-cols-2 gap-3">
-        {prevLink ? (
+        {previous ? (
           <Link
-            to={prevLink}
+            to={previous.to}
             className="group flex min-w-0 items-center gap-2.5 rounded-xl border border-white/[0.04] bg-white/[0.01] px-3.5 py-3 transition-colors hover:border-white/[0.09] hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <ArrowLeft
@@ -34,10 +37,10 @@ export function LessonNav({ previous, next, className }: LessonNavProps) {
             />
             <span className="min-w-0">
               <span className="block text-[10px] font-medium uppercase tracking-widest text-text-muted">
-                Previous lesson
+                Previous
               </span>
               <span className="block truncate text-[13px] font-medium text-text-secondary transition-colors group-hover:text-text">
-                {previous!.title}
+                {previous.title}
               </span>
             </span>
           </Link>
@@ -45,17 +48,17 @@ export function LessonNav({ previous, next, className }: LessonNavProps) {
           <span aria-hidden="true" />
         )}
 
-        {nextLink ? (
+        {next ? (
           <Link
-            to={nextLink}
+            to={next.to}
             className="group flex min-w-0 items-center justify-end gap-2.5 rounded-xl border border-white/[0.04] bg-white/[0.01] px-3.5 py-3 text-right transition-colors hover:border-white/[0.09] hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <span className="min-w-0">
               <span className="block text-[10px] font-medium uppercase tracking-widest text-text-muted">
-                Next lesson
+                Next
               </span>
               <span className="block truncate text-[13px] font-medium text-text-secondary transition-colors group-hover:text-text">
-                {next!.title}
+                {next.title}
               </span>
             </span>
             <ArrowRight

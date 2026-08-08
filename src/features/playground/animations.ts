@@ -103,7 +103,7 @@ export const ERROR_HINTS: Record<string, string> = {
   "could not clone": "There's no remote repository to clone from in this exercise.",
   "invalid upstream": "That branch isn't a valid rebase target. Run git branch to see your branches.",
   "merge: can't merge": "Merging that branch isn't part of this exercise. Use git switch or git rebase instead.",
-  "no local changes to save": "There's nothing to stash — your working tree is clean.",
+  "no local changes to save": "There's nothing to stash, your working tree is clean.",
   "No stash entries found": "There's nothing to pop. Create a stash first with git stash.",
   "cannot remove": "That file isn't in the working tree. Run ls to see what's there.",
   "cannot stat": "That file doesn't exist. Run ls to see what's in the working tree.",

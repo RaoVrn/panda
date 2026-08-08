@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, KeyRound, Mail, User } from "lucide-react";
 import { useAuth } from "@/features/user/auth/authContext";
 import {
+  AuthDivider,
   AuthField,
   AuthShell,
   UnconfiguredNotice,
@@ -115,13 +116,24 @@ export function SignUpPage() {
       {errors.form && (
         <div
           role="alert"
-          className="mb-4 rounded-xl border border-danger/30 bg-danger-soft/30 px-3.5 py-2.5 text-sm text-danger"
+          className="mb-0.5 rounded-xl border border-danger/30 bg-danger-soft/30 px-3.5 py-2.5 text-sm text-danger"
         >
           {errors.form}
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <Button
+        variant="secondary"
+        onClick={() => void signInWithGoogle()}
+        className="h-10 w-full"
+        leftIcon={GOOGLE_ICON}
+      >
+        Continue with Google
+      </Button>
+
+      <AuthDivider>or</AuthDivider>
+
+      <form onSubmit={onSubmit} className="flex flex-col gap-2">
         <AuthField label="Name" error={errors.name} icon={<User className="size-4" aria-hidden="true" />}>
           <input
             value={name}
@@ -207,25 +219,10 @@ export function SignUpPage() {
           />
         </AuthField>
 
-        <Button type="submit" loading={submitting} className="h-11" rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}>
+        <Button type="submit" loading={submitting} className="h-10 w-full" rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}>
           Create account
         </Button>
       </form>
-
-      <div className="my-5 flex items-center gap-3 text-xs text-text-muted">
-        <span className="h-px flex-1 bg-border-subtle" />
-        or continue with
-        <span className="h-px flex-1 bg-border-subtle" />
-      </div>
-
-      <Button
-        variant="secondary"
-        onClick={() => void signInWithGoogle()}
-        className="h-11 w-full"
-        leftIcon={GOOGLE_ICON}
-      >
-        Google
-      </Button>
     </AuthShell>
   );
 }

@@ -90,7 +90,7 @@ export const lessonSquash: ContentLesson = {
     hints: [
       "Look at history with git log --oneline. Five commits say almost nothing.",
       "Fold them back with git reset --soft HEAD~5. All the changes stay staged.",
-      "Check git status — your work is staged and ready.",
+      "Check git status, your work is staged and ready.",
       "Make one clean commit: git commit -m \"Implement the cart feature\".",
       "Run git log --oneline to see the clean story.",
     ],

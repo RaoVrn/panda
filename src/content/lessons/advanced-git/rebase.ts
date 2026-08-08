@@ -90,7 +90,7 @@ export const lessonGitRebase: ContentLesson = {
       "Look at history with git log --oneline. Main moved ahead with Add profile.",
       "Make sure you're on feature with git branch.",
       "Lay your work onto main with git rebase main.",
-      "Run git log --oneline again — now your commits sit on top of main in one line.",
+      "Run git log --oneline again, now your commits sit on top of main in one line.",
     ],
     solution: ["git log --oneline", "git branch", "git rebase main", "git log --oneline"],
     suggestions: ["git log --oneline", "git branch", "git rebase main"],

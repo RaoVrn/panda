@@ -80,7 +80,7 @@ export const lessonGitRevert: ContentLesson = {
     hints: [
       "Your last commit added a bug line to app.js. See it with cat app.js.",
       "Undo it with git revert HEAD. A new commit appears.",
-      "Check app.js again — the bug line is gone.",
+      "Check app.js again, the bug line is gone.",
       "Run git log --oneline to see that the bad commit is still in history.",
     ],
     solution: ["cat app.js", "git revert HEAD", "cat app.js", "git log --oneline"],

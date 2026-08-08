@@ -32,6 +32,7 @@ import { Brand, Logo } from "@/components/brand/Logo";
 
 export interface CourseSidebarProps {
   currentSlug?: string;
+  currentModuleId?: string;
   onClose?: () => void;
   collapsed?: boolean;
   onToggle?: () => void;
@@ -135,30 +136,38 @@ function ModuleGroup({
 
   return (
     <li className="flex flex-col gap-0.5">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className="group flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-base-subtle"
-      >
-        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted group-hover:text-text">
+      <div className="flex w-full items-center gap-1 rounded-lg px-2 py-1.5 transition-colors hover:bg-base-subtle">
+        <Link
+          to={`/module/${module.id}`}
+          title={module.title}
+          aria-label={`Open ${module.title} module`}
+          className="group flex min-w-0 flex-1 items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted transition-colors hover:text-text"
+        >
           {moduleIcons[module.icon ?? ""] ?? (
             <BookMarked className="size-3.5" aria-hidden="true" />
           )}
-          {module.title}
-        </span>
-        <span className="ml-auto flex items-center gap-1.5">
+          <span className="truncate">{module.title}</span>
+        </Link>
+        <span className="ml-auto flex shrink-0 items-center gap-1">
           {progress.total > 0 && (
             <span className="text-[10px] tabular-nums text-text-muted">
               {progress.completed}/{progress.total}
             </span>
           )}
-          <ChevronRight
-            className={cn("size-3 text-text-muted transition-transform", open && "rotate-90")}
-            aria-hidden="true"
-          />
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-label={open ? `Collapse ${module.title}` : `Expand ${module.title}`}
+            className="flex size-6 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-base-subtle hover:text-text"
+          >
+            <ChevronRight
+              className={cn("size-3 transition-transform", open && "rotate-90")}
+              aria-hidden="true"
+            />
+          </button>
         </span>
-      </button>
+      </div>
 
       <div className="flex items-center justify-between gap-2 px-2 pb-1">
         <div
@@ -206,16 +215,18 @@ function CollapsedRail({
   onToggle,
   level,
   streak,
+  currentModuleId,
 }: {
   onToggle?: () => void;
   level: number;
   streak: number;
+  currentModuleId?: string;
 }) {
   return (
     <div className="flex h-full flex-col items-center bg-base-elevated">
       <div className="flex flex-col items-center gap-1 pt-5">
         <Link
-          to="/course"
+          to="/dashboard"
           className="flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-base-subtle"
           aria-label="Panda home"
           title="Panda"
@@ -226,19 +237,34 @@ function CollapsedRail({
 
       <nav aria-label="Course" className="mt-4 flex-1 overflow-y-auto px-2">
         <ul className="flex flex-col items-center gap-1">
-          {modules.map((module) => (
-            <li key={module.id}>
-              <Link
-                to="/course"
-                title={module.title}
-                className="flex size-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-base-subtle hover:text-text"
-              >
+          {modules.map((module) => {
+            const isActive = module.id === currentModuleId;
+            const inner = (
+              <>
                 {moduleIcons[module.icon ?? ""] ?? (
                   <BookMarked className="size-4" aria-hidden="true" />
                 )}
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={module.id}>
+                <Link
+                  to={`/module/${module.id}`}
+                  title={module.title}
+                  aria-label={module.title}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded-lg transition-colors",
+                    isActive
+                      ? "bg-accent-soft text-accent-hover"
+                      : "text-text-muted hover:bg-base-subtle hover:text-text",
+                  )}
+                >
+                  {inner}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -265,6 +291,7 @@ function CollapsedRail({
 
 export function CourseSidebar({
   currentSlug,
+  currentModuleId,
   onClose,
   collapsed = false,
   onToggle,
@@ -291,7 +318,12 @@ export function CourseSidebar({
 
   if (collapsed) {
     return (
-      <CollapsedRail onToggle={onToggle} level={level.level} streak={streak.current} />
+      <CollapsedRail
+        onToggle={onToggle}
+        level={level.level}
+        streak={streak.current}
+        currentModuleId={currentModuleId}
+      />
     );
   }
 
@@ -299,7 +331,7 @@ export function CourseSidebar({
     <div className="flex h-full flex-col bg-base-elevated">
       <div className="flex items-center justify-between gap-2 px-5 pb-4 pt-5">
         <Link
-          to="/course"
+          to="/dashboard"
           className="flex items-center"
           onClick={onClose}
         >

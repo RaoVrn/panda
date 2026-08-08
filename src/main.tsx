@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "@/styles/global.css";
 import { App } from "@/app/App";
 import { ProgressToasts } from "@/features/progress/components/ProgressToasts";
-import { SearchShortcut } from "@/features/search/components/SearchShortcut";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const rootElement = document.getElementById("root");
@@ -17,7 +16,6 @@ createRoot(rootElement).render(
     <ErrorBoundary>
       <App />
       <ProgressToasts />
-      <SearchShortcut />
     </ErrorBoundary>
   </StrictMode>,
 );

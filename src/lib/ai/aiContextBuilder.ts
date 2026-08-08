@@ -22,7 +22,7 @@ export function buildContextSnippet(context: LessonContext): string {
   if (context.description) lines.push(`About: ${context.description}`);
   if (context.difficulty || context.estimatedMinutes) {
     lines.push(
-      `Profile: ${context.difficulty ?? "—"} · ~${context.estimatedMinutes ?? "?"} min`,
+      `Profile: ${context.difficulty ?? "N/A"} · ~${context.estimatedMinutes ?? "?"} min`,
     );
   }
 

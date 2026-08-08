@@ -5,7 +5,7 @@ import { renderBlock } from "@/content/renderer";
 import { LessonTitle } from "@/features/lesson/components/LessonTitle";
 import { LessonPlayer } from "@/features/lesson/components/LessonPlayer";
 import { LessonBreadcrumb } from "@/features/lesson/components/LessonBreadcrumb";
-import { LessonNav } from "@/features/lesson/components/LessonNav";
+import { LessonNav, type LessonNavTarget } from "@/features/lesson/components/LessonNav";
 import { PrerequisiteNote } from "@/features/lesson/components/PrerequisiteNote";
 import { BlockTracker } from "@/features/lesson/components/BlockTracker";
 import { PlaygroundWorkspace } from "@/features/playground/components/PlaygroundWorkspace";
@@ -24,8 +24,8 @@ import { cn } from "@/lib/utils";
 
 export interface LessonRendererProps {
   lesson: ContentLesson;
-  previousLesson?: ContentLesson;
-  nextLesson?: ContentLesson;
+  previous?: LessonNavTarget;
+  next?: LessonNavTarget;
   className?: string;
 }
 
@@ -77,8 +77,8 @@ function blockPad(block: ContentLesson["blocks"][number]): string {
  */
 export function LessonRenderer({
   lesson,
-  previousLesson,
-  nextLesson,
+  previous,
+  next,
   className,
 }: LessonRendererProps) {
   const mode = useLessonModeStore((state) => state.mode);
@@ -133,8 +133,8 @@ export function LessonRenderer({
               <PlaygroundWorkspace lesson={lesson} />
               <PlaygroundCompletionBar
                 lesson={lesson}
-                previous={previousLesson}
-                next={nextLesson}
+                previous={previous}
+                next={next}
               />
             </>
           ) : (
@@ -163,7 +163,7 @@ export function LessonRenderer({
                 {index === ctaAfterIndex && lesson.playground && <PlaygroundPreview lesson={lesson} />}
               </BlockTracker>
             ))}
-            <LessonNav previous={previousLesson} next={nextLesson} />
+            <LessonNav previous={previous} next={next} />
           </>
         )}
       </article>

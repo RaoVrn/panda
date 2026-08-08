@@ -11,12 +11,14 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { allLessons, moduleLessons } from "@/content/lessons";
+import { allLessons, getLesson, moduleLessons } from "@/content/lessons";
 import { modules } from "@/content/curriculum";
 import {
+  buildAchievementContext,
   evaluateAchievements,
-  type AchievementContext,
 } from "./achievements";
+import { useAchievementCelebration } from "@/features/progress/components/achievementCelebrationStore";
+import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
 import { localStorageAdapter, toZustandStorage } from "./localStorage";
 import { recordActivity, readStreak, todayKey } from "./streak";
 import { levelInfo, lessonXp, XP_REWARDS } from "./xp";
@@ -77,30 +79,6 @@ interface ProgressState {
 
 const initialStreak: StreakInfo = readStreak(localStorageAdapter);
 
-function achievementContext(state: {
-  completedLessonIds: string[];
-  quizStats: Record<string, QuizRecord>;
-  aiQuestions: number;
-  practiceCount: number;
-}): AchievementContext {
-  const modulesComplete: Record<string, boolean> = {};
-  for (const module of modules) {
-    const lessons = moduleLessons(module.id);
-    modulesComplete[module.id] =
-      lessons.length > 0 &&
-      lessons.every((lesson) => state.completedLessonIds.includes(lesson.id));
-  }
-  return {
-    lessonsCompleted: state.completedLessonIds.length,
-    totalLessons: allLessons().length,
-    quizCompletedCount: Object.keys(state.quizStats).length,
-    quizPerfectCount: Object.values(state.quizStats).filter((q) => q.perfect).length,
-    aiQuestionsAsked: state.aiQuestions,
-    practiceCount: state.practiceCount,
-    modulesComplete,
-  };
-}
-
 /** Module ids that are fully completed for a set of completed lessons. */
 function completedModuleIds(completedLessonIds: string[]): Set<string> {
   const set = new Set<string>();
@@ -154,7 +132,7 @@ export const useProgressStore = create<ProgressState>()(
 
       /** Re-evaluates achievements and unlocks any that now pass. */
       const unlockAchievements = () => {
-        const ctx = achievementContext(get());
+        const ctx = buildAchievementContext(get());
         const newly = evaluateAchievements(ctx, get().achievements);
         if (newly.length === 0) return;
         const now = Date.now();
@@ -171,6 +149,19 @@ export const useProgressStore = create<ProgressState>()(
           }
           return { achievements, toasts };
         });
+        // Badges carry a small one-time XP reward.
+        for (const achievement of newly) grantXp(achievement.rewardXp);
+        // Queue a one-time centered celebration for each genuine new unlock.
+        for (const achievement of newly) {
+          useAchievementCelebration.getState().enqueue(achievement);
+          useNotificationCenter.getState().notify({
+            type: "achievement",
+            reference: `achievement:${achievement.id}`,
+            title: "Achievement unlocked",
+            message: achievement.title,
+            metadata: { achievementId: achievement.id },
+          });
+        }
       };
 
       return {
@@ -217,6 +208,18 @@ export const useProgressStore = create<ProgressState>()(
             XP_REWARDS["read-lesson"] + XP_REWARDS["finish-lesson"];
           grantXp(reward);
 
+          // A real lesson completion is worth a notification.
+          const completedLesson = getLesson(lessonId);
+          if (completedLesson) {
+            useNotificationCenter.getState().notify({
+              type: "lesson",
+              reference: `lesson:${lessonId}`,
+              title: "Lesson completed",
+              message: completedLesson.title,
+              metadata: { lessonSlug: completedLesson.slug },
+            });
+          }
+
           // Celebrate any section (module) that just became complete.
           for (const id of completedModuleIds(next)) {
             if (before.has(id)) continue;
@@ -229,6 +232,13 @@ export const useProgressStore = create<ProgressState>()(
                   title: `Section complete: ${module.title}`,
                 }),
               }));
+              useNotificationCenter.getState().notify({
+                type: "module",
+                reference: `module:${module.id}`,
+                title: "Module completed",
+                message: module.title,
+                metadata: { moduleId: module.id },
+              });
             }
           }
 

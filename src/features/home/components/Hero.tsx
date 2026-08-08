@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Map } from "lucide-react";
+import { ArrowRight, Check, GitBranch, Map, MessageSquareText, MousePointerClick } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/brand/Logo";
 
@@ -18,6 +18,13 @@ const item = {
     transition: { duration: 0.55, ease: [0.2, 0.8, 0.2, 1] },
   },
 };
+
+const trust = [
+  { icon: <MousePointerClick className="size-3.5" aria-hidden="true" />, label: "Interactive Playground" },
+  { icon: <MessageSquareText className="size-3.5" aria-hidden="true" />, label: "AI Mentor" },
+  { icon: <GitBranch className="size-3.5" aria-hidden="true" />, label: "Visual Branch Graphs" },
+  { icon: <Check className="size-3.5" aria-hidden="true" />, label: "Learn by Doing" },
+];
 
 function scrollToRoadmap() {
   document
@@ -65,9 +72,9 @@ export function Hero() {
           variants={item}
           className="mt-6 max-w-2xl text-balance text-lg leading-relaxed text-text-secondary"
         >
-          Master Git, GitHub and Version Control through visual explanations,
-          interactive editors, terminal simulations, branch visualizers and
-          AI-powered guidance.
+          See every Git command come to life. Practice in a safe, real
+          repository. Understand what actually happens instead of memorizing
+          commands you don't get.
         </motion.p>
 
         <motion.div
@@ -76,7 +83,7 @@ export function Hero() {
         >
           <Button
             size="lg"
-            href="/course"
+            href="/dashboard"
             rightIcon={<ArrowRight className="size-4" aria-hidden="true" />}
           >
             Start Learning
@@ -90,6 +97,22 @@ export function Hero() {
             Explore Roadmap
           </Button>
         </motion.div>
+
+        {/* Trust strip — no badges, just plain checks */}
+        <motion.ul
+          variants={item}
+          className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5"
+        >
+          {trust.map((item) => (
+            <li
+              key={item.label}
+              className="flex items-center gap-1.5 text-[13px] text-text-muted"
+            >
+              <span className="text-accent-hover">{item.icon}</span>
+              {item.label}
+            </li>
+          ))}
+        </motion.ul>
       </motion.div>
     </section>
   );
