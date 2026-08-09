@@ -88,8 +88,23 @@ export function runCommand(
   if (cmd === "") return { state: repo, events, output: ok("") };
   if (cmd === "pwd") return { state: repo, events, output: ok(repo.pwd) };
   if (cmd === "ls") {
+    if (trimmed.trim() !== "ls") {
+      const path = trimmed.slice(3).trim();
+      return {
+        state: repo,
+        events,
+        output: ok(`ls: cannot access '${path}': No such file or directory`, "error"),
+      };
+    }
     const names = [...repo.workingTree.keys()].sort();
     return { state: repo, events, output: ok(names.join("  ") || "(empty)") };
+  }
+  if (cmd === "git" && trimmed.trim() === "git") {
+    return {
+      state: repo,
+      events,
+      output: ok("Git needs a subcommand. Try `git status`.", "muted"),
+    };
   }
   if (cmd === "clear") {
     return { state: repo, events, output: ok("", "muted") };
@@ -183,6 +198,17 @@ export function runCommand(
       events.push(createEvent(existing ? "FILE_MODIFIED" : "FILE_ADDED", echo.file));
       events.push(createEvent("STATUS_CHANGED"));
       return { state: next, events, output: ok(echo.append ? `${echo.file} updated` : `wrote ${echo.file}`, "success") };
+    }
+    if (cmd === "echo") {
+      // Bare `echo` prints the supplied text (matches the terminal engine).
+      let text = trimmed.slice(5).trim();
+      if (
+        (text.startsWith('"') && text.endsWith('"')) ||
+        (text.startsWith("'") && text.endsWith("'"))
+      ) {
+        text = text.slice(1, -1);
+      }
+      return { state: repo, events, output: ok(text, "output") };
     }
     return { state: repo, events, output: ok(`panda: command not found: ${cmd}\nType 'help' for available commands.`, "error") };
   }

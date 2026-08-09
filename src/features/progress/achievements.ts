@@ -32,7 +32,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { modules } from "@/content/curriculum";
-import { moduleLessons } from "@/content/lessons";
 
 export type AchievementCategoryId =
   | "foundations"
@@ -113,8 +112,8 @@ export function buildAchievementContext(
   const moduleProgress: Record<string, AchievementProgress> = {};
   const modulesComplete: Record<string, boolean> = {};
   for (const module of modules) {
-    const total = moduleLessons(module.id).length;
-    const done = moduleLessons(module.id).filter((l) => completed.has(l.id)).length;
+    const total = module.lessons.length;
+    const done = module.lessons.filter((id) => completed.has(id)).length;
     moduleProgress[module.id] = { current: done, max: total };
     modulesComplete[module.id] = total > 0 && done === total;
   }

@@ -15,7 +15,6 @@ import { router } from "@/app/router";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { ACHIEVEMENTS } from "@/features/progress/achievements";
 import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
-import { useAiContextStore } from "@/stores/aiContextStore";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { memorySummary } from "@/features/ai/memory/conversationMemory";
 import { nextLessonToStudy } from "@/features/progress/progressService";
@@ -23,21 +22,10 @@ import { levelInfo } from "@/features/progress/xp";
 import { describeAiRoutes } from "@/lib/navigation/routeRegistry";
 import { describeCourseContent } from "@/lib/navigation/conceptIndex";
 import { describeDocsContent } from "@/features/docs/guideIndex";
-
-/** The most recent lesson context, captured just before navigating to /panda-ai. */
-let capturedLesson: LessonContext | null = null;
+import { takeCapturedLesson } from "@/features/ai/global/lessonCapture";
 
 /** The signed-in user's identity, set by the page when it mounts. */
 let cachedUser: { name?: string; email?: string } | null = null;
-
-/**
- * Snapshot the current lesson context (called right before leaving a lesson
- * for the global assistant) so the /panda-ai turn still knows the lesson.
- */
-export function captureLessonContextForGlobal(): void {
-  const live = useAiContextStore.getState().context;
-  capturedLesson = live.lessonId || live.lessonTitle ? live : null;
-}
 
 /** Hand the signed-in user's identity to the context builder. */
 export function setGlobalAiUser(user: { name?: string; email?: string } | null): void {
@@ -81,8 +69,10 @@ export function buildGlobalContext(): LessonContext {
     .filter((lesson) => progress.completedLessonIds.includes(lesson.id))
     .map((lesson) => lesson.slug);
 
+  const captured = takeCapturedLesson();
+
   const base: LessonContext = {
-    contextReady: Boolean(capturedLesson),
+    contextReady: Boolean(captured),
     course: course?.title,
     courseOverview: course ? courseLabel(course) : undefined,
     currentRoute: router.state.location.pathname,
@@ -113,13 +103,11 @@ export function buildGlobalContext(): LessonContext {
   };
 
   // Merge the captured lesson context so the assistant knows where the
-  // learner came from, then clear it (it applies to this turn only).
-  if (capturedLesson) {
-    const lesson = capturedLesson;
-    capturedLesson = null;
+  // learner came from (it applies to this turn only).
+  if (captured) {
     return {
       ...base,
-      ...lesson,
+      ...captured,
       contextReady: true,
       courseOverview: base.courseOverview,
       completedCount: base.completedCount,

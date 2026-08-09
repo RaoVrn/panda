@@ -3,7 +3,7 @@ import { BookOpen, Moon, Sparkles, Sun } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/user/auth/authContext";
 import { UserMenu } from "@/features/user/components/UserMenu";
-import { captureLessonContextForGlobal } from "@/features/ai/global/globalContext";
+import { captureLessonContextForGlobal } from "@/features/ai/global/lessonCapture";
 import { NotificationsButton } from "@/features/notifications/NotificationsButton";
 import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
 import { useTheme } from "@/contexts/useTheme";

@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CourseComplete } from "@/features/lesson/components/CourseComplete";
 
 /** A resolved navigation destination (exact URL), never a raw lesson object. */
 export interface LessonNavTarget {
@@ -67,7 +68,7 @@ export function LessonNav({ previous, next, className }: LessonNavProps) {
             />
           </Link>
         ) : (
-          <span aria-hidden="true" />
+          <CourseComplete />
         )}
       </div>
     </nav>

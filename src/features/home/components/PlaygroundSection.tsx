@@ -123,7 +123,7 @@ function TerminalMock() {
 function StatusGrid() {
   const cells = [
     { label: "Branch", value: "main", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-accent-hover" },
-    { label: "HEAD", value: "a1f8b3", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-accent-hover" },
+    { label: "HEAD", value: "<commit>", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-accent-hover" },
     { label: "Working tree", value: "0+3", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-warning" },
     { label: "Staged", value: "1", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-warning" },
     { label: "Commits", value: "2", icon: <GitBranch className="size-3" aria-hidden="true" />, tone: "text-text-secondary" },

@@ -11,7 +11,6 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { allLessons, getLesson, moduleLessons } from "@/content/lessons";
 import { modules } from "@/content/curriculum";
 import {
   ACHIEVEMENTS,
@@ -85,8 +84,8 @@ const initialStreak: StreakInfo = readStreak(userScopedAdapter);
 function completedModuleIds(completedLessonIds: string[]): Set<string> {
   const set = new Set<string>();
   for (const module of modules) {
-    const lessons = moduleLessons(module.id);
-    if (lessons.length > 0 && lessons.every((l) => completedLessonIds.includes(l.id))) {
+    const lessonIds = module.lessons;
+    if (lessonIds.length > 0 && lessonIds.every((id) => completedLessonIds.includes(id))) {
       set.add(module.id);
     }
   }
@@ -213,14 +212,19 @@ export const useProgressStore = create<ProgressState>()(
           grantXp(reward);
 
           // A real lesson completion is worth a notification.
-          const completedLesson = getLesson(lessonId);
-          if (completedLesson && usePreferencesStore.getState().notifyLessons !== false) {
-            useNotificationCenter.getState().notify({
-              type: "lesson",
-              reference: `lesson:${lessonId}`,
-              title: "Lesson completed",
-              message: completedLesson.title,
-              metadata: { lessonSlug: completedLesson.slug },
+          if (usePreferencesStore.getState().notifyLessons !== false) {
+            // Loaded lazily so the progress store never pulls the whole lesson
+            // registry into the initial bundle.
+            void import("@/content/lessons").then(({ getLesson }) => {
+              const completedLesson = getLesson(lessonId);
+              if (!completedLesson) return;
+              useNotificationCenter.getState().notify({
+                type: "lesson",
+                reference: `lesson:${lessonId}`,
+                title: "Lesson completed",
+                message: completedLesson.title,
+                metadata: { lessonSlug: completedLesson.slug },
+              });
             });
           }
 
@@ -455,9 +459,13 @@ export const useProgressStore = create<ProgressState>()(
 window.setTimeout(() => {
   const state = useProgressStore.getState();
   if (state.completedLessonIds.length > 0 && state.xp === 0) {
-    const reward = allLessons()
-      .filter((lesson) => state.completedLessonIds.includes(lesson.id))
-      .reduce((sum, lesson) => sum + lessonXp(lesson), 0);
-    useProgressStore.setState({ xp: reward });
+    // Lessons are lazy-loaded so the progress store stays out of the initial
+    // bundle; the repair runs once shortly after hydration anyway.
+    void import("@/content/lessons").then(({ allLessons }) => {
+      const reward = allLessons()
+        .filter((lesson) => state.completedLessonIds.includes(lesson.id))
+        .reduce((sum, lesson) => sum + lessonXp(lesson), 0);
+      useProgressStore.setState({ xp: reward });
+    });
   }
 }, 0);

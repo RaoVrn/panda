@@ -11,7 +11,6 @@
  */
 
 import { modules } from "@/content/curriculum";
-import { moduleLessons } from "@/content/lessons";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { levelInfo } from "@/features/progress/xp";
 import { upsertLearningProfile } from "@/features/user/services/profileService";
@@ -30,10 +29,10 @@ export function buildLearningProfileRow(
 
   const completedModules: Record<string, boolean> = {};
   for (const module of modules) {
-    const lessons = moduleLessons(module.id);
+    const lessons = module.lessons;
     completedModules[module.id] =
       lessons.length > 0 &&
-      lessons.every((lesson) => state.completedLessonIds.includes(lesson.id));
+      lessons.every((id) => state.completedLessonIds.includes(id));
   }
 
   const quizStats: Record<string, QuizStat> = {};

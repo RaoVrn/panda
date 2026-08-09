@@ -4,7 +4,6 @@ import { toZustandStorage, userScopedAdapter } from "@/features/progress/localSt
 import { runTurn, isAiConfigured } from "@/lib/ai/chat";
 import { StreamInterruptedError, AiError } from "@/lib/ai/errors";
 import type { ChatMessage } from "@/lib/ai/types";
-import { allLessons } from "@/content/lessons";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { buildGlobalContext } from "@/features/ai/global/globalContext";
 import { normalizeResponse } from "@/features/ai/ResponseParser";
@@ -645,8 +644,6 @@ export function detectTags(text: string): string[] {
   const tags: string[] = [];
   if (gitTerms.some((term) => lower.includes(term))) tags.push("git");
   if (pandaTerms.some((term) => lower.includes(term))) tags.push("panda");
-  // A named lesson reference earns a "lesson" badge.
-  if (allLessons().some((l) => lower.includes(l.title.toLowerCase()))) tags.push("lesson");
   if (tags.length === 0) tags.push("general");
   return tags;
 }

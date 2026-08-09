@@ -1,4 +1,5 @@
 import { RouterProvider } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import { router } from "@/app/router";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { QueryProvider } from "@/lib/react-query/QueryProvider";
@@ -9,15 +10,17 @@ import { AchievementCelebration } from "@/features/progress/components/Achieveme
 
 export function App() {
   return (
-    <QueryProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          <OnboardingOverlay />
-          <SearchShortcut />
-          <AchievementCelebration />
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryProvider>
+    <MotionConfig reducedMotion="user">
+      <QueryProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+            <OnboardingOverlay />
+            <SearchShortcut />
+            <AchievementCelebration />
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryProvider>
+    </MotionConfig>
   );
 }

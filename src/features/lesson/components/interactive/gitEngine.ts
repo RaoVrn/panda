@@ -292,10 +292,23 @@ export function runCommand(state: GitState, raw: string): CommandResult {
   // Non-git shell commands.
   if (cmd === "pwd") return { state, output: message(state.pwd, "output") };
   if (cmd === "ls") {
+    if (trimmed.trim() !== "ls") {
+      const path = trimmed.slice(3).trim();
+      return {
+        state,
+        output: message(`ls: cannot access '${path}': No such file or directory`, "error"),
+      };
+    }
     const names = [...state.files.keys()].sort();
     return {
       state,
       output: message(names.join("  ") || "(empty)", "output"),
+    };
+  }
+  if (cmd === "git" && trimmed.trim() === "git") {
+    return {
+      state,
+      output: message("Git needs a subcommand. Try `git status`.", "muted"),
     };
   }
   if (cmd === "cat") {
@@ -386,7 +399,7 @@ export function runCommand(state: GitState, raw: string): CommandResult {
     };
   }
   if (!trimmed.startsWith("git ")) {
-    // echo writes files; anything else is unknown.
+    // echo writes files; bare echo prints the supplied text.
     const echo = parseEcho(trimmed);
     if (echo) {
       const next = cloneState(state);
@@ -397,6 +410,16 @@ export function runCommand(state: GitState, raw: string): CommandResult {
         state: next,
         output: message(echo.append ? `${echo.file} updated` : `wrote ${echo.file}`, "success"),
       };
+    }
+    if (cmd === "echo") {
+      let text = trimmed.slice(5).trim();
+      if (
+        (text.startsWith('"') && text.endsWith('"')) ||
+        (text.startsWith("'") && text.endsWith("'"))
+      ) {
+        text = text.slice(1, -1);
+      }
+      return { state, output: message(text, "output") };
     }
     return {
       state,

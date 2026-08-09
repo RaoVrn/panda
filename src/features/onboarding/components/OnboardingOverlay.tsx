@@ -9,7 +9,6 @@ import {
   Rocket,
   X,
 } from "lucide-react";
-import { allLessons } from "@/content/lessons";
 import { useAuth } from "@/features/user/auth/authContext";
 import { useOnboardingStore } from "../onboardingStore";
 import { Button } from "@/components/ui/Button";
@@ -64,11 +63,6 @@ const STEPS: Step[] = [
   },
 ];
 
-/** First authored lesson in course order  -  where "Start learning" lands. */
-function firstLessonSlug(): string {
-  return allLessons()[0]?.slug ?? "";
-}
-
 /**
  * First-visit welcome overlay. Shows once (until the learner completes or
  * skips), then never again. Small, friendly, one idea per screen, with subtle
@@ -108,8 +102,11 @@ export function OnboardingOverlay() {
   const startLearning = useCallback(() => {
     finish();
     // The overlay lives outside the router, so navigate via a full page load.
-    const slug = firstLessonSlug();
-    window.location.assign(slug ? `/lesson/${slug}` : "/dashboard");
+    // Lessons are lazy-loaded to keep the initial bundle light.
+    void import("@/content/lessons").then(({ allLessons }) => {
+      const slug = allLessons()[0]?.slug ?? "";
+      window.location.assign(slug ? `/lesson/${slug}` : "/dashboard");
+    });
   }, [finish]);
 
   // Lock body scroll + trap focus while shown.

@@ -1,24 +1,26 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
-import { HomePage } from "@/features/home/pages/HomePage";
-import { CoursePage } from "@/features/learning/pages/CoursePage";
-import { ModulePage } from "@/features/learning/pages/ModulePage";
-import { LessonPage } from "@/features/learning/pages/LessonPage";
-import { SearchPage } from "@/features/search/pages/SearchPage";
-import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import { AchievementsPage } from "@/features/progress/pages/AchievementsPage";
-import { GlobalAiPage } from "@/features/ai/global/GlobalAiPage";
-import { LoginPage } from "@/features/user/pages/LoginPage";
-import { SignUpPage } from "@/features/user/pages/SignUpPage";
-import { ResetPasswordPage } from "@/features/user/pages/ResetPasswordPage";
-import { ProfilePage } from "@/features/user/pages/ProfilePage";
-import { AccountPage } from "@/features/user/pages/AccountPage";
+import { lazyPage } from "@/app/lazyPage";
 import { RequireAuth } from "@/features/user/components/RequireAuth";
 import { RedirectIfAuthenticated } from "@/features/user/components/RedirectIfAuthenticated";
-import { GuideOverviewPage } from "@/features/docs/pages/GuideOverviewPage";
-import { GuideLearningPage } from "@/features/docs/pages/GuideLearningPage";
-import { GuidePlaygroundPage } from "@/features/docs/pages/GuidePlaygroundPage";
-import { GuideAiPage } from "@/features/docs/pages/GuideAiPage";
+
+const HomePage = lazyPage(() => import("@/features/home/pages/HomePage").then((m) => m.HomePage));
+const CoursePage = lazyPage(() => import("@/features/learning/pages/CoursePage").then((m) => m.CoursePage));
+const ModulePage = lazyPage(() => import("@/features/learning/pages/ModulePage").then((m) => m.ModulePage));
+const LessonPage = lazyPage(() => import("@/features/learning/pages/LessonPage").then((m) => m.LessonPage));
+const SearchPage = lazyPage(() => import("@/features/search/pages/SearchPage").then((m) => m.SearchPage));
+const SettingsPage = lazyPage(() => import("@/features/settings/pages/SettingsPage").then((m) => m.SettingsPage));
+const AchievementsPage = lazyPage(() => import("@/features/progress/pages/AchievementsPage").then((m) => m.AchievementsPage));
+const GlobalAiPage = lazyPage(() => import("@/features/ai/global/GlobalAiPage").then((m) => m.GlobalAiPage));
+const LoginPage = lazyPage(() => import("@/features/user/pages/LoginPage").then((m) => m.LoginPage));
+const SignUpPage = lazyPage(() => import("@/features/user/pages/SignUpPage").then((m) => m.SignUpPage));
+const ResetPasswordPage = lazyPage(() => import("@/features/user/pages/ResetPasswordPage").then((m) => m.ResetPasswordPage));
+const ProfilePage = lazyPage(() => import("@/features/user/pages/ProfilePage").then((m) => m.ProfilePage));
+const AccountPage = lazyPage(() => import("@/features/user/pages/AccountPage").then((m) => m.AccountPage));
+const GuideOverviewPage = lazyPage(() => import("@/features/docs/pages/GuideOverviewPage").then((m) => m.GuideOverviewPage));
+const GuideLearningPage = lazyPage(() => import("@/features/docs/pages/GuideLearningPage").then((m) => m.GuideLearningPage));
+const GuidePlaygroundPage = lazyPage(() => import("@/features/docs/pages/GuidePlaygroundPage").then((m) => m.GuidePlaygroundPage));
+const GuideAiPage = lazyPage(() => import("@/features/docs/pages/GuideAiPage").then((m) => m.GuideAiPage));
 
 export const router = createBrowserRouter([
   {
