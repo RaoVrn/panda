@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson 10 · git add
  *
  * git add is the "pick what to save" command. Covers staging a specific file,
- * several files, or everything at once — and the one mistake that can leak
+ * several files, or everything at once  -  and the one mistake that can leak
  * secrets into history.
  */
 export const lesson10: ContentLesson = {

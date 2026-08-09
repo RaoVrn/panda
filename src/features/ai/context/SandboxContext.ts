@@ -1,5 +1,5 @@
 /**
- * SandboxContext — the live Git simulation + code editor state the AI can see.
+ * SandboxContext  -  the live Git simulation + code editor state the AI can see.
  *
  * `summarizeGitState` turns the simulated repository into a compact, human
  * summary (branch, staged/modified/untracked files, HEAD, recent commands) so

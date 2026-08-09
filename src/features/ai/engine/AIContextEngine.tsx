@@ -16,7 +16,7 @@ function getScrollParent(node: Element | null): Element | null {
 }
 
 /**
- * AIContextEngine — lightweight live-state tracker.
+ * AIContextEngine  -  lightweight live-state tracker.
  *
  * Everything the AI knows about the PAGE comes from the authored lesson data
  * (see LessonContextBuilder). This component only adds live hints: how far the

@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Flame,
   LayoutDashboard,
   LogOut,
   Settings,
-  User,
+  UserPen,
   type LucideIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -20,11 +19,12 @@ interface MenuItem {
   to: string;
 }
 
+// The profile is opened from the avatar card above; the menu holds the
+// distinct actions (edit, dashboard, settings) plus sign out.
 const MENU_ITEMS: MenuItem[] = [
-  { label: "Profile", icon: User, to: "/profile" },
-  { label: "Settings", icon: Settings, to: "/settings" },
+  { label: "Edit profile", icon: UserPen, to: "/account" },
   { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
-  { label: "Learning Stats", icon: Flame, to: "/profile#stats" },
+  { label: "Settings", icon: Settings, to: "/settings" },
 ];
 
 /**

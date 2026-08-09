@@ -34,7 +34,7 @@ export function DashboardAchievements() {
             Achievements
           </h2>
           <p className="mt-1 text-sm text-text-muted">
-            Milestones you've earned while learning Git.
+            Your Git milestones, earned as you progress.
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm">

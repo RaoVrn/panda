@@ -3,7 +3,7 @@
  *
  * A single lazily-created client used across auth and data services. When the
  * project isn't configured (no URL/anon key) `supabase` is `null` and services
- * throw a typed `SupabaseUnconfiguredError` — the UI handles that gracefully.
+ * throw a typed `SupabaseUnconfiguredError`  -  the UI handles that gracefully.
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";

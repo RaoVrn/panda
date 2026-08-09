@@ -149,11 +149,11 @@ export function AccountPage() {
 
         <Card className="p-6">
           <h2 className="text-sm font-medium uppercase tracking-wide text-text-secondary">
-            Sign in
+            Account
           </h2>
-          <p className="mt-1.5 text-sm text-text-secondary">
-            {user?.email ?? "N/A"}
-            {user?.app_metadata?.provider === "google" ? " · via Google" : ""}
+          <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+            <span className="font-medium text-text">{user?.email ?? "N/A"}</span>
+            {user?.app_metadata?.provider === "google" ? " · signed in with Google" : ""}
           </p>
           <Button
             variant="danger"

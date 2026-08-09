@@ -34,7 +34,7 @@ export function HintPanel({ className }: HintPanelProps) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      // Clipboard unavailable — ignore.
+      // Clipboard unavailable  -  ignore.
     }
   };
 

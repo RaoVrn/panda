@@ -10,6 +10,7 @@
 
 import { useMemo } from "react";
 import type { ContentLesson } from "@/content/schema";
+import { ACHIEVEMENTS } from "./achievements";
 import { levelInfo } from "./xp";
 import {
   lessonStatus,
@@ -114,5 +115,8 @@ export function useProfileStats(): ProfileStats {
 
 export function useUnlockedAchievements(): string[] {
   const achievements = useProgressStore((state) => state.achievements);
-  return useMemo(() => Object.keys(achievements), [achievements]);
+  const ids = useMemo(() => Object.keys(achievements), [achievements]);
+  // Legacy ids from removed achievements should never surface.
+  const defined = new Set(ACHIEVEMENTS.map((a) => a.id));
+  return ids.filter((id) => defined.has(id));
 }

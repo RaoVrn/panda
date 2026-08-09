@@ -16,12 +16,14 @@ export interface UserProfile {
 
 /** Learner preferences (persisted in learning_profiles.preferences). */
 export interface UserPreferences {
-  theme?: "dark" | "light";
+  theme?: import("@/contexts/themeContext").Theme;
   animationSpeed?: "fast" | "normal" | "slow";
   defaultMode?: "read" | "interactive";
-  quizPreference?: "immediate" | "end";
   aiExplanationStyle?: "simple" | "balanced" | "deep";
-  dailyReminder?: boolean;
+  /** Which notification types the learner wants to receive. */
+  notifyAchievements?: boolean;
+  notifyLessons?: boolean;
+  notifyModules?: boolean;
 }
 
 export type QuizStat = { correct: number; total: number };

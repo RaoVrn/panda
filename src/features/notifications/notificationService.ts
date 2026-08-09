@@ -1,5 +1,5 @@
 /**
- * notificationService — persistent notifications in Supabase.
+ * notificationService  -  persistent notifications in Supabase.
  *
  * RLS scopes every row to the signed-in user. `reference` + the unique
  * (user_id, reference) constraint dedupe notifications, so an achievement or

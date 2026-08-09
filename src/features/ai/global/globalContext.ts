@@ -20,6 +20,8 @@ import { memorySummary } from "@/features/ai/memory/conversationMemory";
 import { nextLessonToStudy } from "@/features/progress/progressService";
 import { levelInfo } from "@/features/progress/xp";
 import { describeAiRoutes } from "@/lib/navigation/routeRegistry";
+import { describeCourseContent } from "@/lib/navigation/conceptIndex";
+import { describeDocsContent } from "@/features/docs/guideIndex";
 
 /** The most recent lesson context, captured just before navigating to /panda-ai. */
 let capturedLesson: LessonContext | null = null;
@@ -74,6 +76,10 @@ export function buildGlobalContext(): LessonContext {
 
   const next = nextLessonToStudy(progress.completedLessonIds);
 
+  const completedLessonSlugs = allLessons()
+    .filter((lesson) => progress.completedLessonIds.includes(lesson.id))
+    .map((lesson) => lesson.slug);
+
   const base: LessonContext = {
     contextReady: Boolean(capturedLesson),
     course: course?.title,
@@ -81,6 +87,8 @@ export function buildGlobalContext(): LessonContext {
     currentRoute: router.state.location.pathname,
     userName: cachedUser?.name,
     userEmail: cachedUser?.email,
+    completedLessonSlugs:
+      completedLessonSlugs.length > 0 ? completedLessonSlugs.join(", ") : "none",
     completedCount: progress.completedLessonIds.length,
     totalCount: allLessons().length,
     completedLessons:
@@ -100,7 +108,7 @@ export function buildGlobalContext(): LessonContext {
     animationSpeed: prefs.animationSpeed,
     theme: prefs.theme,
     memory: memorySummary() || undefined,
-    aiTools: describeAiRoutes(),
+    aiTools: `${describeAiRoutes()}\n${describeCourseContent()}\n${describeDocsContent()}`,
   };
 
   // Merge the captured lesson context so the assistant knows where the
@@ -116,6 +124,7 @@ export function buildGlobalContext(): LessonContext {
       completedCount: base.completedCount,
       totalCount: base.totalCount,
       completedLessons: base.completedLessons,
+      completedLessonSlugs: base.completedLessonSlugs,
       modulesCompleted: base.modulesCompleted,
       recommendedNext: base.recommendedNext,
       achievementsSummary: base.achievementsSummary,

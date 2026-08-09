@@ -11,7 +11,7 @@ export interface CommandPreview {
 /**
  * Real output for a preview command: runs the playground's setup script plus a
  * chosen command against a throwaway engine, so read-mode mini terminals show
- * the actual repository response — never a fake.
+ * the actual repository response  -  never a fake.
  */
 export function useCommandPreview(lesson: ContentLesson, commandIndex = 0): CommandPreview | null {
   return useMemo(() => {

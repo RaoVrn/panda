@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bell,
@@ -16,6 +16,7 @@ import {
   unreadCount,
   useNotificationCenter,
 } from "./notificationCenterStore";
+import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 import type { PandaNotification, NotificationType } from "./types";
 
 const TYPE_ICON: Record<NotificationType, typeof Trophy> = {
@@ -59,7 +60,23 @@ export function NotificationsButton() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const count = unreadCount(items);
+
+  // Only show the notification types the learner has enabled in Settings.
+  const notifyAchievements = usePreferencesStore((s) => s.notifyAchievements);
+  const notifyLessons = usePreferencesStore((s) => s.notifyLessons);
+  const notifyModules = usePreferencesStore((s) => s.notifyModules);
+  const enabled = useMemo(() => {
+    const set = new Set<NotificationType>(["streak", "system"]);
+    if (notifyAchievements !== false) set.add("achievement");
+    if (notifyLessons !== false) set.add("lesson");
+    if (notifyModules !== false) set.add("module");
+    return set;
+  }, [notifyAchievements, notifyLessons, notifyModules]);
+  const visible = useMemo(
+    () => items.filter((item) => enabled.has(item.type)),
+    [items, enabled],
+  );
+  const count = unreadCount(visible);
 
   useEffect(() => {
     if (!open) return;
@@ -137,9 +154,9 @@ export function NotificationsButton() {
 
             {/* Body */}
             <div className="max-h-96 overflow-y-auto">
-              {loading && items.length === 0 ? (
+              {loading && visible.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-text-muted">Loading…</p>
-              ) : error && items.length === 0 ? (
+              ) : error && visible.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
                   <p className="text-sm text-text-muted">Couldn't load notifications.</p>
                   <button
@@ -151,14 +168,14 @@ export function NotificationsButton() {
                     Try again
                   </button>
                 </div>
-              ) : items.length === 0 ? (
+              ) : visible.length === 0 ? (
                 <div className="px-4 py-8 text-center">
                   <p className="text-sm text-text">No new notifications</p>
                   <p className="mt-1 text-xs text-text-muted">You're all caught up.</p>
                 </div>
               ) : (
                 <ul className="flex flex-col">
-                  {items.map((item) => {
+                  {visible.map((item) => {
                     const Icon = TYPE_ICON[item.type] ?? Info;
                     return (
                       <li key={item.id} className="border-b border-border-subtle/60 last:border-b-0">

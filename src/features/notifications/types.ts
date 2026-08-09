@@ -9,7 +9,7 @@ export interface PandaNotification {
   type: NotificationType;
   title: string;
   message: string;
-  /** Stable dedupe key, e.g. "achievement:first-lesson". */
+  /** Stable dedupe key, e.g. "achievement:git-beginner". */
   reference: string;
   read: boolean;
   /** Epoch ms. */

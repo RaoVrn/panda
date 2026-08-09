@@ -13,7 +13,7 @@ export interface PlaygroundPanelProps {
 }
 
 /**
- * The shared shell for every playground card — soft, minimal, GPT-style.
+ * The shared shell for every playground card  -  soft, minimal, GPT-style.
  * Elevation and background contrast do the separating; borders are whisper-thin
  * and used only where they improve readability.
  */

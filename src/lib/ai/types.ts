@@ -142,12 +142,14 @@ export interface LessonContext {
   userName?: string;
   /** Email of the signed-in user. */
   userEmail?: string;
+  /** Slugs of lessons the learner has completed (for Review/Learn labels). */
+  completedLessonSlugs?: string;
   /** The route the assistant was opened from, e.g. "/lesson/git-rebase". */
   currentRoute?: string;
   /** Available action destinations, documented for the AI's tool use. */
   aiTools?: string;
   /* ------------------------------------------------------------ */
-  /* Structured lesson data — the single source of truth. These are   */
+  /* Structured lesson data  -  the single source of truth. These are   */
   /* built from the authored lesson (never scraped from the DOM).      */
   /* ------------------------------------------------------------ */
   /** Lesson description (what it's about). */

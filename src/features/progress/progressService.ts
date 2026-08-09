@@ -1,11 +1,11 @@
 /**
- * progressService — the single place that decides what "done" means.
+ * progressService  -  the single place that decides what "done" means.
  *
  * A lesson counts as complete only when ALL three gates pass:
  *
- *   1. Read   — the learner scrolled through at least 80% of the lesson.
- *   2. Interact — they explored the lesson in Interactive mode.
- *   3. Quiz   — they passed the quiz with at least 80%.
+ *   1. Read    -  the learner scrolled through at least 80% of the lesson.
+ *   2. Interact  -  they explored the lesson in Interactive mode.
+ *   3. Quiz    -  they passed the quiz with at least 80%.
  *
  * Completion is derived, not fire-and-forget: these helpers are used by the
  * sidebar, dashboard, lesson summary and quiz so every surface agrees. XP is

@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson · git cherry-pick
  *
  * A teammate fixed a bug on their branch, and you need that exact fix on
- * yours. git cherry-pick copies one commit — just that one — onto your branch,
+ * yours. git cherry-pick copies one commit  -  just that one  -  onto your branch,
  * without dragging in all their other work.
  */
 export const lessonGitCherryPick: ContentLesson = {

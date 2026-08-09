@@ -14,11 +14,13 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { allLessons, getLesson, moduleLessons } from "@/content/lessons";
 import { modules } from "@/content/curriculum";
 import {
+  ACHIEVEMENTS,
   buildAchievementContext,
   evaluateAchievements,
 } from "./achievements";
 import { useAchievementCelebration } from "@/features/progress/components/achievementCelebrationStore";
 import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
+import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 import { localStorageAdapter, toZustandStorage } from "./localStorage";
 import { recordActivity, readStreak, todayKey } from "./streak";
 import { levelInfo, lessonXp, XP_REWARDS } from "./xp";
@@ -154,13 +156,15 @@ export const useProgressStore = create<ProgressState>()(
         // Queue a one-time centered celebration for each genuine new unlock.
         for (const achievement of newly) {
           useAchievementCelebration.getState().enqueue(achievement);
-          useNotificationCenter.getState().notify({
-            type: "achievement",
-            reference: `achievement:${achievement.id}`,
-            title: "Achievement unlocked",
-            message: achievement.title,
-            metadata: { achievementId: achievement.id },
-          });
+          if (usePreferencesStore.getState().notifyAchievements !== false) {
+            useNotificationCenter.getState().notify({
+              type: "achievement",
+              reference: `achievement:${achievement.id}`,
+              title: "Achievement unlocked",
+              message: achievement.title,
+              metadata: { achievementId: achievement.id },
+            });
+          }
         }
       };
 
@@ -210,7 +214,7 @@ export const useProgressStore = create<ProgressState>()(
 
           // A real lesson completion is worth a notification.
           const completedLesson = getLesson(lessonId);
-          if (completedLesson) {
+          if (completedLesson && usePreferencesStore.getState().notifyLessons !== false) {
             useNotificationCenter.getState().notify({
               type: "lesson",
               reference: `lesson:${lessonId}`,
@@ -232,13 +236,15 @@ export const useProgressStore = create<ProgressState>()(
                   title: `Section complete: ${module.title}`,
                 }),
               }));
-              useNotificationCenter.getState().notify({
-                type: "module",
-                reference: `module:${module.id}`,
-                title: "Module completed",
-                message: module.title,
-                metadata: { moduleId: module.id },
-              });
+              if (usePreferencesStore.getState().notifyModules !== false) {
+                useNotificationCenter.getState().notify({
+                  type: "module",
+                  reference: `module:${module.id}`,
+                  title: "Module completed",
+                  message: module.title,
+                  metadata: { moduleId: module.id },
+                });
+              }
             }
           }
 
@@ -375,7 +381,7 @@ export const useProgressStore = create<ProgressState>()(
     },
     {
       name: "panda-progress",
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => toZustandStorage(localStorageAdapter)),
       partialize: (state) => ({
         xp: state.xp,
@@ -399,17 +405,39 @@ export const useProgressStore = create<ProgressState>()(
         missionsDone: state.missionsDone,
         lessonTimeSpent: state.lessonTimeSpent,
       }),
-      migrate: (persisted, version) => {
-        if (version >= 3) return persisted as ProgressState;
+      migrate: (persisted) => {
         const prev = (persisted ?? {}) as Partial<ProgressState>;
-        return {
+        // Rename legacy achievement ids to their new equivalents so existing
+        // users keep their earned milestones. Legacy ids with no mapping (the
+        // removed quiz/interaction achievements) are dropped entirely.
+        const remap = (achievements: Record<string, number>) => {
+          const map: Record<string, string> = {
+            "first-lesson": "git-beginner",
+            "finished-first-module": "git-foundations",
+            "history-master": "history-explorer",
+            "merge-master": "merge-point",
+            "first-remote": "remote-explorer",
+            "finished-course": "git-master",
+          };
+          const valid = new Set(ACHIEVEMENTS.map((a) => a.id));
+          const out: Record<string, number> = {};
+          for (const [id, ts] of Object.entries(achievements)) {
+            const target = map[id] ?? id;
+            if (valid.has(target)) out[target] = ts;
+          }
+          return out;
+        };
+
+        const migrated: Partial<ProgressState> = {
           ...prev,
           completedLessonIds: prev.completedLessonIds ?? [],
+          achievements: prev.achievements ? remap(prev.achievements) : {},
           commandsExecuted: prev.commandsExecuted ?? 0,
           missionsCompleted: prev.missionsCompleted ?? 0,
           missionsDone: prev.missionsDone ?? {},
           lessonTimeSpent: prev.lessonTimeSpent ?? {},
-        } as ProgressState;
+        };
+        return migrated as ProgressState;
       },
     },
   ),

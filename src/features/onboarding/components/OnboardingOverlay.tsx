@@ -20,7 +20,7 @@ interface Step {
   id: string;
   icon: React.ReactNode;
   title: string;
-  /** A short body. Keep to 2–3 short lines — one idea per screen. */
+  /** A short body. Keep to 2–3 short lines  -  one idea per screen. */
   body: string;
   /** A one-line friendly kicker shown above the title. */
   kicker: string;
@@ -64,7 +64,7 @@ const STEPS: Step[] = [
   },
 ];
 
-/** First authored lesson in course order — where "Start learning" lands. */
+/** First authored lesson in course order  -  where "Start learning" lands. */
 function firstLessonSlug(): string {
   return allLessons()[0]?.slug ?? "";
 }

@@ -9,7 +9,7 @@ import type { AchievementDefinition } from "../achievements";
 /**
  * Polished, once-only achievement celebration. Mounted at the app root (and
  * portaled to <body>), it shows a calm centered modal whenever the progress
- * store reports a genuinely new unlock — with a soft chime. It never fires on
+ * store reports a genuinely new unlock  -  with a soft chime. It never fires on
  * page load for achievements the learner already had.
  */
 export function AchievementCelebration() {
@@ -70,6 +70,14 @@ export function AchievementCelebration() {
             className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-text-secondary"
           >
             {shown.description}
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.24 }}
+            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent-hover"
+          >
+            +{shown.rewardXp} XP
           </motion.p>
 
           <Button variant="secondary" onClick={dismiss} className="mt-6 w-full">

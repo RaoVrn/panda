@@ -65,7 +65,7 @@ const RIGHT_ARM: Record<ArmPose, { x: number; y: number; rx: number; ry: number;
 };
 
 /**
- * PandaMascot — the reusable Panda assistant character.
+ * PandaMascot  -  the reusable Panda assistant character.
  *
  * A full-body, premium-illustrated black-and-white panda with the classic
  * large inward-tilted eye patches, small rounded ears, round fluffy body,

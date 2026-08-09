@@ -26,6 +26,7 @@ import { useProgressStore } from "@/features/progress/progressStore";
 import { useTheme } from "@/contexts/useTheme";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
 import type { AuthStatus } from "@/features/user/types";
 import { AuthContext, type AuthContextValue } from "./authContext";
 
@@ -50,13 +51,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
       setStatus(data.session?.user ? "authenticated" : "unauthenticated");
-      if (!data.session?.user) queryClient.clear();
+      if (!data.session?.user) {
+        queryClient.clear();
+        useNotificationCenter.getState().clearForLogout();
+      }
     });
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
       setStatus(session?.user ? "authenticated" : "unauthenticated");
-      if (!session?.user) queryClient.clear();
+      if (!session?.user) {
+        queryClient.clear();
+        useNotificationCenter.getState().clearForLogout();
+      }
     });
 
     return () => {

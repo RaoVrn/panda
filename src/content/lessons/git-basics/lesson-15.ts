@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson 15 · .gitignore
  *
  * The "do not look at these" list. A hidden file named .gitignore tells Git
- * which files to never track — secrets, build junk, cache. Uses the directory
+ * which files to never track  -  secrets, build junk, cache. Uses the directory
  * tree (ignored styling), an editor block, and a live terminal.
  */
 export const lesson15: ContentLesson = {

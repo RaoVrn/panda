@@ -45,7 +45,7 @@ export interface AiPanelProps {
 }
 
 /**
- * Panda AI — the mentor living inside Panda. The lesson's STRUCTURED context
+ * Panda AI  -  the mentor living inside Panda. The lesson's STRUCTURED context
  * (built from the authored lesson, not the DOM) is handed to the model every
  * turn, so it can teach the current lesson deeply and still answer anything.
  */
@@ -143,7 +143,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
           )}
         </div>
 
-        {/* Currently helping with — the learner's live location */}
+        {/* Currently helping with  -  the learner's live location */}
         {context.contextReady && (context.module || context.lessonTitle) && (
           <div className="border-t border-border-subtle bg-base-subtle/40 px-4 py-2.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
@@ -335,7 +335,7 @@ export function AiPanel({ onClose }: AiPanelProps) {
         </div>
       )}
 
-      {/* Proactive nudge — dismissed once, reappears when it changes */}
+      {/* Proactive nudge  -  dismissed once, reappears when it changes */}
       <AnimatePresence>
         {notice && notice !== dismissedNotice && (
           <motion.div

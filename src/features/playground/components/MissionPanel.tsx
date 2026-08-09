@@ -17,7 +17,7 @@ export interface MissionPanelProps {
 }
 
 /**
- * Sticky mission — progress + objectives on the right. Completed objectives
+ * Sticky mission  -  progress + objectives on the right. Completed objectives
  * collapse into a compact summary so only the active task draws attention.
  */
 export function MissionPanel({ xpReward, durationMinutes, className }: MissionPanelProps) {
@@ -131,7 +131,7 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
           )}
         </div>
 
-        {/* Active objectives — the ones that stand out */}
+        {/* Active objectives  -  the ones that stand out */}
         <ul className="space-y-1">
           <AnimatePresence initial={false}>
             {active.map((objective) => {
@@ -158,7 +158,7 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
           </AnimatePresence>
         </ul>
 
-        {/* Completed — collapsed */}
+        {/* Completed  -  collapsed */}
         {completedList.length > 0 && (
           <div>
             <button type="button" onClick={() => setShowCompleted((v) => !v)} className="flex w-full items-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.01] px-2 py-1.5 text-[11px] text-text-muted hover:bg-white/[0.05] hover:text-text-secondary">
@@ -195,7 +195,7 @@ export function MissionPanel({ xpReward, durationMinutes, className }: MissionPa
           </div>
         )}
 
-        {/* Hints accordion — inline, no separate section */}
+        {/* Hints accordion  -  inline, no separate section */}
         {hints.length > 0 && (
           <div className="overflow-hidden rounded-lg border border-white/[0.04]">
             <button type="button" onClick={() => setHintsExpanded((v) => !v)}

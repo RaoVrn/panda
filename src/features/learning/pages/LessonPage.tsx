@@ -32,7 +32,14 @@ export function LessonPage() {
   const lesson = slug ? getLessonBySlug(slug) : undefined;
 
   // Deep link from search: /lesson/:slug?focus=<blockId> scrolls to that block.
+  // ?mode=interactive opens the playground directly (Panda AI "Playground").
   const focusId = searchParams.get("focus");
+  const modeParam = searchParams.get("mode");
+  useEffect(() => {
+    if (modeParam === "interactive") {
+      useLessonModeStore.getState().setMode("interactive");
+    }
+  }, [modeParam]);
   useEffect(() => {
     if (!focusId || !lesson) return;
     const mode = useLessonModeStore.getState().mode;

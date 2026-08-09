@@ -76,7 +76,7 @@ export function AchievementsPage() {
     <div className="mx-auto w-full max-w-5xl py-8">
       <PageHeader
         title="Achievements"
-        subtitle="Track the milestones you've earned throughout your Git journey."
+        subtitle="Your Git milestones, earned as you progress."
         back={{ to: "/dashboard", label: "Dashboard" }}
       />
 
@@ -84,7 +84,7 @@ export function AchievementsPage() {
       <div className="rounded-xl border border-border-subtle bg-card px-5 py-4">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-sm font-medium text-text">
-            {earnedCount} of {total} earned
+            {earnedCount} of {total} milestones earned
           </p>
           <p className="text-sm text-text-muted">{pct}%</p>
         </div>

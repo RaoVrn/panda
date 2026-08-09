@@ -120,7 +120,7 @@ export interface StageAreaProps {
 /**
  * Working Tree → Staging Area → Repository.
  *
- *  · Read: a documentary — files appear in the working tree, move into the
+ *  · Read: a documentary  -  files appear in the working tree, move into the
  *    staging area one by one, then a commit lands in the repository.
  *
  *  · Interactive: a sandbox. Click a file to stage it (git add), click a

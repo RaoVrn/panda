@@ -14,7 +14,7 @@ export interface LessonNavProps {
 }
 
 /**
- * Minimal documentation-style navigation — two equal-width cards at the end
+ * Minimal documentation-style navigation  -  two equal-width cards at the end
  * of a lesson. Destinations are resolved by the lesson page (module-scoped
  * previous/next, or back-to-module / next-module at boundaries), so links are
  * always deterministic.
@@ -29,7 +29,7 @@ export function LessonNav({ previous, next, className }: LessonNavProps) {
         {previous ? (
           <Link
             to={previous.to}
-            className="group flex min-w-0 items-center gap-2.5 rounded-xl border border-white/[0.04] bg-white/[0.01] px-3.5 py-3 transition-colors hover:border-white/[0.09] hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="group flex min-w-0 items-center gap-2.5 rounded-xl border border-border-subtle bg-card px-3.5 py-3 transition-colors hover:border-border hover:bg-card-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <ArrowLeft
               className="size-3.5 shrink-0 text-text-muted transition-colors group-hover:text-accent-hover"

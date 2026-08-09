@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson · git reset
  *
  * You made a commit you regret. git reset moves your branch back to an older
- * commit. It has three flavors — soft, mixed, hard — that decide how much
+ * commit. It has three flavors  -  soft, mixed, hard  -  that decide how much
  * changes. None of them need to be scary.
  */
 export const lessonGitReset: ContentLesson = {

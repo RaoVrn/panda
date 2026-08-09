@@ -3,7 +3,7 @@ import type { ContentLesson } from "@/content/schema";
 /**
  * Lesson 14 · git restore
  *
- * The undo for working-tree changes. Sets a file back to the last snapshot —
+ * The undo for working-tree changes. Sets a file back to the last snapshot  - 
  * perfect when you change something and wish you hadn't. Also covers
  * git restore --staged (unstage) and what restore does NOT do (it can't
  * undo commits).

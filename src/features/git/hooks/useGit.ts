@@ -1,5 +1,5 @@
 /**
- * Git State Engine — reusable React hooks.
+ * Git State Engine  -  reusable React hooks.
  *
  * Thin adapters over the engine provided by <GitEngineProvider>. The UI only
  * ever RENDERS state; all Git logic lives in `src/lib/git`.

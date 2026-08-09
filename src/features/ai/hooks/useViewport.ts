@@ -10,7 +10,7 @@ export interface ViewportState {
 }
 
 /**
- * useViewport — subscribe to the live viewport slice (what's on screen now).
+ * useViewport  -  subscribe to the live viewport slice (what's on screen now).
  * Selects stable primitives so it never causes re-render loops. Mostly for
  * future UI; the AI reads the full context at send time instead of
  * re-rendering on every scroll.

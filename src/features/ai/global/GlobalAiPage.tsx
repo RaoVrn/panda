@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Archive,
   ArchiveRestore,
@@ -95,6 +96,27 @@ export function GlobalAiPage() {
   const scrollTimerRef = useRef<number | undefined>(undefined);
   const nearBottomRef = useRef(true);
   const lastSessionRef = useRef<string | null>(null);
+
+  // A documentation prompt arrives in router state. Submit it exactly once
+  // through the normal chat pipeline, then clear the URL state so a refresh or
+  // back navigation never resubmits it.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const initialPromptHandledRef = useRef(false);
+
+  useEffect(() => {
+    const state = location.state as { initialPrompt?: string } | null;
+    const prompt = state?.initialPrompt?.trim();
+    if (!prompt || initialPromptHandledRef.current) return;
+    initialPromptHandledRef.current = true;
+    // Replace the history entry without the prompt state: back returns to the
+    // documentation page naturally, and refreshing never resubmits.
+    void navigate(location.pathname, { replace: true, state: null });
+    // Leave the input ready for the next question.
+    setDraft("");
+    // Send through the exact same pipeline as a typed message.
+    send(prompt);
+  }, [location.pathname, location.state, navigate, send, setDraft]);
 
   useEffect(() => {
     bindUser(userId ?? null);

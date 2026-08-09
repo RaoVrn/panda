@@ -397,9 +397,9 @@ export interface ContentLessonPlayground {
   solution: string[];
   /** Terminal quick-command chips shown in the welcome state. Falls back to sensible defaults (git init / git status) when absent. */
   suggestions?: string[];
-  /** Visualizer adaptation — how the 4-column flow should present itself for this lesson. */
+  /** Visualizer adaptation  -  how the 4-column flow should present itself for this lesson. */
   visualizer?: PlaygroundVisualizerConfig;
-  /** Shell configuration — makes the terminal toolbar, placeholder, welcome text and quick-action chips specific to this lesson. */
+  /** Shell configuration  -  makes the terminal toolbar, placeholder, welcome text and quick-action chips specific to this lesson. */
   shell?: PlaygroundShellConfig;
   /**
    * Per-event toast messages that override the defaults. Maps GitEventType
@@ -420,7 +420,7 @@ export interface PlaygroundVisualizerConfig {
   banner?: string;
 }
 
-/** Terminal shell personalisation — everything the Panda Shell shows adapts to the lesson. */
+/** Terminal shell personalisation  -  everything the Panda Shell shows adapts to the lesson. */
 export interface PlaygroundShellConfig {
   /** The primary command this lesson teaches (shown in the toolbar next to repo/branch). */
   primaryCommand?: string;

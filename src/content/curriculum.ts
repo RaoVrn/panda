@@ -1,5 +1,5 @@
 /**
- * Course curriculum — the single source of structure for the platform.
+ * Course curriculum  -  the single source of structure for the platform.
  *
  * A platform can host many courses. Each course contains ordered modules, and
  * each module lists its lessons (by id, in teaching order). Modules can depend

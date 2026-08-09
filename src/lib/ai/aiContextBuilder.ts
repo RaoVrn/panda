@@ -1,10 +1,10 @@
 /**
- * aiContextBuilder — turns the LessonContext into the structured "current
+ * aiContextBuilder  -  turns the LessonContext into the structured "current
  * lesson" block handed to the AI. Everything comes from the authored lesson
  * (the single source of truth); live state (scroll, selection, terminal,
  * progress) is layered on top and clearly labelled.
  *
- * The lesson block ENHANCES the model — it never restricts it.
+ * The lesson block ENHANCES the model  -  it never restricts it.
  */
 
 import type { LessonContext } from "./types";
@@ -63,7 +63,7 @@ export function buildContextSnippet(context: LessonContext): string {
 
   const live = [
     context.mode &&
-      `Mode: ${context.mode === "interactive" ? "PLAYGROUND (live repository — learner is doing a hands-on mission)" : "READ (lesson text — learner is reading)"}`,
+      `Mode: ${context.mode === "interactive" ? "PLAYGROUND (live repository, learner is doing a hands-on mission)" : "READ (lesson text, learner is reading)"}`,
     context.currentSectionText &&
       `Section content (what the learner is reading):\n${context.currentSectionText}`,
     context.selectedText && `Selected: """${context.selectedText}"""`,

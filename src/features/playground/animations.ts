@@ -1,5 +1,5 @@
 /**
- * Animation system — event → visual response mappings.
+ * Animation system  -  event → visual response mappings.
  *
  * When the engine fires an event, the store reads these maps to:
  *   1. highlight the relevant visualizer column(s)
@@ -40,7 +40,7 @@ function shortName(path?: string): string {
 
 /**
  * Build a beginner-friendly, one-sentence toast that explains what a Git event
- * just changed — including the file it touched, so feedback feels concrete
+ * just changed  -  including the file it touched, so feedback feels concrete
  * ("app.js is now staged") rather than generic ("a file was staged").
  */
 export function buildEventToast(

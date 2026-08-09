@@ -1,10 +1,10 @@
 /**
- * Playground — shared store.
+ * Playground  -  shared store.
  *
  * One Git simulation per lesson. The store owns the ENGINE (created from the
  * lesson's playground config + optional setup script) and the command session
  * (history, last output, AI reporting). Components NEVER touch repository state
- * directly — they call `run` / `writeFile` / `deleteFile` / `renameFile`, which
+ * directly  -  they call `run` / `writeFile` / `deleteFile` / `renameFile`, which
  * all delegate to the engine. Repository snapshots are read through
  * `usePlaygroundRepository()` (a useSyncExternalStore adapter), so renders only
  * happen when a command actually changes state.
@@ -304,7 +304,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
     /**
      * Called when the workspace unmounts (mode switch / navigation). The engine
      * and mission latch are KEPT so toggling Read ⇄ Interactive never wipes the
-     * learner's sandbox — only the ephemeral command session is cleared.
+     * learner's sandbox  -  only the ephemeral command session is cleared.
      */
     unmount: () => {
       const current = get();

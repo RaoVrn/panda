@@ -1,5 +1,5 @@
 /**
- * Onboarding — first-visit state.
+ * Onboarding  -  first-visit state.
  *
  * A single persisted flag decides whether to show the welcome flow. New users
  * see it once; returning users go straight into the course. The Settings page

@@ -1,5 +1,5 @@
 /**
- * ContextCollector — the heart of the Panda AI Context Engine.
+ * ContextCollector  -  the heart of the Panda AI Context Engine.
  *
  *   Application state (stores + live reports)
  *              │

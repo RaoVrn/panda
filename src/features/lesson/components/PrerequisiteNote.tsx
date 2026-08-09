@@ -12,7 +12,7 @@ export interface PrerequisiteNoteProps {
 /**
  * A gentle, non-blocking nudge when a learner jumps ahead of the course
  * order. If an earlier module isn't complete, we recommend finishing it
- * first — but we never lock the lesson or stop them from continuing.
+ * first  -  but we never lock the lesson or stop them from continuing.
  */
 export function PrerequisiteNote({ lesson }: PrerequisiteNoteProps) {
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);

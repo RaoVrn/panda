@@ -1,5 +1,5 @@
 /**
- * Git State Engine — repository model.
+ * Git State Engine  -  repository model.
  *
  * Creation, cloning and the derived file-status model. Commands (commands.ts)
  * build on these helpers. Everything is immutable: each mutation returns a
@@ -95,7 +95,7 @@ export function wasTracked(repo: GitRepository, path: string): boolean {
 
 /**
  * Derived status for one path. `file.original` is the baseline, so status is
- * computed here — never stored redundantly.
+ * computed here  -  never stored redundantly.
  */
 export function fileStatusOf(repo: GitRepository, path: string): GitFileStatus {
   const file = repo.workingTree.get(path);

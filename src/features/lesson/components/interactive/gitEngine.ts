@@ -628,7 +628,7 @@ export function runCommand(state: GitState, raw: string): CommandResult {
     return { state, output: message(lines.join("\n") || "(no remotes)", "output") };
   }
 
-  // git push / pull / fetch — friendly simulation for the GitHub module.
+  // git push / pull / fetch  -  friendly simulation for the GitHub module.
   if (sub === "push") {
     return {
       state,

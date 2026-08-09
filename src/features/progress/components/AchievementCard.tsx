@@ -13,7 +13,7 @@ function formatEarnedDate(timestamp: number): string {
 /**
  * A compact, premium achievement card. Earned cards get a subtle teal accent;
  * locked cards stay muted with a small lock indicator. No glows, no giant
- * badges — clean and minimal.
+ * badges  -  clean and minimal.
  */
 export function AchievementCard({
   achievement,

@@ -3,7 +3,7 @@
  *
  * Synthesized with the Web Audio API (no asset needed). Wrapped defensively:
  * if the browser blocks audio (autoplay rules) or the API is unavailable, it
- * silently no-ops and never throws — the visual celebration still works.
+ * silently no-ops and never throws  -  the visual celebration still works.
  */
 
 let audioContext: AudioContext | null = null;
@@ -53,6 +53,6 @@ export function playAchievementSound(): void {
     playNote(ctx, 1046.5, now + 0.16, 0.34, 0.16);
     playNote(ctx, 1318.5, now + 0.34, 0.4, 0.08);
   } catch {
-    /* audio unavailable — never throw */
+    /* audio unavailable  -  never throw */
   }
 }

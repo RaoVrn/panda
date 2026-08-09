@@ -5,7 +5,7 @@ import { Logo } from "@/components/brand/Logo";
 
 /**
  * Guards public routes. An authenticated user is never shown the landing page
- * or the auth screens — they're sent to the dashboard instead.
+ * or the auth screens  -  they're sent to the dashboard instead.
  *
  *  · unconfigured → allow (anonymous mode; there's no auth to enforce)
  *  · loading     → branded loading screen

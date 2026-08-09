@@ -1,10 +1,10 @@
 /**
- * Playground — React hooks.
+ * Playground  -  React hooks.
  *
  * Thin adapters so UI components only ever read state and call store actions.
  * `usePlaygroundRepository` subscribes to the engine directly (via
  * useSyncExternalStore), so components re-render exactly when a command changes
- * the repository — never on unrelated state.
+ * the repository  -  never on unrelated state.
  */
 
 import { useCallback, useSyncExternalStore } from "react";

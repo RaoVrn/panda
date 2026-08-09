@@ -1,11 +1,11 @@
 /**
- * Git State Engine — command execution (Phase 1).
+ * Git State Engine  -  command execution (Phase 1).
  *
  * `runCommand` takes a repository and a raw command line, and returns a NEW
  * repository plus the events it emitted. Commands never mutate their input.
  *
  * Phase 1: init · status · add · restore · commit · log · diff
- * (push/pull/merge/rebase land in later phases — the model already holds the
+ * (push/pull/merge/rebase land in later phases  -  the model already holds the
  * state they will fill.)
  */
 

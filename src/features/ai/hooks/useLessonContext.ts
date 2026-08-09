@@ -6,7 +6,7 @@ import { useReadingStore } from "@/stores/readingStore";
 import { buildLessonContext } from "@/features/ai/lessonContextService";
 
 /**
- * useLessonContext — the live, fully-enriched "where is the learner" object.
+ * useLessonContext  -  the live, fully-enriched "where is the learner" object.
  *
  * Subscribes to the lesson reports, progress store and reading store, then
  * merges them with the curriculum. The AI panel uses this for the "Helping

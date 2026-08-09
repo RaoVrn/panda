@@ -3,7 +3,7 @@ import { GitEngineContext } from "@/features/git/gitEngineContext";
 import { gitSimulation } from "@/features/git/simulation";
 
 /**
- * GitEngineProvider — exposes the Git State Engine to the whole app.
+ * GitEngineProvider  -  exposes the Git State Engine to the whole app.
  *
  * Future interactive lessons (terminal, sandbox, visualizations) consume the
  * engine through `useGitEngine()` instead of importing the simulation

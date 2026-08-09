@@ -98,7 +98,7 @@ export function Hero() {
           </Button>
         </motion.div>
 
-        {/* Trust strip — no badges, just plain checks */}
+        {/* Trust strip  -  no badges, just plain checks */}
         <motion.ul
           variants={item}
           className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5"

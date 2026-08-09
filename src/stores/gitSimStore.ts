@@ -1,8 +1,8 @@
 /**
  * The shared Git simulation store.
  *
- * One repository per lesson. Every interactive element — the terminal sandbox,
- * the staging-area visualization, the branch graph — reads from and drives the
+ * One repository per lesson. Every interactive element  -  the terminal sandbox,
+ * the staging-area visualization, the branch graph  -  reads from and drives the
  * same state here, so `git add` typed in the terminal is instantly visible in
  * the staging area, and clicking a file to stage it shows up in `git status`.
  *

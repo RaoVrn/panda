@@ -1,5 +1,5 @@
 /**
- * Playground — repository summarizer for the AI context.
+ * Playground  -  repository summarizer for the AI context.
  *
  * Turns the live simulated repository into a compact human summary so Panda AI
  * can answer "what went wrong?" from real state instead of guesses.

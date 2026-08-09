@@ -28,6 +28,8 @@ interface NotificationCenterState {
   notify: (input: NotificationInput) => void;
   markRead: (id: string) => void;
   markAllRead: () => void;
+  /** Clear user-scoped notification state on sign-out. */
+  clearForLogout: () => void;
 }
 
 /** Number of unread notifications. */
@@ -114,6 +116,10 @@ export const useNotificationCenter = create<NotificationCenterState>()(
         if (userId && isSupabaseConfigured()) {
           void markAllNotificationsRead(userId).catch(() => {});
         }
+      },
+
+      clearForLogout: () => {
+        set({ items: [], userId: null, error: false });
       },
     }),
     {

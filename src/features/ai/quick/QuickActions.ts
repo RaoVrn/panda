@@ -1,5 +1,5 @@
 /**
- * QuickActions — generates the AI panel's chips from the current context.
+ * QuickActions  -  generates the AI panel's chips from the current context.
  *
  * Chips adapt to the lesson (title-derived prompts), to live state (selection,
  * terminal, quiz) and always include the teaching set. Nothing is hardcoded to
@@ -64,7 +64,7 @@ export function buildQuickActions(
   return items.slice(0, limit);
 }
 
-/** Empty-state example prompts — "ask anything about this lesson". */
+/** Empty-state example prompts  -  "ask anything about this lesson". */
 export function buildEmptyState(ctx: LessonContext): Recommendation[] {
   const title = ctx.lessonTitle ?? "this lesson";
   // In the Playground, lead with mission coaching.

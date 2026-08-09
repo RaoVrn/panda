@@ -15,6 +15,10 @@ import { ProfilePage } from "@/features/user/pages/ProfilePage";
 import { AccountPage } from "@/features/user/pages/AccountPage";
 import { RequireAuth } from "@/features/user/components/RequireAuth";
 import { RedirectIfAuthenticated } from "@/features/user/components/RedirectIfAuthenticated";
+import { GuideOverviewPage } from "@/features/docs/pages/GuideOverviewPage";
+import { GuideLearningPage } from "@/features/docs/pages/GuideLearningPage";
+import { GuidePlaygroundPage } from "@/features/docs/pages/GuidePlaygroundPage";
+import { GuideAiPage } from "@/features/docs/pages/GuideAiPage";
 
 export const router = createBrowserRouter([
   {
@@ -97,6 +101,28 @@ export const router = createBrowserRouter([
             <GlobalAiPage />
           </RequireAuth>
         ),
+      },
+      // Panda Guide: public, reachable from the landing page (logged out) and
+      // from inside the app (logged in). One shared route system, four pages.
+      {
+        path: "docs",
+        element: <GuideOverviewPage />,
+      },
+      {
+        path: "docs/learning",
+        element: <GuideLearningPage />,
+      },
+      {
+        path: "docs/playground",
+        element: <GuidePlaygroundPage />,
+      },
+      {
+        path: "docs/panda-ai",
+        element: <GuideAiPage />,
+      },
+      {
+        path: "docs/*",
+        element: <Navigate to="/docs" replace />,
       },
     ],
   },

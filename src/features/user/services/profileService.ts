@@ -1,5 +1,5 @@
 /**
- * profileService — reads and writes the user's identity + learning profile.
+ * profileService  -  reads and writes the user's identity + learning profile.
  *
  * Maps between the snake_case database rows and the camelCase domain types.
  * RLS keeps every row scoped to `auth.uid()`.

@@ -1,5 +1,5 @@
 /**
- * Git State Engine — events.
+ * Git State Engine  -  events.
  *
  * Every command emits events (FILE_STAGED, COMMIT_CREATED, HEAD_CHANGED, …) so
  * future animations, visualizations and the AI can react to exact changes

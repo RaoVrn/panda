@@ -28,13 +28,16 @@ export function useAchievementState(): {
     () => ACHIEVEMENTS.filter((a) => Boolean(state.achievements[a.id])),
     [state.achievements],
   );
+  // Only count achievements that still exist, so legacy ids never inflate the
+  // "earned" figure after an achievement-system migration.
+  const earnedCount = earned.length;
   return {
     unlocked,
     ctx,
     isEarned: (id) => Boolean(unlocked[id]),
     earnedAt: (id) => unlocked[id],
     earned,
-    earnedCount: Object.keys(unlocked).length,
+    earnedCount,
     total: ACHIEVEMENTS.length,
   };
 }

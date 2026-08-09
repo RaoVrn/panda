@@ -3,8 +3,8 @@ import type { ContentLesson } from "@/content/schema";
 /**
  * Lesson · Tags
  *
- * Tags are bookmarks for important versions. They name a commit forever —
- * v1.0, first release — so you can always return to it. Create, list, check
+ * Tags are bookmarks for important versions. They name a commit forever  - 
+ * v1.0, first release  -  so you can always return to it. Create, list, check
  * out, and push tags to share releases.
  */
 export const lessonTags: ContentLesson = {

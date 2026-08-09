@@ -1,5 +1,5 @@
 /**
- * ConversationMemory — remembers what the learner has asked, struggled with,
+ * ConversationMemory  -  remembers what the learner has asked, struggled with,
  * and what has already been explained, so future answers adapt and never
  * repeat themselves.
  *

@@ -1,5 +1,5 @@
 /**
- * Git State Engine — demo repository.
+ * Git State Engine  -  demo repository.
  *
  * A ready-made project so visualizations and the AI have something real to
  * read immediately: an initialized repo with history, a staged change, an

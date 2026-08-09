@@ -100,8 +100,8 @@ export interface RepositoryInspectorProps {
 /**
  * One inspector panel replacing three separate cards. Two tabs:
  *
- *   Files & Status  —  file explorer (always-visible actions) + repo status grid
- *   History          —  commit timeline (compact when ≤2, full timeline otherwise)
+ *   Files & Status   -   file explorer (always-visible actions) + repo status grid
+ *   History           -   commit timeline (compact when ≤2, full timeline otherwise)
  *
  * Everything reads from the engine; every file action drives it.
  */

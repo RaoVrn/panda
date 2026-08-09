@@ -1,5 +1,5 @@
 /**
- * Panda Git State Engine — shared types.
+ * Panda Git State Engine  -  shared types.
  *
  * A strongly-typed, in-memory Git simulation that is entirely independent of
  * React. Every future visualization, terminal, lesson and AI explanation reads
@@ -16,7 +16,7 @@ export interface GitAuthor {
  * A file in the working tree. `original` holds the content at the last commit
  * (undefined = never committed), so status is DERIVED, never duplicated.
  * The booleans you'd expect (tracked/staged/modified/deleted/untracked) are
- * computed by `fileStatusOf` — see `GitFileStatus`.
+ * computed by `fileStatusOf`  -  see `GitFileStatus`.
  */
 export interface GitFileEntry {
   id: string;

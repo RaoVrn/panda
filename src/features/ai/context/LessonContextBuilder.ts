@@ -1,5 +1,5 @@
 /**
- * LessonContextBuilder — builds the structured lesson context from the
+ * LessonContextBuilder  -  builds the structured lesson context from the
  * AUTHORED lesson data. This is the single source of truth for what the AI
  * knows about a page. No DOM scraping, no guessing: everything comes from the
  * lesson's typed blocks, so any future course (Python, Docker, React, …)

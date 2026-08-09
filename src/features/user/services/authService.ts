@@ -1,5 +1,5 @@
 /**
- * authService — every Supabase auth call in one place.
+ * authService  -  every Supabase auth call in one place.
  *
  * All methods throw `SupabaseUnconfiguredError` when the project isn't
  * configured, so the UI can catch it and show a setup notice. Nothing in the

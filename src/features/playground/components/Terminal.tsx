@@ -70,7 +70,7 @@ function Cursor() {
 }
 
 /**
- * The primary workspace surface — a realistic terminal wired to the Git engine.
+ * The primary workspace surface  -  a realistic terminal wired to the Git engine.
  * The header shows the current repository, branch, lesson and a Reset action;
  * the output is ~18 scrollable lines with the input and Run pinned to the
  * bottom. Every command goes through the engine, so the visualizer, files,
@@ -131,7 +131,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         setLines((prev) => [...prev, { id: ++lineSeq, kind: "cmd", text: value }]);
         if (output.text) appendOutput(output.text, output.kind);
         // Inline coaching: when a command fails, explain why and how to fix it
-        // right where the error appeared — not just as a toast.
+        // right where the error appeared  -  not just as a toast.
         if (output.kind === "error") {
           const hint = getErrorHint(output.text);
           const suggestion = /unknown git command|command not found/i.test(output.text)
@@ -202,7 +202,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      // Clipboard unavailable — ignore.
+      // Clipboard unavailable  -  ignore.
     }
   };
 
@@ -222,7 +222,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
       )}
       onClick={focusInput}
     >
-      {/* Header: three groups — left (context), center (lesson), right (actions) */}
+      {/* Header: three groups  -  left (context), center (lesson), right (actions) */}
       <div className="flex items-center gap-3 border-b border-white/[0.03] bg-[#12161b]/80 px-4 py-2.5">
         <div className="flex shrink-0 gap-1.5" aria-hidden="true">
           <span className="size-3 rounded-full bg-[#ff5f57]" />
@@ -231,7 +231,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         </div>
         <span className="truncate font-mono text-[11px] text-[#8b949e]">{title}</span>
 
-        {/* Group 1 — context (project + branch) */}
+        {/* Group 1  -  context (project + branch) */}
         <span className="hidden items-center gap-1.5 pl-1 sm:flex">
           <span className="flex items-center gap-1 rounded-md border border-white/[0.04] bg-white/[0.02] px-2 py-1 font-mono text-[10px] text-[#8b949e]">
             <FolderGit2 className="size-3 shrink-0" aria-hidden="true" />
@@ -246,7 +246,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         {/* Separator */}
         <span aria-hidden="true" className="hidden h-4 w-px bg-white/[0.06] sm:block" />
 
-        {/* Group 2 — lesson + command (informational labels) */}
+        {/* Group 2  -  lesson + command (informational labels) */}
         <span className="hidden items-center gap-1.5 sm:flex">
           {lesson && (
             <span className="flex items-center gap-1 rounded-full bg-white/[0.02] px-2 py-1 text-[10px] text-text-muted">
@@ -265,7 +265,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         {/* Separator */}
         <span aria-hidden="true" className="hidden h-4 w-px bg-white/[0.06] sm:block" />
 
-        {/* Group 3 — actions (reset) */}
+        {/* Group 3  -  actions (reset) */}
         <button
           type="button"
           onClick={handleReset}
@@ -310,7 +310,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         </button>
       </div>
 
-      {/* Output — ~18 visible lines */}
+      {/* Output  -  ~18 visible lines */}
       <div
         ref={scrollRef}
         role="log"
@@ -383,7 +383,7 @@ export function Terminal({ className, title = "panda-shell" }: TerminalProps) {
         </p>
       </div>
 
-      {/* Input — pinned to bottom */}
+      {/* Input  -  pinned to bottom */}
       <form
         onSubmit={submit}
         aria-label="Type a terminal command"

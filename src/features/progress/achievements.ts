@@ -1,68 +1,64 @@
 /**
  * Achievement definitions and evaluation.
  *
- * The single source of truth for the achievement system: what each
- * achievement is (id, name, icon, category), how to earn it (requirement,
- * `test`), how close the learner is (`progress`) and its XP reward. Unlock
+ * The single source of truth for the achievement system. Achievements are
+ * meaningful, Git-focused milestones spread across the entire course, derived
+ * from the real curriculum and progress store (never hard-coded counts). Unlock
  * state lives in the progress store (`achievements: id -> earnedAt`) and is
- * synced with the learner's Supabase profile, so the UI always reflects real
- * user state — never hard-coded values.
+ * synced with the learner's Supabase profile.
  */
 
 import {
-  Award,
-  BookOpen,
-  Bot,
-  Brain,
-  Clock,
-  Code2,
-  Compass,
-  Dumbbell,
+  CheckSquare,
+  Cloud,
+  CloudUpload,
+  Code,
+  Files,
   Flame,
-  Gamepad2,
-  Gem,
+  Github,
   GitBranch,
+  GitCommit,
+  GitCommitHorizontal,
   GitMerge,
   Globe,
   History,
-  Hourglass,
   Layers,
-  Leaf,
-  MessageSquareText,
-  Package,
+  Map,
   Rocket,
-  Sparkles,
-  Sprout,
-  Star,
-  Target,
+  SquareTerminal,
   Terminal,
-  Trophy,
+  Workflow,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { modules } from "@/content/curriculum";
 import { moduleLessons } from "@/content/lessons";
-import type { QuizRecord } from "./types";
 
 export type AchievementCategoryId =
-  | "journey"
-  | "modules"
-  | "practice"
-  | "habits"
-  | "engagement";
+  | "foundations"
+  | "core"
+  | "branching"
+  | "remote"
+  | "advanced"
+  | "mastery"
+  | "streaks"
+  | "practice";
 
 export interface AchievementCategory {
   id: AchievementCategoryId;
   label: string;
 }
 
-/** Categories in display order. */
+/** Categories in display order (roughly follows the learner's journey). */
 export const CATEGORIES: AchievementCategory[] = [
-  { id: "journey", label: "Journey" },
-  { id: "modules", label: "Modules" },
+  { id: "foundations", label: "Foundations" },
+  { id: "core", label: "Core Git" },
+  { id: "branching", label: "Branching" },
+  { id: "remote", label: "Remote" },
+  { id: "advanced", label: "Advanced" },
+  { id: "mastery", label: "Mastery" },
+  { id: "streaks", label: "Streaks" },
   { id: "practice", label: "Practice" },
-  { id: "habits", label: "Habits" },
-  { id: "engagement", label: "Engagement" },
 ];
 
 export interface AchievementProgress {
@@ -72,7 +68,7 @@ export interface AchievementProgress {
 
 export interface AchievementDefinition {
   id: string;
-  /** Kept for small celebrations (toasts); the UI uses `icon`. */
+  /** Kept for the small unlock toast; the UI uses `icon`. */
   emoji: string;
   icon: LucideIcon;
   title: string;
@@ -94,13 +90,7 @@ export interface AchievementContext {
   totalLessons: number;
   completedLessons: Set<string>;
   streakDays: number;
-  quizCompletedCount: number;
-  quizPerfectCount: number;
-  aiQuestionsAsked: number;
   practiceCount: number;
-  commandsExecuted: number;
-  missionsCompleted: number;
-  timeSpentSeconds: number;
   /** moduleId -> whether every authored lesson in it is complete. */
   modulesComplete: Record<string, boolean>;
   /** moduleId -> { completed, total }. */
@@ -112,12 +102,7 @@ export interface AchievementStateSnapshot {
   xp: number;
   completedLessonIds: string[];
   streakCurrent: number;
-  quizStats: Record<string, QuizRecord>;
-  aiQuestions: number;
   practiceCount: number;
-  commandsExecuted: number;
-  missionsCompleted: number;
-  lessonTimeSpent: Record<string, number>;
 }
 
 /** Builds the full achievement context from a persisted-store snapshot. */
@@ -139,230 +124,257 @@ export function buildAchievementContext(
     totalLessons: Object.values(moduleProgress).reduce((sum, p) => sum + p.max, 0),
     completedLessons: completed,
     streakDays: s.streakCurrent,
-    quizCompletedCount: Object.keys(s.quizStats).length,
-    quizPerfectCount: Object.values(s.quizStats).filter((q) => q.perfect).length,
-    aiQuestionsAsked: s.aiQuestions,
     practiceCount: s.practiceCount,
-    commandsExecuted: s.commandsExecuted,
-    missionsCompleted: s.missionsCompleted,
-    timeSpentSeconds: Object.values(s.lessonTimeSpent).reduce((sum, v) => sum + v, 0),
     modulesComplete,
     moduleProgress,
   };
 }
+
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+
+const one = (value: boolean): AchievementProgress => ({ current: value ? 1 : 0, max: 1 });
 
 const fullCourse = (ctx: AchievementContext) => ({
   current: ctx.lessonsCompleted,
   max: ctx.totalLessons,
 });
 
-const one = (value: boolean): AchievementProgress => ({ current: value ? 1 : 0, max: 1 });
+/** How many of the given lesson ids are completed. */
+function done(ctx: AchievementContext, ...lessonIds: string[]): number {
+  return lessonIds.filter((id) => ctx.completedLessons.has(id)).length;
+}
+
+function moduleProgressOf(ctx: AchievementContext, moduleId: string): AchievementProgress {
+  return ctx.moduleProgress[moduleId] ?? { current: 0, max: 0 };
+}
 
 export const ACHIEVEMENTS: AchievementDefinition[] = [
-  {
-    id: "first-lesson",
-    emoji: "🌱",
-    icon: Sprout,
-    title: "First Lesson",
-    description: "Completed your first lesson.",
-    requirement: "Complete any lesson in the course.",
-    category: "journey",
-    rewardXp: 15,
-    test: (ctx) => ctx.lessonsCompleted >= 1,
-    progress: (ctx) => ({ current: ctx.lessonsCompleted, max: 1 }),
-  },
+  /* ---------------- FOUNDATIONS ---------------- */
   {
     id: "git-beginner",
     emoji: "🐣",
-    icon: Leaf,
+    icon: Terminal,
     title: "Git Beginner",
-    description: "Understand what Git is and why it exists.",
-    requirement: "Finish the 'What is Git?' lesson.",
-    category: "journey",
-    rewardXp: 15,
-    test: (ctx) => ctx.completedLessons.has("what-is-git"),
-    progress: (ctx) => one(ctx.completedLessons.has("what-is-git")),
+    description: "Completed the first five Git Fundamentals lessons.",
+    requirement: "Complete 5 lessons in Git Fundamentals.",
+    category: "foundations",
+    rewardXp: 25,
+    test: (ctx) => (ctx.moduleProgress["git-fundamentals"]?.current ?? 0) >= 5,
+    progress: (ctx) => ({
+      current: Math.min(ctx.moduleProgress["git-fundamentals"]?.current ?? 0, 5),
+      max: 5,
+    }),
   },
   {
-    id: "first-commit",
+    id: "working-tree",
+    emoji: "🗂️",
+    icon: Files,
+    title: "Working Tree",
+    description: "Understood the working tree and staging area.",
+    requirement: "Complete the 'Working Tree' and 'Staging Area' lessons.",
+    category: "foundations",
+    rewardXp: 30,
+    test: (ctx) => done(ctx, "working-tree", "staging-area") === 2,
+    progress: (ctx) => ({ current: done(ctx, "working-tree", "staging-area"), max: 2 }),
+  },
+  {
+    id: "first-snapshot",
     emoji: "📦",
-    icon: Package,
-    title: "First Commit",
-    description: "Saved your first snapshot.",
-    requirement: "Finish the 'git commit' lesson.",
-    category: "journey",
-    rewardXp: 20,
+    icon: GitCommit,
+    title: "First Snapshot",
+    description: "Made your first commit.",
+    requirement: "Complete the 'git commit' lesson.",
+    category: "foundations",
+    rewardXp: 25,
     test: (ctx) => ctx.completedLessons.has("git-commit"),
     progress: (ctx) => one(ctx.completedLessons.has("git-commit")),
   },
   {
-    id: "explorer",
-    emoji: "🚀",
-    icon: Compass,
-    title: "Git Explorer",
-    description: "Explored five lessons.",
-    requirement: "Complete 5 lessons.",
-    category: "journey",
-    rewardXp: 20,
-    test: (ctx) => ctx.lessonsCompleted >= 5,
-    progress: (ctx) => ({ current: Math.min(ctx.lessonsCompleted, 5), max: 5 }),
-  },
-  {
-    id: "veteran",
-    emoji: "🐼",
-    icon: Award,
-    title: "Panda Veteran",
-    description: "A dedicated learner with a live streak.",
-    requirement: "Complete 20 lessons and keep a 3-day streak.",
-    category: "journey",
-    rewardXp: 60,
-    test: (ctx) => ctx.lessonsCompleted >= 20 && ctx.streakDays >= 3,
-    progress: (ctx) => ({ current: Math.min(ctx.lessonsCompleted, 20), max: 20 }),
-  },
-  {
-    id: "finished-course",
-    emoji: "🏆",
-    icon: Trophy,
-    title: "Finished Entire Course",
-    description: "Completed every lesson.",
-    requirement: "Complete all 45 lessons in the course.",
-    category: "journey",
-    rewardXp: 200,
-    test: (ctx) => ctx.totalLessons > 0 && ctx.lessonsCompleted >= ctx.totalLessons,
-    progress: fullCourse,
-  },
-  {
-    id: "finished-first-module",
-    emoji: "📖",
-    icon: BookOpen,
-    title: "Finished First Module",
-    description: "Completed Git Fundamentals.",
-    requirement: "Complete all lessons in Git Fundamentals.",
-    category: "modules",
-    rewardXp: 30,
+    id: "git-foundations",
+    emoji: "🧱",
+    icon: Layers,
+    title: "Git Foundations",
+    description: "Finished every Git Fundamentals lesson.",
+    requirement: "Complete all Git Fundamentals lessons.",
+    category: "foundations",
+    rewardXp: 100,
     test: (ctx) => ctx.modulesComplete["git-fundamentals"] === true,
-    progress: (ctx) => ctx.moduleProgress["git-fundamentals"] ?? { current: 0, max: 0 },
+    progress: (ctx) => moduleProgressOf(ctx, "git-fundamentals"),
+  },
+
+  /* ---------------- CORE GIT ---------------- */
+  {
+    id: "command-line-ready",
+    emoji: "⌨️",
+    icon: SquareTerminal,
+    title: "Command Line Ready",
+    description: "Completed the core status and staging commands.",
+    requirement: "Complete the 'git status' and 'git add' lessons.",
+    category: "core",
+    rewardXp: 40,
+    test: (ctx) => done(ctx, "git-status", "git-add") === 2,
+    progress: (ctx) => ({ current: done(ctx, "git-status", "git-add"), max: 2 }),
   },
   {
     id: "core-commands",
-    emoji: "🏁",
-    icon: Layers,
+    emoji: "⚙️",
+    icon: GitCommitHorizontal,
     title: "Core Commands",
-    description: "Completed the Core Commands module.",
-    requirement: "Complete all lessons in Core Commands.",
-    category: "modules",
-    rewardXp: 40,
+    description: "Finished every Core Commands lesson.",
+    requirement: "Complete all Core Commands lessons.",
+    category: "core",
+    rewardXp: 100,
     test: (ctx) => ctx.modulesComplete["core-commands"] === true,
-    progress: (ctx) => ctx.moduleProgress["core-commands"] ?? { current: 0, max: 0 },
+    progress: (ctx) => moduleProgressOf(ctx, "core-commands"),
   },
   {
-    id: "history-master",
+    id: "history-explorer",
     emoji: "🕰️",
     icon: History,
-    title: "History Reader",
-    description: "Completed the History module.",
-    requirement: "Complete all lessons in History.",
-    category: "modules",
-    rewardXp: 40,
+    title: "History Explorer",
+    description: "Finished every History lesson.",
+    requirement: "Complete all History lessons.",
+    category: "core",
+    rewardXp: 100,
     test: (ctx) => ctx.modulesComplete["history"] === true,
-    progress: (ctx) => ctx.moduleProgress["history"] ?? { current: 0, max: 0 },
+    progress: (ctx) => moduleProgressOf(ctx, "history"),
   },
+
+  /* ---------------- BRANCHING ---------------- */
   {
-    id: "branch-master",
+    id: "branch-builder",
     emoji: "🌿",
     icon: GitBranch,
-    title: "Branch Master",
-    description: "Completed the Branching module.",
-    requirement: "Complete all lessons in Branching.",
-    category: "modules",
-    rewardXp: 50,
-    test: (ctx) => ctx.modulesComplete["branching"] === true,
-    progress: (ctx) => ctx.moduleProgress["branching"] ?? { current: 0, max: 0 },
+    title: "Branch Builder",
+    description: "Created and switched branches.",
+    requirement: "Complete the 'Branches' and 'git branch' lessons.",
+    category: "branching",
+    rewardXp: 60,
+    test: (ctx) => done(ctx, "branches", "git-branch") === 2,
+    progress: (ctx) => ({ current: done(ctx, "branches", "git-branch"), max: 2 }),
   },
   {
-    id: "merge-master",
+    id: "merge-point",
     emoji: "🔀",
     icon: GitMerge,
-    title: "Merge Master",
-    description: "Merged your first branches.",
+    title: "Merge Point",
+    description: "Merged branches together.",
     requirement: "Complete the merge lesson.",
-    category: "modules",
-    rewardXp: 25,
+    category: "branching",
+    rewardXp: 60,
     test: (ctx) => ctx.completedLessons.has("merge"),
     progress: (ctx) => one(ctx.completedLessons.has("merge")),
   },
   {
-    id: "first-remote",
+    id: "branch-master",
+    emoji: "🌳",
+    icon: Workflow,
+    title: "Branch Master",
+    description: "Finished every Branching lesson.",
+    requirement: "Complete all Branching lessons.",
+    category: "branching",
+    rewardXp: 150,
+    test: (ctx) => ctx.modulesComplete["branching"] === true,
+    progress: (ctx) => moduleProgressOf(ctx, "branching"),
+  },
+
+  /* ---------------- REMOTE ---------------- */
+  {
+    id: "remote-ready",
+    emoji: "☁️",
+    icon: Cloud,
+    title: "Remote Ready",
+    description: "Connected your work to a remote.",
+    requirement: "Complete the 'git remote' and GitHub lessons.",
+    category: "remote",
+    rewardXp: 60,
+    test: (ctx) => done(ctx, "git-remote", "github") === 2,
+    progress: (ctx) => ({ current: done(ctx, "git-remote", "github"), max: 2 }),
+  },
+  {
+    id: "push-to-the-world",
+    emoji: "🚀",
+    icon: CloudUpload,
+    title: "Push to the World",
+    description: "Shared your work with a push.",
+    requirement: "Complete the 'git push' lesson.",
+    category: "remote",
+    rewardXp: 60,
+    test: (ctx) => ctx.completedLessons.has("git-push"),
+    progress: (ctx) => one(ctx.completedLessons.has("git-push")),
+  },
+  {
+    id: "remote-explorer",
     emoji: "🌍",
     icon: Globe,
-    title: "First Remote Repository",
-    description: "Completed the Remote Repositories module.",
-    requirement: "Complete all lessons in Remote Repositories.",
-    category: "modules",
-    rewardXp: 60,
+    title: "Remote Explorer",
+    description: "Finished every Remote Repositories lesson.",
+    requirement: "Complete all Remote Repositories lessons.",
+    category: "remote",
+    rewardXp: 150,
     test: (ctx) => ctx.modulesComplete["remote-repositories"] === true,
-    progress: (ctx) => ctx.moduleProgress["remote-repositories"] ?? { current: 0, max: 0 },
+    progress: (ctx) => moduleProgressOf(ctx, "remote-repositories"),
+  },
+
+  /* ---------------- ADVANCED ---------------- */
+  {
+    id: "git-deep-dive",
+    emoji: "🔬",
+    icon: Code,
+    title: "Git Deep Dive",
+    description: "Worked through a substantial part of Advanced Git.",
+    requirement: "Complete 4 of the Advanced Git lessons.",
+    category: "advanced",
+    rewardXp: 80,
+    test: (ctx) => (ctx.moduleProgress["advanced-git"]?.current ?? 0) >= 4,
+    progress: (ctx) => ({
+      current: Math.min(ctx.moduleProgress["advanced-git"]?.current ?? 0, 4),
+      max: 4,
+    }),
   },
   {
     id: "advanced-git",
     emoji: "🧗",
     icon: Rocket,
     title: "Advanced Git",
-    description: "Completed the Advanced Git module.",
-    requirement: "Complete all lessons in Advanced Git.",
-    category: "modules",
-    rewardXp: 75,
+    description: "Finished every Advanced Git lesson.",
+    requirement: "Complete all Advanced Git lessons.",
+    category: "advanced",
+    rewardXp: 150,
     test: (ctx) => ctx.modulesComplete["advanced-git"] === true,
-    progress: (ctx) => ctx.moduleProgress["advanced-git"] ?? { current: 0, max: 0 },
+    progress: (ctx) => moduleProgressOf(ctx, "advanced-git"),
+  },
+
+  /* ---------------- MASTERY ---------------- */
+  {
+    id: "git-journey",
+    emoji: "🗺️",
+    icon: Map,
+    title: "Git Journey",
+    description: "Completed most of the course.",
+    requirement: "Complete 75% of all lessons.",
+    category: "mastery",
+    rewardXp: 200,
+    test: (ctx) =>
+      ctx.totalLessons > 0 && ctx.lessonsCompleted >= Math.ceil(ctx.totalLessons * 0.75),
+    progress: fullCourse,
   },
   {
-    id: "first-quiz",
-    emoji: "🧠",
-    icon: Brain,
-    title: "First Quiz",
-    description: "Completed a quiz.",
-    requirement: "Complete any lesson quiz.",
-    category: "practice",
-    rewardXp: 15,
-    test: (ctx) => ctx.quizCompletedCount >= 1,
-    progress: (ctx) => ({ current: ctx.quizCompletedCount, max: 1 }),
+    id: "git-master",
+    emoji: "🏆",
+    icon: Github,
+    title: "Git Master",
+    description: "Completed the entire course.",
+    requirement: "Complete all lessons in the course.",
+    category: "mastery",
+    rewardXp: 500,
+    test: (ctx) => ctx.totalLessons > 0 && ctx.lessonsCompleted >= ctx.totalLessons,
+    progress: fullCourse,
   },
-  {
-    id: "perfect-quiz",
-    emoji: "🎯",
-    icon: Target,
-    title: "First Perfect Quiz",
-    description: "Scored 100% on a quiz.",
-    requirement: "Score 100% on any quiz.",
-    category: "practice",
-    rewardXp: 25,
-    test: (ctx) => ctx.quizPerfectCount >= 1,
-    progress: (ctx) => ({ current: ctx.quizPerfectCount, max: 1 }),
-  },
-  {
-    id: "mission-10",
-    emoji: "🎮",
-    icon: Gamepad2,
-    title: "Mission Complete",
-    description: "Finished ten playground missions.",
-    requirement: "Complete 10 playground missions.",
-    category: "practice",
-    rewardXp: 30,
-    test: (ctx) => ctx.missionsCompleted >= 10,
-    progress: (ctx) => ({ current: Math.min(ctx.missionsCompleted, 10), max: 10 }),
-  },
-  {
-    id: "practice-10",
-    emoji: "🏋️",
-    icon: Dumbbell,
-    title: "Practice Makes Perfect",
-    description: "Completed ten practice exercises.",
-    requirement: "Complete 10 practice exercises.",
-    category: "practice",
-    rewardXp: 25,
-    test: (ctx) => ctx.practiceCount >= 10,
-    progress: (ctx) => ({ current: Math.min(ctx.practiceCount, 10), max: 10 }),
-  },
+
+  /* ---------------- STREAKS ---------------- */
   {
     id: "streak-7",
     emoji: "🔥",
@@ -370,8 +382,8 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     title: "7 Day Streak",
     description: "Studied seven days in a row.",
     requirement: "Study 7 days in a row.",
-    category: "habits",
-    rewardXp: 25,
+    category: "streaks",
+    rewardXp: 50,
     test: (ctx) => ctx.streakDays >= 7,
     progress: (ctx) => ({ current: Math.min(ctx.streakDays, 7), max: 7 }),
   },
@@ -382,118 +394,24 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     title: "30 Day Streak",
     description: "Studied for a whole month.",
     requirement: "Study 30 days in a row.",
-    category: "habits",
-    rewardXp: 60,
+    category: "streaks",
+    rewardXp: 150,
     test: (ctx) => ctx.streakDays >= 30,
     progress: (ctx) => ({ current: Math.min(ctx.streakDays, 30), max: 30 }),
   },
+
+  /* ---------------- PRACTICE ---------------- */
   {
-    id: "command-100",
-    emoji: "⌨️",
-    icon: Terminal,
-    title: "100 Commands",
-    description: "Ran one hundred Git commands.",
-    requirement: "Run 100 Git commands.",
-    category: "habits",
-    rewardXp: 30,
-    test: (ctx) => ctx.commandsExecuted >= 100,
-    progress: (ctx) => ({ current: Math.min(ctx.commandsExecuted, 100), max: 100 }),
-  },
-  {
-    id: "command-1000",
-    emoji: "🖥️",
-    icon: Code2,
-    title: "Command Veteran",
-    description: "Ran one thousand Git commands.",
-    requirement: "Run 1,000 Git commands.",
-    category: "habits",
-    rewardXp: 75,
-    test: (ctx) => ctx.commandsExecuted >= 1000,
-    progress: (ctx) => ({ current: Math.min(ctx.commandsExecuted, 1000), max: 1000 }),
-  },
-  {
-    id: "time-60",
-    emoji: "⏱️",
-    icon: Clock,
-    title: "One Hour In",
-    description: "Spent an hour learning.",
-    requirement: "Spend 1 hour learning.",
-    category: "habits",
-    rewardXp: 25,
-    test: (ctx) => ctx.timeSpentSeconds >= 3600,
-    progress: (ctx) => ({ current: Math.min(Math.round(ctx.timeSpentSeconds / 60), 60), max: 60 }),
-  },
-  {
-    id: "time-300",
-    emoji: "⏳",
-    icon: Hourglass,
-    title: "Five Hours Deep",
-    description: "Spent five hours learning.",
-    requirement: "Spend 5 hours learning.",
-    category: "habits",
-    rewardXp: 50,
-    test: (ctx) => ctx.timeSpentSeconds >= 18000,
-    progress: (ctx) => ({ current: Math.min(Math.round(ctx.timeSpentSeconds / 60), 300), max: 300 }),
-  },
-  {
-    id: "first-ai",
-    emoji: "💬",
-    icon: MessageSquareText,
-    title: "First AI Question",
-    description: "Asked Panda your first question.",
-    requirement: "Ask Panda a question.",
-    category: "engagement",
-    rewardXp: 10,
-    test: (ctx) => ctx.aiQuestionsAsked >= 1,
-    progress: (ctx) => ({ current: ctx.aiQuestionsAsked, max: 1 }),
-  },
-  {
-    id: "ai-10",
-    emoji: "🤖",
-    icon: Bot,
-    title: "Asked Panda 10 Times",
-    description: "Asked Panda ten questions.",
-    requirement: "Ask Panda 10 questions.",
-    category: "engagement",
-    rewardXp: 20,
-    test: (ctx) => ctx.aiQuestionsAsked >= 10,
-    progress: (ctx) => ({ current: Math.min(ctx.aiQuestionsAsked, 10), max: 10 }),
-  },
-  {
-    id: "ai-50",
-    emoji: "🦾",
-    icon: Sparkles,
-    title: "AI Power User",
-    description: "Asked Panda fifty questions.",
-    requirement: "Ask Panda 50 questions.",
-    category: "engagement",
-    rewardXp: 50,
-    test: (ctx) => ctx.aiQuestionsAsked >= 50,
-    progress: (ctx) => ({ current: Math.min(ctx.aiQuestionsAsked, 50), max: 50 }),
-  },
-  {
-    id: "xp-500",
-    emoji: "💎",
-    icon: Gem,
-    title: "Halfway There",
-    description: "Earned 500 XP.",
-    requirement: "Earn 500 XP.",
-    category: "engagement",
-    rewardXp: 25,
-    test: (ctx) => ctx.xp >= 500,
-    progress: (ctx) => ({ current: Math.min(ctx.xp, 500), max: 500 }),
-  },
-  {
-    id: "git-wizard",
-    emoji: "⭐",
-    icon: Star,
-    title: "Git Wizard",
-    description: "Earned 1,000 XP.",
-    requirement: "Earn 1,000 XP.",
-    category: "engagement",
-    rewardXp: 100,
-    test: (ctx) => ctx.xp >= 1000,
-    progress: (ctx) => ({ current: Math.min(ctx.xp, 1000), max: 1000 }),
+    id: "practice-10",
+    emoji: "✍️",
+    icon: CheckSquare,
+    title: "Practice Makes Progress",
+    description: "Completed ten practice exercises.",
+    requirement: "Complete 10 practice exercises.",
+    category: "practice",
+    rewardXp: 40,
+    test: (ctx) => ctx.practiceCount >= 10,
+    progress: (ctx) => ({ current: Math.min(ctx.practiceCount, 10), max: 10 }),
   },
 ];
 

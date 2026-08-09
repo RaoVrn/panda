@@ -1,5 +1,5 @@
 /**
- * Git State Engine — app singleton.
+ * Git State Engine  -  app singleton.
  *
  * A single, app-wide simulation instance seeded with the demo project so
  * visualizations and the AI have real state to read immediately. The engine

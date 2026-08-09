@@ -1,11 +1,11 @@
 /**
- * lessonContextService — merges the STRUCTURED lesson context (built from the
+ * lessonContextService  -  merges the STRUCTURED lesson context (built from the
  * authored lesson data) with the learner's live state.
  *
  * The structured lesson (title, goal, headings, concepts, commands, examples,
  * quiz, challenge, …) is the source of truth and always exists before the AI
  * is called. Live hints (current section via scroll, selection, terminal,
- * progress) are layered on top. If no lesson is open the AI still works —
+ * progress) are layered on top. If no lesson is open the AI still works  - 
  * context only enhances.
  */
 

@@ -85,7 +85,7 @@ function CommitNode({
 }
 
 /**
- * The commit timeline as a horizontal row of nodes — newest on the left, oldest
+ * The commit timeline as a horizontal row of nodes  -  newest on the left, oldest
  * on the right. HEAD glows, the message reads large, the hash stays small, and
  * clicking a node reveals its author and changed files below the row.
  */

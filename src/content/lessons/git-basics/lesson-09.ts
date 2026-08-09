@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson 9 · git status
  *
  * A guided tour of Git's most important command. git status is the "what's
- * happening?" question — this lesson teaches how to read its three sections
+ * happening?" question  -  this lesson teaches how to read its three sections
  * like a HUD instead of a wall of text.
  */
 export const lesson09: ContentLesson = {

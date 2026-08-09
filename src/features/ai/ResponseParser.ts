@@ -1,5 +1,5 @@
 /**
- * ResponseParser — normalizes model output so answers render cleanly.
+ * ResponseParser  -  normalizes model output so answers render cleanly.
  *
  * Applied to streamed + final text. Keeps the writing untouched, just tidies
  * whitespace and trims trailing space so the UI never shows double-blank

@@ -1,9 +1,9 @@
 /**
- * Playground — task validator.
+ * Playground  -  task validator.
  *
  * Objectives are never "did the learner type X". They are predicates over the
  * LIVE simulated repository, so a task completes only when Git's real state
- * satisfies it — exactly how the engine reports it. This file is the single
+ * satisfies it  -  exactly how the engine reports it. This file is the single
  * place that knows how to read a `PlaygroundCheck`; adding a check kind means
  * one case here (and, in the future, command support in the engine).
  */

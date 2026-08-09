@@ -13,18 +13,30 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getLessonBySlug } from "@/content/lessons";
-import { resolveRouteLink } from "@/lib/navigation/routeRegistry";
+import { resolveInternalHref } from "@/lib/navigation/routeRegistry";
+
+/**
+ * React-markdown strips `route:` protocol URLs by default, which would leave
+ * internal action links with an empty href (clicking them reopens the current
+ * page). This transform keeps route:, http(s), mailto, hash and relative URLs
+ * intact so the `a` component can resolve them; anything else is dropped.
+ */
+function safeUrlTransform(url: string): string {
+  if (/^(route:|https?:|mailto:|#|\/)/i.test(url)) return url;
+  return "";
+}
 
 /**
  * Renders Panda AI's markdown replies: headings, lists, GFM tables, inline
  * and fenced code with a copy button, syntax highlighting, and rich callouts.
  *
- * Action buttons: any `[Label](route:<id>)` link resolves through the route
- * registry and renders as a real button (never a raw URL). Bare `/lesson/<slug>`
- * paths and `[Label](route:lesson:slug)` both open lessons directly.
+ * Navigation: any link that resolves to a real Panda destination (via the
+ * route registry) becomes an action button using the app router. External
+ * http(s) links open in a new tab. Anything else renders as plain text  - 
+ * never a dead link.
  */
 export function AiMarkdown({ text }: { text: string }) {
-  // Turn bare lesson paths (/lesson/<slug>) into clickable lesson buttons.
+  // Turn bare lesson paths (/lesson/<slug>) into explicit route: action links.
   const linked = text.replace(
     /(^|\s)\/(lesson\/[a-z0-9-]+)/g,
     (_match, prefix: string, path: string) => {
@@ -39,6 +51,7 @@ export function AiMarkdown({ text }: { text: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeHighlight, { detect: false, ignoreMissing: true }]]}
+        urlTransform={safeUrlTransform}
         components={{
           code: InlineOrBlockCode,
           pre: PreBlock,
@@ -52,7 +65,7 @@ export function AiMarkdown({ text }: { text: string }) {
   );
 }
 
-/** Internal `route:` links and lesson links become action buttons. */
+/** Resolves Panda navigation and external links; invalid links become text. */
 function MarkdownLink({
   children,
   href,
@@ -60,39 +73,32 @@ function MarkdownLink({
   children?: ReactNode;
   href?: string;
 }) {
-  const routeUrl = href && href.startsWith("route:") ? resolveRouteLink(href) : null;
-  if (routeUrl) {
+  const internal = href ? resolveInternalHref(href) : null;
+  if (internal) {
     return (
       <Link
-        to={routeUrl}
-        className="inline-flex max-w-full items-center gap-1 rounded-lg border border-accent/30 bg-accent-soft/50 px-2.5 py-1 text-[12px] font-medium text-accent-hover transition-colors hover:bg-accent-soft"
+        to={internal}
+        className="inline-flex max-w-full items-center gap-1 rounded-lg border border-accent/30 bg-accent-soft/50 px-2.5 py-1 text-[12px] font-medium text-accent-hover transition-colors hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <span className="truncate">{children}</span>
         <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
       </Link>
     );
   }
-  if (href && href.startsWith("/")) {
+  if (href && /^https?:/i.test(href)) {
     return (
-      <Link
-        to={href}
-        className="inline-flex max-w-full items-center gap-1 rounded-lg border border-border-subtle bg-base-subtle/60 px-2.5 py-1 text-[12px] font-medium text-text-secondary transition-colors hover:border-border-strong hover:text-text"
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-accent-hover underline underline-offset-2"
       >
-        <span className="truncate">{children}</span>
-        <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
-      </Link>
+        {children}
+      </a>
     );
   }
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="text-accent-hover underline underline-offset-2"
-    >
-      {children}
-    </a>
-  );
+  // Unknown or invalid destination: render plain text, never a dead link.
+  return <span>{children}</span>;
 }
 
 /** Callouts: "> **Tip:** ..." / "> **Warning:** ..." render as rich cards. */

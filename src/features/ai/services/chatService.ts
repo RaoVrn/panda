@@ -1,5 +1,5 @@
 /**
- * chatService — persistent Panda AI conversations.
+ * chatService  -  persistent Panda AI conversations.
  *
  * Maps between the in-memory chat store and the Supabase tables
  * (chat_sessions, chat_messages, message_feedback). RLS keeps every row

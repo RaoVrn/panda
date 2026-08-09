@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { scaledDuration, useAnimationSpeed } from "@/lib/motion/animation";
 
 /**
- * Route transition. Content is fully visible from the very first frame —
+ * Route transition. Content is fully visible from the very first frame  - 
  * no fade-from-black, no invisible start. Only a tiny 150ms settle (4px) so
  * navigation feels polished without ever delaying readability. The app shell
  * (header, sidebar, menu) stays mounted; only the page content swaps.

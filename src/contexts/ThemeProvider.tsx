@@ -1,38 +1,35 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import {
   ThemeContext,
   type Theme,
 } from "@/contexts/themeContext";
+import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 
-const STORAGE_KEY = "panda-theme";
-
-function readSystemTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-}
-
-function readInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored === "dark" || stored === "light") return stored;
-  return readSystemTheme();
-}
-
+/**
+ * Theme provider. The selected theme lives in the preferences store (the
+ * single source of truth): it persists locally for refresh and syncs to the
+ * user's account via the existing Supabase preferences pipeline, so it
+ * survives logout/login too. The provider simply applies `data-theme` to the
+ * document and exposes setter/toggle helpers.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(readInitialTheme);
+  const theme = usePreferencesStore((s) => s.theme ?? "dark");
+  const setPreferences = usePreferencesStore((s) => s.set);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute("data-theme", theme);
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  const setTheme = useCallback((next: Theme) => setThemeState(next), []);
+  const setTheme = useCallback(
+    (next: Theme) => setPreferences({ theme: next }),
+    [setPreferences],
+  );
   const toggleTheme = useCallback(
-    () => setThemeState((prev) => (prev === "dark" ? "light" : "dark")),
-    [],
+    () =>
+      setPreferences({
+        theme: theme === "dark" || theme === "midnight" ? "light" : "dark",
+      }),
+    [theme, setPreferences],
   );
 
   const value = useMemo(

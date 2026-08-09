@@ -1,5 +1,5 @@
 /**
- * Git State Engine — entry point.
+ * Git State Engine  -  entry point.
  *
  * `createGitSimulation()` returns a self-contained, React-free repository
  * runner: it holds the current state, runs commands immutably, and emits both

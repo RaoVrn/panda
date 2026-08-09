@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useAiChatStore } from "@/stores/aiChatStore";
 
 /**
- * usePandaChat — a thin, ergonomic wrapper around the chat store so the UI
+ * usePandaChat  -  a thin, ergonomic wrapper around the chat store so the UI
  * never touches the store directly. Keeps the chat contract in one place.
  */
 export function usePandaChat() {

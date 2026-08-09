@@ -9,6 +9,9 @@
 
 import { nextLessonToStudy } from "@/features/progress/progressService";
 import { useProgressStore } from "@/features/progress/progressStore";
+import { getLessonBySlug } from "@/content/lessons";
+import { moduleById } from "@/content/curriculum";
+import { isDocSlug, resolveDocsRoute } from "@/features/docs/guideIndex";
 
 export interface RouteTarget {
   /** Stable identifier used by the AI and action buttons. */
@@ -111,6 +114,27 @@ export const ROUTE_REGISTRY: Record<string, RouteTarget> = {
     },
     aiLinkable: true,
   },
+  playground: {
+    id: "playground",
+    label: "Playground",
+    description: "Open a lesson's hands-on Git playground",
+    resolve: (param) => (param ? `/lesson/${param}?mode=interactive` : "/dashboard"),
+    aiLinkable: true,
+  },
+  docs: {
+    id: "docs",
+    label: "Documentation",
+    description: "The Panda help center",
+    resolve: () => "/docs",
+    aiLinkable: true,
+  },
+  docsPage: {
+    id: "docsPage",
+    label: "Documentation page",
+    description: "Open a specific documentation page by its slug",
+    resolve: (param) => (param ? `/docs/${param}` : "/docs"),
+    aiLinkable: true,
+  },
 };
 
 /** Resolves a route ID (and optional param) to a URL, or null when unknown. */
@@ -139,6 +163,8 @@ export function describeAiRoutes(): string {
  * Parse a `route:...` action-link href into a URL.
  *   route:dashboard                    → resolved URL
  *   route:lesson:what-is-git           → /lesson/what-is-git
+ *   route:module:branching             → /module/branching
+ *   route:playground:git-branch        → /lesson/git-branch?mode=interactive
  * Returns null when the route is unknown.
  */
 export function resolveRouteLink(href: string): string | null {
@@ -147,4 +173,64 @@ export function resolveRouteLink(href: string): string | null {
   const [id, param] = rest.split(":");
   if (!id) return null;
   return resolveRoute(id, param || undefined);
+}
+
+/**
+ * Resolve ANY href found in AI-generated markdown to a real Panda page.
+ *
+ * Supports both `route:<id>` action links and bare internal paths. Lesson and
+ * module destinations are validated against the real content, so the AI can
+ * never produce a dead or misleading link. Returns null for anything that
+ * isn't a valid internal destination (the renderer then shows plain text).
+ */
+export function resolveInternalHref(href: string): string | null {
+  if (href.startsWith("route:")) {
+    const rest = href.slice("route:".length);
+    const [id, param] = rest.split(":");
+    // Validate lesson / module / playground / docs params against real content.
+    if (id === "lesson" || id === "playground") {
+      if (!param || !getLessonBySlug(param)) return null;
+      return resolveRoute(id, param);
+    }
+    if (id === "module") {
+      if (!param || !moduleById(param)) return null;
+      return resolveRoute(id, param);
+    }
+    if (id === "docsPage") {
+      if (!param || !isDocSlug(param)) return null;
+      return resolveDocsRoute(param);
+    }
+    if (id === "docs") {
+      if (param && !isDocSlug(param)) return null;
+      return param ? resolveDocsRoute(param) : "/docs";
+    }
+    if (!id) return null;
+    return resolveRoute(id, param || undefined);
+  }
+
+  if (!href.startsWith("/")) return null;
+
+  const lessonMatch = /^\/lesson\/([a-z0-9-]+)/.exec(href);
+  if (lessonMatch) {
+    const slug = lessonMatch[1];
+    if (slug && getLessonBySlug(slug)) return href;
+  }
+
+  const moduleMatch = /^\/module\/([a-z0-9-]+)/.exec(href);
+  if (moduleMatch) {
+    const id = moduleMatch[1];
+    if (id && moduleById(id)) return href;
+  }
+
+  const docsMatch = /^\/docs\/([a-z0-9-/]+)/.exec(href);
+  if (docsMatch) {
+    const slug = docsMatch[1];
+    if (slug && isDocSlug(slug)) return resolveDocsRoute(slug);
+  }
+
+  for (const target of Object.values(ROUTE_REGISTRY)) {
+    if (target.aiLinkable && target.resolve() === href) return href;
+  }
+
+  return null;
 }

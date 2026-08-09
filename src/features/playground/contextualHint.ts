@@ -1,10 +1,10 @@
 /**
- * Playground — contextual hints.
+ * Playground  -  contextual hints.
  *
  * Instead of only showing the lesson's static hint for the current objective,
  * this derives a hint from the LIVE repository state and the learner's last
  * command. It inspects the first failing check of the active objective and
- * tells the learner exactly what to do next — e.g. "You staged README.md.
+ * tells the learner exactly what to do next  -  e.g. "You staged README.md.
  * Now commit those staged changes."
  */
 

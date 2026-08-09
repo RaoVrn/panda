@@ -1,5 +1,5 @@
 /**
- * UserContext — a minimal, privacy-conscious slice of who the learner is.
+ * UserContext  -  a minimal, privacy-conscious slice of who the learner is.
  *
  * Only facts that help the AI teach better are included: level, XP, how much
  * of the course is done, their preferred explanation style, theme, lesson

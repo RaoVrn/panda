@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { Moon, Sparkles, Sun } from "lucide-react";
+import { BookOpen, Moon, Sparkles, Sun } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/user/auth/authContext";
 import { UserMenu } from "@/features/user/components/UserMenu";
@@ -30,6 +30,7 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const darkish = theme === "dark" || theme === "midnight";
   const bindNotifications = useNotificationCenter((s) => s.bindUser);
 
   // Load the signed-in user's notifications whenever the header mounts.
@@ -88,14 +89,20 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
 
             <div className="ml-auto flex shrink-0 items-center gap-1">
               <IconButton
-                label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                label={darkish ? "Switch to light theme" : "Switch to dark theme"}
                 onClick={toggleTheme}
               >
-                {theme === "dark" ? (
+                {darkish ? (
                   <Moon className="size-4" aria-hidden="true" />
                 ) : (
                   <Sun className="size-4" aria-hidden="true" />
                 )}
+              </IconButton>
+              <IconButton
+                label="Documentation"
+                onClick={() => navigate("/docs")}
+              >
+                <BookOpen className="size-4" aria-hidden="true" />
               </IconButton>
               <NotificationsButton />
               {pathname !== "/panda-ai" && (
@@ -117,10 +124,10 @@ export function AppHeader({ leading, hideBrand = false }: AppHeaderProps) {
         ) : (
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <IconButton
-              label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              label={darkish ? "Switch to light theme" : "Switch to dark theme"}
               onClick={toggleTheme}
             >
-              {theme === "dark" ? (
+              {darkish ? (
                 <Moon className="size-4" aria-hidden="true" />
               ) : (
                 <Sun className="size-4" aria-hidden="true" />

@@ -10,7 +10,7 @@ export function LessonTitle({ lesson }: { lesson: ContentLesson }) {
       initial={{ opacity: 1, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
-      className="flex flex-col gap-4 border-b border-white/[0.04] pb-8"
+      className="flex flex-col gap-4 border-b border-border-subtle pb-8"
     >
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="neutral">{titleCase(lesson.meta.module)}</Badge>

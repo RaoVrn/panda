@@ -96,9 +96,13 @@ export function AchievementDetailModal({
               )}
             </p>
 
+            <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-accent-hover">
+              +{achievement.rewardXp} XP
+            </p>
+
             {earned ? (
               <p className="mt-1.5 text-xs text-text-muted">
-                Earned {earnedAt ? formatEarnedDate(earnedAt) : "—"}
+                Earned {earnedAt ? formatEarnedDate(earnedAt) : "today"}
               </p>
             ) : (
               <>

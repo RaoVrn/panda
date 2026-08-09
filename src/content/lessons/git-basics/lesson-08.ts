@@ -4,7 +4,7 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson 8 · Staging area
  *
  * The room everyone stumbles on: why does Git need a middle step at all? This
- * lesson makes the "pick your snacks" idea land for real — the staging area is
+ * lesson makes the "pick your snacks" idea land for real  -  the staging area is
  * where you build each snapshot file by file, on purpose.
  */
 export const lesson08: ContentLesson = {

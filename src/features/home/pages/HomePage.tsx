@@ -54,6 +54,11 @@ const Footer = lazy(() =>
     default: m.Footer,
   })),
 );
+const DocsCta = lazy(() =>
+  import("@/features/home/components/DocsCta").then((m) => ({
+    default: m.DocsCta,
+  })),
+);
 
 export function HomePage() {
   return (
@@ -88,6 +93,9 @@ export function HomePage() {
         </Suspense>
         <Suspense fallback={null}>
           <FinalCta />
+        </Suspense>
+        <Suspense fallback={null}>
+          <DocsCta />
         </Suspense>
       </main>
       <Suspense fallback={null}>

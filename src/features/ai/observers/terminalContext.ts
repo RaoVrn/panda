@@ -1,5 +1,5 @@
 /**
- * TerminalObserver helpers — a compact, human summary of the live Git
+ * TerminalObserver helpers  -  a compact, human summary of the live Git
  * simulation so the AI can answer "what did I do wrong?" from real state.
  */
 

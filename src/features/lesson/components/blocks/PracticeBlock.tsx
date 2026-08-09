@@ -74,7 +74,7 @@ export interface PracticeBlockProps {
 
 /**
  * A quick inline checkpoint, not an assignment. Compact, low-contrast, and
- * integrated into the reading flow — a small pause to think before moving on.
+ * integrated into the reading flow  -  a small pause to think before moving on.
  * Hints and sample answers stay collapsed until asked for.
  */
 export function PracticeBlock({
@@ -193,7 +193,7 @@ export function PracticeBlock({
         </AnimatePresence>
       </div>
 
-      {/* Hints — always collapsed */}
+      {/* Hints  -  always collapsed */}
       {(block.hint || block.exampleAnswer) && (
         <div className="flex flex-wrap gap-1.5 border-t border-white/[0.03] px-3 py-2">
           {block.hint && (

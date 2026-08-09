@@ -15,7 +15,7 @@ export interface PlaygroundWorkspaceProps {
 }
 
 /**
- * The Interactive-mode workspace — one cohesive IDE, not a dashboard.
+ * The Interactive-mode workspace  -  one cohesive IDE, not a dashboard.
  *
  *   Lesson header · Mission progress strip
  *   ────────────────── Repository Visualizer ──────────────────
@@ -59,7 +59,7 @@ export function PlaygroundWorkspace({ lesson }: PlaygroundWorkspaceProps) {
         <MissionSummary xpReward={lesson.xpReward} durationMinutes={lesson.meta.durationMinutes} />
       </div>
 
-      {/* Visualizer — the centerpiece */}
+      {/* Visualizer  -  the centerpiece */}
       <div className="hidden lg:block">
         <RepoVisualizer />
       </div>

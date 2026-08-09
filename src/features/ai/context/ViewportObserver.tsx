@@ -16,11 +16,11 @@ function getScrollParent(node: Element | null): Element | null {
 }
 
 /**
- * ViewportObserver — the live "what is on screen" layer of the context engine.
+ * ViewportObserver  -  the live "what is on screen" layer of the context engine.
  *
  * It measures scroll + selection only (DOM geometry), and reports WHICH block
  * is in front of the learner. The block's CONTENT is resolved by the
- * ContextCollector from the structured lesson — never scraped from the DOM.
+ * ContextCollector from the structured lesson  -  never scraped from the DOM.
  * Reports are throttled with requestAnimationFrame.
  */
 export function ViewportObserver({ lessonId }: { lessonId: string }) {

@@ -1,9 +1,9 @@
 /**
- * progressSync — bridges the local learning engine with the user's persisted
+ * progressSync  -  bridges the local learning engine with the user's persisted
  * learning profile in Supabase.
  *
- *  · push  — snapshot the zustand progress store into a `learning_profiles` row
- *  · pull  — hydrate the local stores from a fetched `learning_profile`
+ *  · push   -  snapshot the zustand progress store into a `learning_profiles` row
+ *  · pull   -  hydrate the local stores from a fetched `learning_profile`
  *
  * When a user signs in, Supabase is the source of truth: the profile is pulled
  * and the local engine is hydrated, then every change is pushed back (debounced
