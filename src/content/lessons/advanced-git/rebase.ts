@@ -64,13 +64,12 @@ export const lessonGitRebase: ContentLesson = {
       'echo "profile" > profile.js',
       "git add .",
       'git commit -m "Add profile"',
-      "git switch feature",
     ],
     objectives: [
       {
         id: "spot",
         label: "Spot your feature branch",
-        checks: [{ kind: "branchExists", name: "feature" }],
+        checks: [{ kind: "branchExists", name: "feature" }, { kind: "ranCommand", contains: "git log" }],
       },
       {
         id: "stand",
@@ -81,6 +80,7 @@ export const lessonGitRebase: ContentLesson = {
         id: "rebase",
         label: "Rebase your work onto main",
         checks: [
+          { kind: "ranCommand", contains: "git rebase" },
           { kind: "branchDescendantOf", name: "feature", ancestor: "main" },
           { kind: "reflogHas", text: "rebase onto main" },
         ],
@@ -88,11 +88,11 @@ export const lessonGitRebase: ContentLesson = {
     ],
     hints: [
       "Look at history with git log --oneline. Main moved ahead with Add profile.",
-      "Make sure you're on feature with git branch.",
+      "Switch to your feature branch with git switch feature.",
       "Lay your work onto main with git rebase main.",
       "Run git log --oneline again, now your commits sit on top of main in one line.",
     ],
-    solution: ["git log --oneline", "git branch", "git rebase main", "git log --oneline"],
+    solution: ["git log --oneline", "git branch", "git switch feature", "git rebase main", "git log --oneline"],
     suggestions: ["git log --oneline", "git branch", "git rebase main"],
     visualizer: { highlight: "repository", banner: "git rebase lays your commits on top of the newest main, in one straight line" },
     shell: {
@@ -227,6 +227,25 @@ export const lessonGitRebase: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "home" > index.html',
+        "git add .",
+        'git commit -m "Add homepage"',
+        "git switch -c feature",
+        'echo "search" > search.js',
+        "git add .",
+        'git commit -m "Add search"',
+        'echo "cart" > cart.js',
+        "git add .",
+        'git commit -m "Add cart"',
+        "git switch main",
+        'echo "profile" > profile.js',
+        "git add .",
+        'git commit -m "Add profile"',
+      ],
       steps: [
         {
           command: "git switch feature",
@@ -236,7 +255,7 @@ export const lessonGitRebase: ContentLesson = {
         },
         {
           command: "git rebase main",
-          output: "Successfully rebased feature onto main\nYour branch now sits on top of main.",
+          output: "Successfully rebased feature onto main\nReplayed: 3fb0268, 2a4f69d\nYour branch now sits on top of main.",
           outputKind: "success",
           note: "Git replays your feature commits onto the newest main.",
         },

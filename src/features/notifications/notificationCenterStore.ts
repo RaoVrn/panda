@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 import {
   insertNotification,
   listNotifications,
@@ -124,6 +125,7 @@ export const useNotificationCenter = create<NotificationCenterState>()(
     }),
     {
       name: "panda-notifications",
+      storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)),
       partialize: (state) => ({ items: state.items }),
     },
   ),

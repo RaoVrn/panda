@@ -274,7 +274,7 @@ export function CoursePage() {
                   Course Progress
                 </h2>
                 <p className="mt-1 text-sm text-text-muted">
-                  Six modules, one journey. Each builds on the last.
+                  {modules.length} modules, one journey. Each builds on the last.
                 </p>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
                   {modules.map((module) => (

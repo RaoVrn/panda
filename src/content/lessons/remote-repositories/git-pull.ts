@@ -153,11 +153,28 @@ export const lessonGitPull: ContentLesson = {
         },
         pwd: "~/project",
         initialized: true,
+        remote: {
+          pwd: "github/my-project",
+          initialized: true,
+          files: {
+            "README.md": "My project\n",
+            "index.html": "<h1>hi</h1>\n",
+          },
+        },
       },
+      setup: ["git init", "git add .", 'git commit -m "Start"'],
+      remoteSetup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start"',
+        "touch team.txt",
+        "git add .",
+        'git commit -m "Teammate adds file"',
+      ],
       steps: [
         {
           command: "git pull",
-          output: "Updating 4a65329..79048ff\nFast-forward",
+          output: "Updating 52ec047..7d271f3\nFast-forward",
           outputKind: "success",
           note: "Your branch moved forward to include your teammate's work.",
         },
@@ -196,7 +213,7 @@ export const lessonGitPull: ContentLesson = {
       id: "clean-connect",
       tone: "warning",
       title: "The golden habit",
-      text: "Before pulling, run git status. If your tree is clean, pull sails through. If it's not, commit your work first so nothing gets tangled.",
+      text: "Before pulling, run git status. If your tree is clean, pull sails through. If it's not, commit your work first. Panda's pull fast-forwards your branch, and a fast-forward can overwrite uncommitted work, so keep your tree clean.",
     },
 
     // ---------------------------------------------------------------
@@ -212,7 +229,7 @@ export const lessonGitPull: ContentLesson = {
       type: "warning",
       id: "mistake-warning",
       title: "Pulling with uncommitted work",
-      text: "If you pull with uncommitted changes and the remote changed the same files, you can hit a conflict. Commit your work first. A clean tree makes pulls calm.",
+      text: "Commit your work before you pull. In real Git, if your uncommitted changes clash with the remote's changes, pulling can hit a conflict. Panda's simulator only demonstrates the fast-forward case, but the habit is the same: clean tree first.",
     },
 
     // ---------------------------------------------------------------

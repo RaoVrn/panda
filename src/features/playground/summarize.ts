@@ -5,7 +5,7 @@
  * can answer "what went wrong?" from real state instead of guesses.
  */
 
-import { statusRows } from "@/lib/git";
+import { headCommit, statusRows } from "@/lib/git";
 import type { GitCommandOutput, GitRepository } from "@/lib/git";
 
 export function summarizeRepository(
@@ -28,7 +28,7 @@ export function summarizeRepository(
   if (modified.length > 0) parts.push(`${modified.length} modified (${modified.map((r) => r.path).join(", ")})`);
   if (untracked.length > 0) parts.push(`${untracked.length} untracked (${untracked.map((r) => r.path).join(", ")})`);
 
-  const head = repo.commits[repo.commits.length - 1];
+  const head = headCommit(repo);
   parts.push(head ? `HEAD ${head.hash} "${head.message}"` : "no commits yet");
 
   let summary = parts.join(" · ");

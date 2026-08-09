@@ -46,7 +46,6 @@ export const lesson14: ContentLesson = {
         "initialized": true
       },
       "setup": [
-        "git init",
         "git add app.js",
         "git commit -m \"Original app\"",
         "echo \"const greet = (name) => {\n  console.log(undefined.name.totally);\n};\" > app.js"
@@ -60,6 +59,10 @@ export const lesson14: ContentLesson = {
               "kind": "fileContent",
               "path": "app.js",
               "contains": "undefined.name"
+            },
+            {
+              "kind": "ranCommand",
+              "contains": "git status"
             }
           ]
         },
@@ -85,7 +88,7 @@ export const lesson14: ContentLesson = {
         }
       ],
       "hints": [
-        "git status shows app.js as modified \u2014 the broken version sits in the working tree.",
+        "git status shows app.js as modified; the broken version sits in the working tree.",
         "Throw the scribbles away and go back to the last snapshot: git restore app.js.",
         "Confirm nothing is left behind: git status."
       ],
@@ -97,11 +100,11 @@ export const lesson14: ContentLesson = {
       "suggestions": [
         "git restore app.js",
         "git status",
-        "git commit -m"
+        "git commit -m \"Fix app.js\""
       ],
       "visualizer": {
         "highlight": "working-tree",
-        "banner": "Undo a mistake \u2014 go back to the last snapshot"
+        "banner": "Undo a mistake, go back to the last snapshot"
       },
       "shell": {
         "primaryCommand": "git restore",
@@ -168,15 +171,20 @@ export const lesson14: ContentLesson = {
       prompt: "$",
       seed: {
         files: {
-          "app.js": "const greet = (name) => {\n  console.log(undefined.name.totally);\n};\n",
+          "app.js": "const greet = (name) => {\n  console.log('hi');\n};\n",
         },
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git add app.js",
+        'git commit -m "Original app"',
+        'echo "const greet = (name) => {\n  console.log(undefined.name.totally);\n};" > app.js',
+      ],
       steps: [
         {
           command: "git status",
-          output: "On branch main\nChanges not staged for commit:\n\tmodified:   app.js",
+          output: "On branch main\n\nChanges not staged for commit:\n\tmodified:   app.js",
           outputKind: "muted",
           note: "app.js is changed, but not staged. Perfect case for restore.",
         },
@@ -188,7 +196,7 @@ export const lesson14: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\nnothing to commit, working tree clean",
+          output: "On branch main\n\nnothing to commit, working tree clean",
           outputKind: "success",
           note: "Clean again. It's as if the mistake never happened.",
         },
@@ -199,7 +207,7 @@ export const lesson14: ContentLesson = {
       id: "undo-connect",
       tone: "success",
       title: "As if it never happened",
-      text: "git restore replaces the working-tree file with the last snapshot. Your mistake is erased. Important: it only works on unstaged changes. A file already in the staging area is protected until you unstage it.",
+      text: "git restore replaces the working-tree file with the version from the last commit. Your mistake is erased. One honest warning: in Panda's simulator, git restore also replaces changes that are currently staged, so check git status first to make sure you aren't about to erase something you wanted to keep.",
     },
 
     // ---------------------------------------------------------------
@@ -220,7 +228,7 @@ export const lesson14: ContentLesson = {
     {
       type: "paragraph",
       id: "cant-note",
-      text: "And remember the two-sided trick: git restore throws away working-tree changes, while git restore --staged just unstages. One destroys the scribbles. The other just takes the file out of the bag. Your changes are safe either way.",
+      text: "And remember the two-sided trick: plain git restore rewinds a working-tree file to the last commit, while git restore --staged just unstages. One rewrites the file. The other just takes it out of the bag. Before you run the plain version, check git status so you know exactly what you're about to erase.",
     },
 
     // ---------------------------------------------------------------
@@ -237,9 +245,9 @@ export const lesson14: ContentLesson = {
       id: "practice-mission",
       description:
         "Will git restore undo changes to a file you already staged?",
-      hint: "Which room does plain git restore act on? What protects a staged file?",
+      hint: "Plain git restore rewinds the working-tree file to the last commit. What does that mean for a staged file in Panda's simulator?",
       exampleAnswer:
-        "No. Plain git restore only undoes unstaged working-tree changes. Since I staged the file, it's in the staging area. I'd need git restore --staged first to unstage, then git restore to get the original back.",
+        "Yes, it can. In Panda's simulator, plain git restore replaces the working-tree file with the version from the last commit even if it was staged, so it can wipe staged changes you meant to keep. The safe habit is to check git status first, then decide whether you really want to restore that file.",
     },
 
     // ---------------------------------------------------------------
@@ -279,7 +287,7 @@ export const lesson14: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: .gitignore",
+      title: "Continue to: Deleting Files (rm)",
       text: "The 'do not look at these' list, and how to keep secrets, junk and build files out of your history.",
     },
   ],

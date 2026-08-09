@@ -27,6 +27,7 @@ import { useTheme } from "@/contexts/useTheme";
 import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
+import { switchStorageUser } from "@/features/user/sync/storageSwitch";
 import type { AuthStatus } from "@/features/user/types";
 import { AuthContext, type AuthContextValue } from "./authContext";
 
@@ -41,6 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const { setTheme } = useTheme();
   const queryClient = useQueryClient();
+  // The most recent user-scoped storage switch; remote profile hydration waits
+  // for it so fresh server data is never clobbered by a stale local rehydrate.
+  const storageSwitchRef = useRef<Promise<void>>(Promise.resolve());
 
   // Session + auth state listener.
   useEffect(() => {
@@ -51,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
       setStatus(data.session?.user ? "authenticated" : "unauthenticated");
+      storageSwitchRef.current = switchStorageUser(data.session?.user?.id ?? null);
       if (!data.session?.user) {
         queryClient.clear();
         useNotificationCenter.getState().clearForLogout();
@@ -60,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: subscription } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
       setStatus(session?.user ? "authenticated" : "unauthenticated");
+      storageSwitchRef.current = switchStorageUser(session?.user?.id ?? null);
       if (!session?.user) {
         queryClient.clear();
         useNotificationCenter.getState().clearForLogout();
@@ -82,7 +88,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.clearTimeout(pushTimer.current);
       pushTimer.current = window.setTimeout(() => {
         const preferences = usePreferencesStore.getState().snapshot();
-        void pushProgressToSupabase(userId, preferences);
+        void pushProgressToSupabase(userId, preferences).catch(() => {
+          // Progress is persisted locally; a failed sync is retried on the
+          // next change or the next sign-in. Never an unhandled rejection.
+        });
       }, PUSH_DEBOUNCE_MS);
     };
 
@@ -103,6 +112,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     void (async () => {
       try {
+        // Wait for the local storage switch to settle first, so the freshly
+        // fetched server profile is authoritative and never overwritten by a
+        // stale local rehydrate.
+        await storageSwitchRef.current;
+        if (cancelled || !user) return;
         const profile = await fetchLearningProfile(user.id);
         if (cancelled || !profile) return;
         hydrateFromLearningProfile(profile);

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
 
 /** One field in the auth card: label, icon, input, inline error. */
@@ -85,7 +84,7 @@ export function AuthShell({
               {subtitle}
             </p>
           )}
-          <div className={cn("flex flex-col gap-2", subtitle ? "mt-5" : "mt-5")}>
+          <div className="mt-5 flex flex-col gap-2">
             {children}
           </div>
         </div>

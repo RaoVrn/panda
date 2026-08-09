@@ -47,10 +47,9 @@ export const lesson09: ContentLesson = {
         "initialized": true
       },
       "setup": [
-        "git init",
         "git add README.md index.html",
         "git commit -m \"Start\"",
-        "echo \"Hello world\" > README.md",
+        "echo \"Hello world, from Git\" > README.md",
         "echo \"<h1>hello</h1>\" > index.html"
       ],
       "objectives": [
@@ -88,13 +87,13 @@ export const lesson09: ContentLesson = {
             },
             {
               "kind": "commitCountAtLeast",
-              "count": 1
+              "count": 2
             }
           ]
         }
       ],
       "hints": [
-        "git status is Git's dashboard \u2014 run it first and read the three sections.",
+        "git status is Git's dashboard; run it first and read the three sections.",
         "Stage README.md: git add README.md.",
         "The other files can wait. Notice status separates staged, changed and new.",
         "When you're ready, sweep the rest with git add . and commit."
@@ -110,11 +109,11 @@ export const lesson09: ContentLesson = {
         "git status",
         "git add README.md",
         "git add .",
-        "git commit -m"
+        "git commit -m \"Finish the homepage\""
       ],
       "visualizer": {
         "highlight": "working-tree",
-        "banner": "Git's dashboard \u2014 read every section"
+        "banner": "Git's dashboard, read every section"
       },
       "shell": {
         "primaryCommand": "git status",
@@ -175,6 +174,12 @@ export const lesson09: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git add README.md index.html",
+        'git commit -m "Start"',
+        'echo "Hello world, from Git" > README.md',
+        'echo "<h1>hello</h1>" > index.html',
+      ],
       steps: [
         {
           command: "git add README.md",
@@ -183,7 +188,7 @@ export const lesson09: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\n\nChanges to be committed:\n  (use \"git restore --staged <file>...\" to unstage)\n\tmodified:   README.md\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n\tmodified:   index.html\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tnotes.txt",
+          output: "On branch main\n\nChanges to be committed:\n  (use \"git restore --staged <file>...\" to unstage)\n\tmodified:   README.md\n\nChanges not staged for commit:\n\tmodified:   index.html\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tnotes.txt",
           outputKind: "muted",
           note: "Three rooms: staged, changed-but-not-staged, and brand new.",
         },
@@ -224,6 +229,12 @@ export const lesson09: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git add .",
+        'git commit -m "Start"',
+        'echo "Hello world, from Git" > README.md',
+        'echo "<h1>hello</h1>" > index.html',
+      ],
       steps: [
         {
           command: "git add .",
@@ -232,12 +243,12 @@ export const lesson09: ContentLesson = {
         },
         {
           command: 'git commit -m "Finish the homepage"',
-          output: "[main 7f0bd9e] Finish the homepage\n 2 files changed",
+          output: "[main 5bc43fb] Finish the homepage\n 2 files changed",
           outputKind: "success",
         },
         {
           command: "git status",
-          output: "On branch main\nnothing to commit, working tree clean",
+          output: "On branch main\n\nnothing to commit, working tree clean",
           outputKind: "success",
           note: "\"Working tree clean\" = every change is safely saved. Freedom.",
         },

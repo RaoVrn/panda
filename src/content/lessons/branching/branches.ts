@@ -61,7 +61,7 @@ export const lessonBranches: ContentLesson = {
       {
         id: "list",
         label: "List the branches and spot feature",
-        checks: [{ kind: "branchExists", name: "feature" }, { kind: "branch", name: "main" }],
+        checks: [{ kind: "branchExists", name: "feature" }, { kind: "ranCommand", contains: "git branch" }],
       },
       {
         id: "feature-work",
@@ -71,15 +71,19 @@ export const lessonBranches: ContentLesson = {
       {
         id: "see-safety",
         label: "Confirm main stays safe",
-        checks: [{ kind: "branch", name: "main" }, { kind: "fileNotExists", path: "feature.txt" }],
+        checks: [
+          { kind: "branch", name: "main" },
+          { kind: "fileNotExists", path: "feature.txt" },
+          { kind: "ranCommand", contains: "git switch feature" },
+        ],
       },
     ],
     hints: [
       "Run git branch to see the branches. The star shows where you are.",
-      "Check the history with git log --oneline. The feature branch has its own commit.",
-      "You're back on main now. Notice feature.txt isn't there. That's the safety.",
+      "Visit feature with git switch feature. It has its own commit with feature.txt.",
+      "Come back to main with git switch main. Notice feature.txt isn't there. That's the safety.",
     ],
-    solution: ["git branch", "git log --oneline", "git switch main"],
+    solution: ["git branch", "git switch feature", "git switch main"],
     suggestions: ["git branch", "git switch feature", "git switch main"],
     visualizer: { highlight: "head", banner: "A branch is a separate line of work that leaves main safe" },
     shell: {
@@ -139,30 +143,18 @@ export const lessonBranches: ContentLesson = {
       type: "gitGraph",
       id: "visual-branches",
       title: "One line becomes two",
-      width: 340,
-      height: 96,
+      width: 300,
+      height: 70,
       commits: [
-        { id: "c1", x: 30, y: 30, lane: 0, message: "Start project", branch: "main" },
-        { id: "c2", x: 96, y: 30, lane: 0, message: "Add homepage", branch: "main" },
-        { id: "c3", x: 162, y: 30, lane: 0, message: "Add login", branch: "feature" },
-        { id: "c4", x: 228, y: 30, lane: 0, message: "Finish login", branch: "feature", accent: true },
-        { id: "c5", x: 228, y: 78, lane: 1, message: "Fix a bug", branch: "main" },
+        { id: "c1", x: 40, y: 24, lane: 0, message: "Start project", branch: "main" },
+        { id: "c2", x: 170, y: 24, lane: 0, message: "Work on feature", branch: "feature", accent: true },
       ],
       lines: [
         {
-          id: "timeline",
+          id: "feature",
           points: [
-            { x: 30, y: 30 },
-            { x: 96, y: 30 },
-            { x: 162, y: 30 },
-            { x: 228, y: 30 },
-          ],
-        },
-        {
-          id: "mainline",
-          points: [
-            { x: 96, y: 30 },
-            { x: 228, y: 78 },
+            { x: 40, y: 24 },
+            { x: 170, y: 24 },
           ],
         },
       ],
@@ -170,7 +162,7 @@ export const lessonBranches: ContentLesson = {
     {
       type: "paragraph",
       id: "see-explain",
-      text: "See the fork? The main line keeps going, and the feature line heads off on its own. Each line can be changed without touching the other.",
+      text: "See the fork? The feature line heads off on its own with its own snapshot, while main stays at the safe version. Each line can be changed without touching the other.",
     },
 
     // ---------------------------------------------------------------

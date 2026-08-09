@@ -62,17 +62,17 @@ export const lessonFastForwardMerge: ContentLesson = {
       {
         id: "on-main",
         label: "Stand on main",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git switch main" }],
       },
       {
         id: "merge",
         label: "Merge add-cart into main",
-        checks: [{ kind: "anyCommitMessage", message: "Finish the cart" }, { kind: "branch", name: "main" }],
+        checks: [{ kind: "anyCommitMessage", message: "Finish the cart" }, { kind: "ranCommand", contains: "git merge add-cart" }],
       },
       {
         id: "straight-line",
         label: "See one clean history line",
-        checks: [{ kind: "commitCountAtLeast", count: 3 }],
+        checks: [{ kind: "commitCountAtLeast", count: 3 }, { kind: "ranCommand", contains: "git merge add-cart" }],
       },
     ],
     hints: [
@@ -132,8 +132,8 @@ export const lessonFastForwardMerge: ContentLesson = {
       height: 70,
       commits: [
         { id: "c1", x: 30, y: 24, lane: 0, message: "Start project", branch: "main" },
-        { id: "c2", x: 120, y: 24, lane: 0, message: "Add cart", branch: "add-cart" },
-        { id: "c3", x: 210, y: 24, lane: 0, message: "Finish cart", branch: "add-cart", accent: true },
+        { id: "c2", x: 120, y: 24, lane: 0, message: "Add the cart", branch: "add-cart" },
+        { id: "c3", x: 210, y: 24, lane: 0, message: "Finish the cart", branch: "add-cart", accent: true },
       ],
       lines: [
         {
@@ -173,7 +173,7 @@ export const lessonFastForwardMerge: ContentLesson = {
       id: "when-connect",
       tone: "info",
       title: "The rule of thumb",
-      text: "If main hasn't moved since you started your branch, the merge is a fast-forward. If main moved too, Git makes a merge commit instead. That's the difference.",
+      text: "If main hasn't moved since you started your branch, the merge is a fast-forward. If both branches have moved, the merge is no longer a fast-forward. Real Git can create a merge commit in that situation; Panda's simulator currently supports the fast-forward case only.",
     },
 
     // ---------------------------------------------------------------

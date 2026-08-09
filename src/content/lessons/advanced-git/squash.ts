@@ -70,17 +70,22 @@ export const lessonSquash: ContentLesson = {
       {
         id: "messy",
         label: "See five messy commits on main",
-        checks: [{ kind: "commitCountEquals", count: 6 }],
+        checks: [{ kind: "commitCountEquals", count: 6 }, { kind: "ranCommand", contains: "git log" }],
       },
       {
         id: "fold",
         label: "Fold them back with a soft reset",
-        checks: [{ kind: "reflogHas", text: "reset" }, { kind: "commitCountEquals", count: 1 }],
+        checks: [
+          { kind: "ranCommand", contains: "git reset" },
+          { kind: "reflogHas", text: "reset" },
+          { kind: "commitCountEquals", count: 1 },
+        ],
       },
       {
         id: "clean",
         label: "Make one clean commit",
         checks: [
+          { kind: "ranCommand", contains: "git commit" },
           { kind: "latestCommitMessage", message: "Implement the cart feature" },
           { kind: "commitCountEquals", count: 2 },
           { kind: "workingTreeClean" },
@@ -191,11 +196,31 @@ export const lessonSquash: ContentLesson = {
       seed: {
         files: {
           "README.md": "My project\n",
-          "app.js": "console.log('hi');\n",
+          "cart.js": "// cart\n",
         },
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "echo '// cart 1' >> cart.js",
+        "git add .",
+        'git commit -m "wip"',
+        "echo '// cart 2' >> cart.js",
+        "git add .",
+        'git commit -m "typo"',
+        "echo '// cart 3' >> cart.js",
+        "git add .",
+        'git commit -m "again"',
+        "echo '// cart 4' >> cart.js",
+        "git add .",
+        'git commit -m "wip 2"',
+        "echo '// cart 5' >> cart.js",
+        "git add .",
+        'git commit -m "wip 3"',
+      ],
       steps: [
         {
           command: "git reset --soft HEAD~5",
@@ -205,7 +230,7 @@ export const lessonSquash: ContentLesson = {
         },
         {
           command: "git commit -m \"Implement the cart feature\"",
-          output: "[main 7c8f830] Implement the cart feature\n 5 files changed",
+          output: "[main 40d9748] Implement the cart feature\n 1 file changed",
           outputKind: "success",
           note: "One commit now holds the whole feature. Five drafts became one final page.",
         },

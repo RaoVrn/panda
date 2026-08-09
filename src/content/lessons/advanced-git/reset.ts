@@ -62,17 +62,29 @@ export const lessonGitReset: ContentLesson = {
       {
         id: "spot",
         label: "See the messy last commit",
-        checks: [{ kind: "anyCommitMessage", message: "Add debug stuff" }, { kind: "fileExists", path: "debug.txt" }],
+        checks: [
+          { kind: "anyCommitMessage", message: "Add debug stuff" },
+          { kind: "fileExists", path: "debug.txt" },
+          { kind: "ranCommand", contains: "git log" },
+        ],
       },
       {
         id: "undo",
         label: "Undo it for good with a hard reset",
-        checks: [{ kind: "branchAtCommit", name: "main", hash: "4c98bc8" }, { kind: "fileNotExists", path: "debug.txt" }],
+        checks: [
+          { kind: "ranCommand", contains: "git reset" },
+          { kind: "branchAtCommit", name: "main", hash: "4c98bc8" },
+          { kind: "fileNotExists", path: "debug.txt" },
+        ],
       },
       {
         id: "safe",
         label: "Confirm your real work is safe",
-        checks: [{ kind: "fileExists", path: "feature.txt" }, { kind: "workingTreeClean" }],
+        checks: [
+          { kind: "ranCommand", contains: "git reset" },
+          { kind: "fileExists", path: "feature.txt" },
+          { kind: "workingTreeClean" },
+        ],
       },
     ],
     hints: [
@@ -132,6 +144,13 @@ export const lessonGitReset: ContentLesson = {
       title: "Soft, mixed, hard",
       text: "--soft keeps your changes staged, ready to recommit. --mixed (the default) keeps them in the working tree but unstaged. --hard throws them away completely. Think: soft = keep everything, hard = start clean.",
     },
+    {
+      type: "callout",
+      id: "modes-panda",
+      tone: "tip",
+      title: "Reset in Panda",
+      text: "Panda's simulator simplifies --soft: it moves your branch back and then re-stages the difference between the old commit and your working tree. The changes stay ready to recommit, just like real Git, but Panda skips the exact index bookkeeping.",
+    },
 
     // ---------------------------------------------------------------
     // 2 · See the difference.
@@ -160,16 +179,30 @@ export const lessonGitReset: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "echo 'feature work' > feature.txt",
+        "git add .",
+        'git commit -m "Add feature"',
+        "echo 'debug junk' > debug.txt",
+        "git add .",
+        'git commit -m "Add debug stuff"',
+        "echo 'extra junk' > extra.txt",
+        "git add .",
+        'git commit -m "Add extra"',
+      ],
       steps: [
         {
           command: "git reset --soft HEAD~1",
-          output: "HEAD is now at 4c98bc8 (soft reset)",
+          output: "HEAD is now at 5529018 (soft reset)",
           outputKind: "success",
           note: "The commit is gone from history, but your changes are still staged. You can recommit cleanly.",
         },
         {
           command: "git reset --mixed HEAD~1",
-          output: "HEAD is now at 2271f37 (mixed reset)",
+          output: "HEAD is now at 4c98bc8 (mixed reset)",
           outputKind: "success",
           note: "Now your changes are also unstaged. They sit in the working tree, waiting.",
         },

@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Button onClick={() => window.location.reload()}>Reload page</Button>
-            <Button variant="secondary" href="/dashboard">
+            <Button variant="secondary" href="/">
               Go Home
             </Button>
           </div>

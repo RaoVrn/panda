@@ -26,7 +26,10 @@ export interface CreateRepositoryOptions {
   remote?: CreateRepositoryOptions;
 }
 
-const DEFAULT_AUTHOR: GitAuthor = { name: "Panda", email: "panda@example.com" };
+// The starter identity. The Git Fundamentals config lesson teaches learners to
+// set this to their own name/email, so it must differ from the values that
+// lesson's objectives check ("Panda" / "panda@example.com").
+const DEFAULT_AUTHOR: GitAuthor = { name: "Git Learner", email: "learner@example.com" };
 
 export function createRepository(options: CreateRepositoryOptions = {}): GitRepository {
   const files: Record<string, string> = options.files ?? {};
@@ -86,11 +89,33 @@ export function cloneRepository(repo: GitRepository): GitRepository {
   };
 }
 
-/** Whether a path was ever committed (tracked). */
+/** Whether a path was ever committed (tracked) by a commit reachable from HEAD. */
 export function wasTracked(repo: GitRepository, path: string): boolean {
-  return repo.commits.some((commit) =>
+  return logCommits(repo).some((commit) =>
     commit.changedFiles.some((file) => file.path === path),
   );
+}
+
+/** The commit HEAD currently points at, if any. */
+export function headCommit(repo: GitRepository): GitCommit | undefined {
+  return repo.commits.find((c) => c.hash === repo.head) ?? undefined;
+}
+
+/** Commits reachable from HEAD, newest first (matches `git log`). */
+export function logCommits(repo: GitRepository): GitCommit[] {
+  if (!repo.head) return [];
+  const byHash = new Map(repo.commits.map((c) => [c.hash, c]));
+  const ordered: GitCommit[] = [];
+  const seen = new Set<string>();
+  let current: string | undefined = repo.head;
+  while (current && !seen.has(current)) {
+    seen.add(current);
+    const commit = byHash.get(current);
+    if (!commit) break;
+    ordered.push(commit);
+    current = commit.parents[0];
+  }
+  return ordered;
 }
 
 /**
@@ -132,7 +157,10 @@ export function statusPaths(repo: GitRepository): string[] {
   for (const path of repo.workingTree.keys()) {
     if (fileStatusOf(repo, path).deleted) paths.add(path);
   }
-  for (const commit of repo.commits) {
+  // Only commits reachable from HEAD count as "tracked". Files that belong to
+  // reset-away or other-branch commits must not linger in `git status` as
+  // phantom deletions after a reset.
+  for (const commit of logCommits(repo)) {
     for (const change of commit.changedFiles) {
       if (change.status === "deleted") continue;
       paths.add(change.path);

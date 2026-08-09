@@ -290,7 +290,7 @@ export const lesson03: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: Creating your first repository",
+      title: "Continue to: Git Configuration",
       text: "One command turns any folder into a Git project. You'll see the magic happen with your own eyes.",
     },
   ],

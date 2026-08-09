@@ -13,6 +13,7 @@
 
 import { create } from "zustand";
 import {
+  applyScript,
   createGitState,
   editFile,
   runCommand,
@@ -27,6 +28,8 @@ export interface GitSimSeed {
   files?: Record<string, string>;
   pwd?: string;
   initialized?: boolean;
+  /** Seed the simulated remote (GitHub) repository. */
+  remote?: GitSimSeed;
 }
 
 interface GitSimState {
@@ -38,8 +41,18 @@ interface GitSimState {
   lastOutput: CommandOutput | null;
   lastCommand: string;
   history: string[];
-  /** Ensure this lesson's repo exists (reset only on lesson/seed change). */
-  sync: (lessonId: string, seedId: string, seed?: GitSimSeed) => void;
+  /**
+   * Ensure this lesson's repo exists (reset only on lesson/seed change).
+   * `remoteSetup` runs against the seeded remote so terminal demos can start
+   * with real remote history (mirrors the playground's `remoteSetup`).
+   */
+  sync: (
+    lessonId: string,
+    seedId: string,
+    seed?: GitSimSeed,
+    setup?: string[],
+    remoteSetup?: string[],
+  ) => void;
   /** Run one command against the shared repo; returns its output. */
   run: (command: string) => CommandOutput;
   /** Edit a working-tree file directly (used by editors). */
@@ -55,14 +68,27 @@ export const useGitSimStore = create<GitSimState>()((set, get) => ({
   lastCommand: "",
   history: [],
 
-  sync: (lessonId, seedId, seed) => {
+  sync: (lessonId, seedId, seed, setup, remoteSetup) => {
     const current = get();
     if (current.lessonId === lessonId && current.seedId === seedId) return;
-    const state = createGitState({
+    let state = createGitState({
       files: seed?.files,
       pwd: seed?.pwd,
       initialized: seed?.initialized,
+      remote: seed?.remote,
     });
+    // Apply any baseline script (e.g. a baseline commit) so the sandbox and
+    // visuals start in the same state the lesson describes.
+    if (setup && setup.length > 0) state = applyScript(state, setup, setup.length);
+    // Seed the remote repository the same way the playground does, so terminal
+    // demos for clone/fetch/pull/push run against a real remote.
+    if (remoteSetup && remoteSetup.length > 0 && state.remote) {
+      let remote = state.remote;
+      for (const command of remoteSetup) {
+        remote = runCommand(remote, command).state;
+      }
+      state = { ...state, remote };
+    }
     useAiContextStore.getState().report({
       terminalState: summarizeGitState(state),
     });

@@ -67,17 +67,24 @@ export const lessonTags: ContentLesson = {
       {
         id: "create",
         label: "Tag your release v1.0",
-        checks: [{ kind: "tagExists", name: "v1.0" }],
+        checks: [{ kind: "tagExists", name: "v1.0" }, { kind: "ranCommand", contains: "git tag" }],
       },
       {
         id: "visit",
         label: "Visit the tagged version",
-        checks: [{ kind: "detachedHead" }, { kind: "tagExists", name: "v1.0" }],
+        checks: [
+          { kind: "ranCommand", contains: "git checkout" },
+          { kind: "detachedHead" },
+          { kind: "tagExists", name: "v1.0" },
+        ],
       },
       {
         id: "share",
         label: "Share tags with the team",
-        checks: [{ kind: "remoteTagExists", name: "v1.0" }],
+        checks: [
+          { kind: "ranCommand", contains: "git push --tags" },
+          { kind: "remoteTagExists", name: "v1.0" },
+        ],
       },
     ],
     hints: [
@@ -150,6 +157,17 @@ export const lessonTags: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "v2" > v2.txt',
+        "git add .",
+        'git commit -m "Add v2 feature"',
+        'echo "v3" > v3.txt',
+        "git add .",
+        'git commit -m "Add v3 feature"',
+      ],
       steps: [
         {
           command: "git tag v1.0",

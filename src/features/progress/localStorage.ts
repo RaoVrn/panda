@@ -7,6 +7,8 @@
  * middleware.
  */
 
+import { userScopedKey } from "@/lib/storage/userStorage";
+
 export interface StorageAdapter {
   get(key: string): string | null;
   set(key: string, value: string): void;
@@ -18,6 +20,17 @@ export const localStorageAdapter: StorageAdapter = {
   get: (key) => window.localStorage.getItem(key),
   set: (key, value) => window.localStorage.setItem(key, value),
   remove: (key) => window.localStorage.removeItem(key),
+};
+
+/**
+ * LocalStorage adapter that scopes keys to the signed-in user
+ * (`panda-progress` → `panda-progress-<userId>`). Device-local in anonymous
+ * mode. Used by every store that holds user-specific state.
+ */
+export const userScopedAdapter: StorageAdapter = {
+  get: (key) => window.localStorage.getItem(userScopedKey(key)),
+  set: (key, value) => window.localStorage.setItem(userScopedKey(key), value),
+  remove: (key) => window.localStorage.removeItem(userScopedKey(key)),
 };
 
 /**

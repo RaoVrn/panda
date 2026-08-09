@@ -23,7 +23,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { fileStatusOf, isIgnored, statusRows } from "@/lib/git";
+import { fileStatusOf, isIgnored, logCommits, statusRows } from "@/lib/git";
 import type { GitFileStatus } from "@/lib/git";
 import { usePlaygroundRepository } from "../usePlayground";
 import { usePlaygroundStore } from "../playgroundStore";
@@ -128,11 +128,11 @@ export function RepositoryInspector({ className }: RepositoryInspectorProps) {
       tracked: rows.filter((r) => r.tracked).length,
     };
   }, [repo]);
-  const commits = useMemo(() => repo ? [...repo.commits].reverse() : [], [repo]);
+  const commits = useMemo(() => repo ? logCommits(repo) : [], [repo]);
 
   if (!repo) return null;
 
-  const latest = repo.commits[repo.commits.length - 1];
+  const latest = commits[0];
   const workingTreeValue = counts.changed + counts.untracked > 0 ? `${counts.changed}+${counts.untracked}` : "clean";
   const compactHistory = commits.length <= 2;
 

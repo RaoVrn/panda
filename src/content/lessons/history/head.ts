@@ -165,7 +165,7 @@ export const lessonHead: ContentLesson = {
         },
         {
           command: "git branch",
-          output: "* feature\n  main",
+          output: "  main\n* feature",
           outputKind: "output",
           note: "Now the star is on feature. HEAD followed you.",
         },

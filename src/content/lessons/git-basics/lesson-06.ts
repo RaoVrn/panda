@@ -59,6 +59,10 @@ export const lesson06: ContentLesson = {
             {
               "kind": "commitCountAtLeast",
               "count": 1
+            },
+            {
+              "kind": "ranCommand",
+              "contains": "git log"
             }
           ]
         },
@@ -74,6 +78,10 @@ export const lesson06: ContentLesson = {
               "kind": "fileContent",
               "path": "README.md",
               "contains": "subtitle"
+            },
+            {
+              "kind": "ranCommand",
+              "contains": "git status"
             }
           ]
         },
@@ -90,7 +98,7 @@ export const lesson06: ContentLesson = {
       ],
       "hints": [
         "This repository already has history. Run git log to read it.",
-        "Run git status \u2014 Git noticed README.md changed but you haven't saved it yet.",
+        "Run git status: Git noticed README.md changed but you haven't saved it yet.",
         "Stage and commit: git add README.md, then git commit -m \"...\"."
       ],
       "solution": [
@@ -230,21 +238,21 @@ export const lesson06: ContentLesson = {
     {
       type: "paragraph",
       id: "hash-question",
-      text: "Every snapshot gets an ID card with a weird name like 3f2ab71. That's a commit hash. It's Git's way of giving each snapshot a unique name, so you can point at exactly the right one.",
+      text: "Every snapshot gets an ID card with a weird name. That's a commit hash. It's Git's way of giving each snapshot a unique name, so you can point at exactly the right one.",
     },
     {
       type: "code",
       id: "hash-example",
       language: "text",
       filename: "git log",
-      code: "commit 3f2ab71d9c8f4a1b2e6c0f3a9b8c7d6e5f4a3b2c\nAuthor: Panda <panda@example.com>\nDate:   just now\n\n    Start the Panda project",
+      code: "commit <commit-hash>\nAuthor: Git Learner <learner@example.com>\nDate:   just now\n\n    Start the Panda project",
     },
     {
       type: "callout",
       id: "hash-connect",
       tone: "success",
       title: "You only need the first 7",
-      text: "The full hash is long, so everyone uses just the first 7 characters: 3f2ab71. When a command says it created 3f2ab71, that's this snapshot's name.",
+      text: "The full hash is long, so everyone uses just the first 7 characters. When a command says it created a commit, that short ID is this snapshot's name.",
     },
 
     // ---------------------------------------------------------------

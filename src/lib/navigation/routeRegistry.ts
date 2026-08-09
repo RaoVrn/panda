@@ -65,7 +65,7 @@ export const ROUTE_REGISTRY: Record<string, RouteTarget> = {
   courseProgress: {
     id: "courseProgress",
     label: "Course Progress",
-    description: "The six modules of the course",
+    description: "The course modules and where you are",
     resolve: () => "/dashboard#course-progress",
     aiLinkable: true,
   },

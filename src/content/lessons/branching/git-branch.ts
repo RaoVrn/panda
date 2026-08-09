@@ -49,7 +49,7 @@ export const lessonGitBranch: ContentLesson = {
       {
         id: "list",
         label: "List your branches with git branch",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git branch" }],
       },
       {
         id: "create",
@@ -59,7 +59,7 @@ export const lessonGitBranch: ContentLesson = {
       {
         id: "still-main",
         label: "Stay on main after creating the branch",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git branch add-cart" }],
       },
     ],
     hints: [
@@ -177,7 +177,7 @@ export const lessonGitBranch: ContentLesson = {
         },
         {
           command: "git branch",
-          output: "  add-cart\n* main",
+          output: "* main\n  add-cart",
           outputKind: "output",
           note: "The star is still on main. Creating a branch doesn't move you onto it.",
         },

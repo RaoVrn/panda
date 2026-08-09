@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 
 export interface LessonReading {
   /** Vertical scroll offset within the lesson, in px. */
@@ -56,6 +57,6 @@ export const useReadingStore = create<ReadingsState>()(
           },
         })),
     }),
-    { name: "panda-reading" },
+    { name: "panda-reading", storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)) },
   ),
 );

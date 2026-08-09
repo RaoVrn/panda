@@ -61,12 +61,10 @@ export const lessonCommitHistory: ContentLesson = {
       {
         id: "read-log",
         label: "Read the whole story with git log",
-        checks: [{ kind: "commitCountAtLeast", count: 3 }],
-      },
-      {
-        id: "newest",
-        label: "Confirm the newest chapter comes first",
-        checks: [{ kind: "latestCommitMessage", message: "Add login" }],
+        checks: [
+          { kind: "ranCommand", contains: "git log" },
+          { kind: "commitCountAtLeast", count: 3 },
+        ],
       },
     ],
     hints: [
@@ -160,7 +158,7 @@ export const lessonCommitHistory: ContentLesson = {
     {
       type: "paragraph",
       id: "log-question",
-      text: "git log prints your history, newest commit first. Each entry shows the commit's hash, author, date, and message.",
+      text: "git log prints your history, newest commit first. Each entry shows the commit's hash, author, date, and message. That's a lot of detail, so git log --oneline gives you just the short hash and the message.",
     },
     {
       type: "terminalSteps",
@@ -175,12 +173,29 @@ export const lessonCommitHistory: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "<h1>homepage</h1>" > index.html',
+        "git add .",
+        'git commit -m "Add homepage"',
+        "touch login.js",
+        "git add login.js",
+        'git commit -m "Add login"',
+      ],
       steps: [
         {
-          command: "git log --oneline",
-          output: "79048ff (HEAD -> main) Add login\n3f2ab71 Add homepage\na1b2c3d Start project",
+          command: "git log",
+          output: "commit 72ab963\nAuthor: Git Learner <learner@example.com>\nDate:   Aug 09, 05:32 AM\n\n    Add login\n\ncommit 3ae3c15\nAuthor: Git Learner <learner@example.com>\nDate:   Aug 09, 05:31 AM\n\n    Add homepage\n\ncommit 2271f37\nAuthor: Git Learner <learner@example.com>\nDate:   Aug 09, 05:30 AM\n\n    Start project\n",
           outputKind: "output",
-          note: "One line per commit, newest first. The hash and message tell you what each one was.",
+          note: "Each full entry shows the hash, who made the snapshot, when, and the message. Newest first.",
+        },
+        {
+          command: "git log --oneline",
+          output: "72ab963 (HEAD -> main) Add login\n3ae3c15 Add homepage\n2271f37 Start project",
+          outputKind: "output",
+          note: "The compact version: one line per commit, just the short hash and the message. Great for an overview.",
         },
       ],
     },
@@ -188,8 +203,13 @@ export const lessonCommitHistory: ContentLesson = {
       type: "callout",
       id: "log-connect",
       tone: "success",
-      title: "Reading a line",
-      text: "The short code on the left is the commit's hash, its ID card. The message on the right is the chapter's title. Together they tell the whole story.",
+      title: "Detailed vs compact",
+      text: "Use git log when you want the full story: who, when, and what. Use git log --oneline when you just need the shape of your history. Both read the same diary, newest first.",
+    },
+    {
+      type: "paragraph",
+      id: "why-history",
+      text: "Why does all this matter? Your history is the whole memory of your project. It's what lets Git show you what changed in any snapshot, jump back to an older moment, and rescue work that looked lost. You'll do all of that in the next few lessons.",
     },
 
     // ---------------------------------------------------------------

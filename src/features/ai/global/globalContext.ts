@@ -16,6 +16,7 @@ import { useProgressStore } from "@/features/progress/progressStore";
 import { ACHIEVEMENTS } from "@/features/progress/achievements";
 import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
 import { useAiContextStore } from "@/stores/aiContextStore";
+import { useLessonModeStore } from "@/stores/lessonModeStore";
 import { memorySummary } from "@/features/ai/memory/conversationMemory";
 import { nextLessonToStudy } from "@/features/progress/progressService";
 import { levelInfo } from "@/features/progress/xp";
@@ -104,7 +105,7 @@ export function buildGlobalContext(): LessonContext {
     level: levelInfo(progress.xp).level,
     streakDays: progress.streakCurrent,
     explanationStyle: prefs.aiExplanationStyle,
-    lessonMode: prefs.defaultMode,
+    lessonMode: prefs.defaultMode ?? useLessonModeStore.getState().mode,
     animationSpeed: prefs.animationSpeed,
     theme: prefs.theme,
     memory: memorySummary() || undefined,

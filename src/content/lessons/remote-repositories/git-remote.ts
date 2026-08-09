@@ -53,7 +53,7 @@ export const lessonGitRemote: ContentLesson = {
       {
         id: "add",
         label: "Add a remote for your project",
-        checks: [{ kind: "remoteExists", name: "upstream" }],
+        checks: [{ kind: "remoteExists", name: "origin" }],
       },
       {
         id: "rename",
@@ -63,7 +63,10 @@ export const lessonGitRemote: ContentLesson = {
       {
         id: "inspect",
         label: "Inspect your remotes",
-        checks: [{ kind: "remoteExists", name: "upstream" }],
+        checks: [
+          { kind: "remoteExists", name: "upstream" },
+          { kind: "ranCommand", contains: "git remote -v" },
+        ],
       },
     ],
     hints: [
@@ -124,7 +127,7 @@ export const lessonGitRemote: ContentLesson = {
       id: "origin-connect",
       tone: "success",
       title: "A convention, not a rule",
-      text: "You can name a remote anything. But everyone names their main remote origin, so when you read someone else's project you instantly know which copy is the main one.",
+      text: "origin is the nickname we give to the main remote. It is not GitHub itself; it's the name of the saved address that points to it. You can name a remote anything, but everyone names their main one origin, so you instantly know which copy is the main one.",
     },
 
     // ---------------------------------------------------------------

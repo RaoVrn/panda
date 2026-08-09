@@ -211,20 +211,20 @@ export function runCommand(
     const lines = [`user.name=${next.author.name}`, `user.email=${next.author.email}`];
     return { state: repo, events, output: ok(lines.join("\n"), "output") };
   }
-  const configSetName = trimmed.match(/^git config(?: --global)? user\.name\s+["'](.+)["']$/);
+  const configSetName = trimmed.match(/^git config(?: --global)? user\.name\s+(?:["'](.+?)["']|(\S+))$/);
   if (configSetName) {
-    const name = configSetName[1]!;
-    if (!name.trim()) return { state: repo, events, output: ok("fatal: empty value", "error") };
+    const name = (configSetName[1] ?? configSetName[2] ?? "").trim();
+    if (!name) return { state: repo, events, output: ok("fatal: empty value", "error") };
     const n = cloneRepository(repo);
-    n.author = { ...n.author, name: name.trim() };
+    n.author = { ...n.author, name };
     return { state: n, events, output: ok("", "success") };
   }
-  const configSetEmail = trimmed.match(/^git config(?: --global)? user\.email\s+["'](.+)["']$/);
+  const configSetEmail = trimmed.match(/^git config(?: --global)? user\.email\s+(?:["'](.+?)["']|(\S+))$/);
   if (configSetEmail) {
-    const email = configSetEmail[1]!;
-    if (!email.trim()) return { state: repo, events, output: ok("fatal: empty value", "error") };
+    const email = (configSetEmail[1] ?? configSetEmail[2] ?? "").trim();
+    if (!email) return { state: repo, events, output: ok("fatal: empty value", "error") };
     const n = cloneRepository(repo);
-    n.author = { ...n.author, email: email.trim() };
+    n.author = { ...n.author, email };
     return { state: n, events, output: ok("", "success") };
   }
   const configGet = trimmed.match(/^git config(?: --global)? user\.(name|email)$/);
@@ -277,7 +277,8 @@ export function runCommand(
       return { state: next, events, output: ok("Nothing to add. The working tree has no changes.", "muted") };
     }
     const noun = staged.length === 1 ? `${staged[0]} is` : `${staged.length} files are`;
-    return { state: next, events, output: ok(`${noun} now staged and ready for their snapshot.`, "success") };
+    const pronoun = staged.length === 1 ? "its" : "their";
+    return { state: next, events, output: ok(`${noun} now staged and ready for ${pronoun} snapshot.`, "success") };
   }
 
   // ------------------------------------------------- git restore / unstage
@@ -536,6 +537,10 @@ export function runCommand(
       next.branches.set(next.branch, targetHash);
       recordReflog(next, next.head, targetHash, `merge ${name}: fast-forward`);
       next.head = targetHash;
+      // A fast-forward merge is a slide forward: bring the working tree along
+      // so the merged files actually appear, like real Git (and git pull).
+      restoreWorkingTreeAt(next, targetHash);
+      next.index.clear();
       events.push(createEvent("COMMIT_CREATED", undefined, { hash: targetHash, message: "Fast-forward" }));
       events.push(createEvent("HEAD_CHANGED", undefined, { hash: targetHash }));
       return { state: next, events, output: ok(`Updating ${headHash.slice(0, 7)}..${targetHash.slice(0, 7)}\nFast-forward`, "success") };
@@ -701,9 +706,12 @@ export function runCommand(
       (c) => !next.commits.some((l) => l.hash === c.hash),
     );
     if (remoteOnly.length === 0) return { state: repo, events, output: ok("Everything up-to-date", "muted") };
-    // Fetch is read-only: it reports what's available without touching local work.
+    // Fetch is read-only: it reports what's available without touching local
+    // work. Record it in the reflog so the mission can confirm the learner ran it.
+    recordReflog(next, next.head, next.head, `fetch: fetching from origin`);
+    events.push(createEvent("STATUS_CHANGED"));
     return {
-      state: repo,
+      state: next,
       events,
       output: ok(
         `Remote has ${remoteOnly.length} new commit${remoteOnly.length === 1 ? "" : "s"} (${remoteOnly.map((c) => c.hash.slice(0, 7)).join(", ")}).\nYour work is untouched. Run git pull to bring them in.`,
@@ -1096,10 +1104,10 @@ export function runCommand(
   };
 }
 
-/** Paths that are tracked but currently absent from the working tree. */
+/** Paths that are tracked (by a reachable commit) but currently absent from the working tree. */
 function trackedDeletedPaths(repo: GitRepository): string[] {
   const tracked = new Set<string>();
-  for (const commit of repo.commits) {
+  for (const commit of commitsFromHead(repo, repo.head ?? undefined)) {
     for (const change of commit.changedFiles) {
       if (change.status !== "deleted") tracked.add(change.path);
     }

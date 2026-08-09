@@ -22,7 +22,7 @@ export const lessonGitSwitch: ContentLesson = {
       "git switch <name> moves you to a branch.",
       "git switch -c <name> creates and moves at once.",
       "Your next commit lands on the branch you're on.",
-      "Uncommitted work can block a switch.",
+      "Commit your work before switching.",
     ],
     whyItMatters:
       "A branch only matters if you're on it. git switch is how you step onto a branch so your work goes to the right place.",
@@ -54,17 +54,21 @@ export const lessonGitSwitch: ContentLesson = {
       {
         id: "commit-there",
         label: "Commit the cart on add-cart",
-        checks: [{ kind: "anyCommitMessage", message: "Add the cart" }],
+        checks: [{ kind: "anyCommitMessage", message: "Add the cart" }, { kind: "ranCommand", contains: "git switch add-cart" }],
       },
       {
         id: "cart-stays",
         label: "Keep the cart work off main",
-        checks: [{ kind: "commitTouchesFile", path: "cart.js" }, { kind: "fileNotExists", path: "cart.js" }],
+        checks: [
+          { kind: "branch", name: "main" },
+          { kind: "fileNotExists", path: "cart.js" },
+          { kind: "ranCommand", contains: "git switch add-cart" },
+        ],
       },
       {
         id: "back-main",
         label: "Return to main",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git switch main" }],
       },
     ],
     hints: [
@@ -79,7 +83,7 @@ export const lessonGitSwitch: ContentLesson = {
       'git commit -m "Add the cart"',
       "git switch main",
     ],
-    suggestions: ["git switch add-cart", "git switch main", "git switch -c"],
+    suggestions: ["git switch add-cart", "git switch main", "git switch -c add-cart"],
     visualizer: { highlight: "head", banner: "git switch moves your star onto another line of work" },
     shell: {
       primaryCommand: "git switch add-cart",
@@ -135,6 +139,7 @@ export const lessonGitSwitch: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git init", "git add .", 'git commit -m "Start project"', "git branch add-cart"],
       steps: [
         {
           command: "git switch add-cart",
@@ -144,7 +149,7 @@ export const lessonGitSwitch: ContentLesson = {
         },
         {
           command: "git branch",
-          output: "* add-cart\n  main",
+          output: "  main\n* add-cart",
           outputKind: "output",
           note: "The star moved to add-cart. That's where your next snapshot will land.",
         },
@@ -193,7 +198,7 @@ export const lessonGitSwitch: ContentLesson = {
         },
         {
           command: "git branch",
-          output: "* fix-nav\n  main",
+          output: "  main\n* fix-nav",
           outputKind: "output",
           note: "You're on the new branch, ready to work.",
         },
@@ -213,7 +218,7 @@ export const lessonGitSwitch: ContentLesson = {
       type: "warning",
       id: "mistake-warning",
       title: "Switching with unsaved work",
-      text: "If you have uncommitted changes, Git may refuse to switch. It doesn't want to lose your work. Commit or stash your changes first, then switch.",
+      text: "In Panda's simulator, switching branches can discard uncommitted changes. Commit your work first if you want to keep it. In real Git, Git usually refuses to switch when doing so would overwrite local changes.",
     },
 
     // ---------------------------------------------------------------
@@ -258,7 +263,7 @@ export const lessonGitSwitch: ContentLesson = {
         "git switch -c <name> creates and moves at once.",
         "The star shows your current branch.",
         "Your next commit lands on the current branch.",
-        "Commit or stash before switching.",
+        "Commit your work before switching.",
       ],
     },
     {

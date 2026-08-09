@@ -95,6 +95,18 @@ export interface ContentTerminalStepsBlock {
   title?: string;
   prompt?: string;
   steps: TerminalStep[];
+  /**
+   * Commands run against the sandbox seed before the script, so the "your
+   * turn" terminal and the lesson's visuals start in a consistent state (e.g.
+   * a baseline commit). Same semantics as the playground `setup`.
+   */
+  setup?: string[];
+  /**
+   * Commands run against the seeded REMOTE repository before the script, so a
+   * terminal demo can clone/fetch/pull/push against real remote history. Same
+   * semantics as the playground `remoteSetup`.
+   */
+  remoteSetup?: string[];
   /** Starting files for the "your turn" sandbox (shared across the lesson). */
   seed?: GitSimSeed;
   seedId?: string;
@@ -352,7 +364,12 @@ export type PlaygroundCheck =
   | { kind: "remoteExists"; name: string }
   | { kind: "remoteNotExists"; name: string }
   | { kind: "remoteHasCommit"; message: string }
-  | { kind: "pushSucceeded" };
+  | { kind: "pushSucceeded" }
+  | {
+      /** Whether the learner ran a command containing this text (e.g. "git log"). */
+      kind: "ranCommand";
+      contains: string;
+    };
 
 /** One checkbox in the Task Panel. All checks must pass to complete it. */
 export interface ContentPlaygroundObjective {

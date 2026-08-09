@@ -49,7 +49,7 @@ export const lessonRepositoryVsWorkingTree: ContentLesson = {
       {
         id: "wake",
         label: "Turn your folder into a repository",
-        checks: [{ kind: "initialized" }],
+        checks: [{ kind: "initialized" }, { kind: "ranCommand", contains: "git init" }],
       },
       {
         id: "edit",
@@ -263,7 +263,7 @@ export const lessonRepositoryVsWorkingTree: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: First Repository",
+      title: "Continue to: Creating your first repository",
       text: "One command turns a plain folder into a repository. You're about to feel it click.",
     },
   ],

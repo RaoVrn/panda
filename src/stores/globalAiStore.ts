@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 import { runTurn, isAiConfigured } from "@/lib/ai/chat";
 import { StreamInterruptedError, AiError } from "@/lib/ai/errors";
 import type { ChatMessage } from "@/lib/ai/types";
@@ -558,6 +559,7 @@ export const useGlobalAiStore = create<GlobalAiState>()(  persist(
     {
       name: "panda-global-ai",
       version: 3,
+      storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)),
       partialize: (state) => ({
         sessions: state.sessions,
         activeSessionId: state.activeSessionId,

@@ -169,7 +169,7 @@ export function StageArea({ block, player, mode }: StageAreaProps) {
     : readCommitted
       ? [
           {
-            hash: "a1b2c3d",
+            hash: "read-commit",
             message: block.commitMessage ?? "Save my work",
             files: readFiles.map((f) => f.name),
           },

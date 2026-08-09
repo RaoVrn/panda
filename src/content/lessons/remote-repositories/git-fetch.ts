@@ -3,7 +3,7 @@ import type { ContentLesson } from "@/content/schema";
 /**
  * Lesson · git fetch
  *
- * Fetch checks what's new on the remote and downloads it, but never changes
+ * Fetch checks what's new on the remote and reports it, but never changes
  * your own work. It's a safe way to look before you leap.
  */
 export const lessonGitFetch: ContentLesson = {
@@ -11,7 +11,7 @@ export const lessonGitFetch: ContentLesson = {
   slug: "git-fetch",
   title: "git fetch",
   description:
-    "git fetch checks what's new on the remote and brings it down, without touching your own work. Look before you leap.",
+    "git fetch checks what's new on the remote without touching your own work. Look before you leap.",
   meta: {
     module: "remote-repositories",
     order: 4,
@@ -19,7 +19,7 @@ export const lessonGitFetch: ContentLesson = {
     durationMinutes: 8,
     tags: ["remote", "fetch"],
     summary: [
-      "git fetch downloads new commits from the remote.",
+      "git fetch checks the remote and reports what's new.",
       "Fetch never changes your own work.",
       "It's a safe way to check what's new.",
       "Use git pull to actually bring changes in.",
@@ -62,12 +62,16 @@ export const lessonGitFetch: ContentLesson = {
       {
         id: "fetch-safe",
         label: "Check the remote safely with git fetch",
-        checks: [{ kind: "workingTreeClean" }],
+        checks: [{ kind: "reflogHas", text: "fetch:" }],
       },
       {
         id: "untouched",
         label: "Confirm your work is untouched",
-        checks: [{ kind: "workingTreeClean" }, { kind: "fileContent", path: "index.html", contains: "<h1>hi" }],
+        checks: [
+          { kind: "reflogHas", text: "fetch:" },
+          { kind: "workingTreeClean" },
+          { kind: "fileContent", path: "index.html", contains: "<h1>hi" },
+        ],
       },
     ],
     hints: [
@@ -117,7 +121,7 @@ export const lessonGitFetch: ContentLesson = {
     {
       type: "paragraph",
       id: "what-question",
-      text: "Fetch talks to the remote, downloads any new commits, and tells you what it found. Your own files and branches stay exactly as they were.",
+      text: "Fetch talks to the remote, checks for any new commits, and tells you what it found. Your own files stay exactly as they were.",
     },
     {
       type: "callout",
@@ -125,6 +129,13 @@ export const lessonGitFetch: ContentLesson = {
       tone: "success",
       title: "Look, don't touch",
       text: "The safest command in Git. Fetch only reads. It never merges, never changes your files, never moves your work. You can fetch as often as you like.",
+    },
+    {
+      type: "callout",
+      id: "what-note",
+      tone: "tip",
+      title: "Fetch in Panda",
+      text: "In Panda, fetch checks the remote and reports what's new, but it does not create a visible origin/main reference. In real Git, fetch also updates remote-tracking branches. Panda uses a simpler model: fetch reports, pull brings the work in.",
     },
 
     // ---------------------------------------------------------------
@@ -149,20 +160,38 @@ export const lessonGitFetch: ContentLesson = {
       seed: {
         files: {
           "README.md": "My project\n",
+          "index.html": "<h1>hi</h1>\n",
         },
         pwd: "~/project",
         initialized: true,
+        remote: {
+          pwd: "github/my-project",
+          initialized: true,
+          files: {
+            "README.md": "My project\n",
+            "index.html": "<h1>hi</h1>\n",
+          },
+        },
       },
+      setup: ["git init", "git add .", 'git commit -m "Start"'],
+      remoteSetup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start"',
+        'echo "<h1>updated home</h1>" > index.html',
+        "git add .",
+        'git commit -m "Teammate updates homepage"',
+      ],
       steps: [
         {
           command: "git fetch",
-          output: "Remote has 1 new commit (a1b2c3d).\nYour work is untouched. Run git pull to bring them in.",
+          output: "Remote has 1 new commit (1153b62).\nYour work is untouched. Run git pull to bring them in.",
           outputKind: "success",
           note: "Git found new work on the remote but left your files alone.",
         },
         {
           command: "git status",
-          output: "On branch main\nnothing to commit, working tree clean",
+          output: "On branch main\n\nnothing to commit, working tree clean",
           outputKind: "muted",
           note: "Your branch is exactly as it was. Fetch changed nothing.",
         },
@@ -195,7 +224,7 @@ export const lessonGitFetch: ContentLesson = {
       id: "vs-connect",
       tone: "tip",
       title: "Two steps, or one",
-      text: "Fetch is the safe look. Pull is fetch plus merge, bringing the work in. You can fetch and pull separately, or just pull and let Git do both at once.",
+      text: "Fetch is the safe look. Pull brings the work in. You can fetch and pull separately, or just pull and let Git do both at once.",
     },
 
     // ---------------------------------------------------------------
@@ -211,7 +240,7 @@ export const lessonGitFetch: ContentLesson = {
       type: "warning",
       id: "mistake-warning",
       title: "Fetching and thinking you're up to date",
-      text: "Fetch downloads the news but doesn't merge it. Your local branch stays behind until you pull. If you only fetch, teammates' work won't appear in your files yet.",
+      text: "Fetch reports the news but doesn't merge it. Your local branch stays behind until you pull. If you only fetch, teammates' work won't appear in your files yet.",
     },
 
     // ---------------------------------------------------------------
@@ -252,7 +281,7 @@ export const lessonGitFetch: ContentLesson = {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
-        "git fetch downloads new commits from the remote.",
+        "git fetch checks the remote and reports what's new.",
         "Fetch never changes your own work.",
         "It's a safe way to check what's new.",
         "Your files stay untouched after fetch.",

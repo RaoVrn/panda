@@ -37,6 +37,12 @@ export function summarizeGitState(
   const head = state.commits.length > 0 ? state.branches.get(state.branch) : undefined;
   parts.push(head ? `HEAD ${head}` : "no commits yet");
 
+  // A remote is present when the lesson seeded one (clone/fetch/pull/push).
+  // Fetch only reports changes; it never creates remote-tracking refs in Panda.
+  if (state.remote) {
+    parts.push(`remote repo with ${state.remote.commits.length} commit(s)`);
+  }
+
   let summary = parts.join(" · ");
   if (lastCommand) summary += `\nlast command: ${lastCommand}`;
   if (lastOutput && lastOutput.lines.length > 0) {

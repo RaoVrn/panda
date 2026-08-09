@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/Button";
+import { allLessons } from "@/content/lessons";
 
 const bullets = [
   {
@@ -141,6 +142,10 @@ function StatusGrid() {
 }
 
 export function PlaygroundSection() {
+  // "Try the Playground" opens the real hands-on playground of the first
+  // lesson that ships one, instead of just dropping the visitor on the course.
+  const playgroundLesson = allLessons().find((lesson) => lesson.playground);
+
   return (
     <section className="py-16 sm:py-20">
       <SectionTitle
@@ -164,7 +169,10 @@ export function PlaygroundSection() {
               </li>
             ))}
           </ul>
-          <Button href="/dashboard" className="mt-8">
+          <Button
+            href={playgroundLesson ? `/lesson/${playgroundLesson.slug}?mode=interactive` : "/dashboard"}
+            className="mt-8"
+          >
             Try the Playground
           </Button>
         </div>

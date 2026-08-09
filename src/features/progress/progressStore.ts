@@ -21,8 +21,8 @@ import {
 import { useAchievementCelebration } from "@/features/progress/components/achievementCelebrationStore";
 import { useNotificationCenter } from "@/features/notifications/notificationCenterStore";
 import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
-import { localStorageAdapter, toZustandStorage } from "./localStorage";
-import { recordActivity, readStreak, todayKey } from "./streak";
+import { toZustandStorage, userScopedAdapter } from "./localStorage";
+import { clearStreak, recordActivity, readStreak, todayKey } from "./streak";
 import { levelInfo, lessonXp, XP_REWARDS } from "./xp";
 import type {
   ProgressToast,
@@ -79,7 +79,7 @@ interface ProgressState {
   reset: () => void;
 }
 
-const initialStreak: StreakInfo = readStreak(localStorageAdapter);
+const initialStreak: StreakInfo = readStreak(userScopedAdapter);
 
 /** Module ids that are fully completed for a set of completed lessons. */
 function completedModuleIds(completedLessonIds: string[]): Set<string> {
@@ -99,7 +99,7 @@ export const useProgressStore = create<ProgressState>()(
       /** Adds XP, updates the streak and surfaces toasts (including level-ups). */
       const grantXp = (amount: number) => {
         if (amount <= 0) return;
-        const streak = recordActivity(localStorageAdapter);
+        const streak = recordActivity(userScopedAdapter);
         const today = todayKey();
         const daily = get().dailyXp;
         const pruned: Record<string, number> = {};
@@ -353,7 +353,10 @@ export const useProgressStore = create<ProgressState>()(
         dismissToast: (id) =>
           set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 
-        reset: () =>
+        reset: () => {
+          // The streak also lives in its own localStorage key; clear it too so
+          // a reset can't be resurrected by the next XP action.
+          clearStreak(userScopedAdapter);
           set({
             xp: 0,
             completedLessonIds: [],
@@ -376,13 +379,14 @@ export const useProgressStore = create<ProgressState>()(
             toasts: [],
             streakCurrent: 0,
             lastStudyDate: null,
-          }),
+          });
+        },
       };
     },
     {
       name: "panda-progress",
       version: 4,
-      storage: createJSONStorage(() => toZustandStorage(localStorageAdapter)),
+      storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)),
       partialize: (state) => ({
         xp: state.xp,
         completedLessonIds: state.completedLessonIds,

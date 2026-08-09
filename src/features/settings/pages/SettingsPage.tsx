@@ -128,7 +128,11 @@ export function SettingsPage() {
                   key={themeOption.id}
                   theme={themeOption}
                   selected={theme === themeOption.id}
-                  onSelect={() => setTheme(themeOption.id)}
+                  onSelect={() => {
+                    setTheme(themeOption.id);
+                    // Match every other setting: show the "Saved" indicator.
+                    savePrefs({ theme: themeOption.id });
+                  }}
                 />
               ))}
             </div>
@@ -435,8 +439,8 @@ function ResetProgressModal({
           Reset learning progress?
         </h2>
         <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
-          This will clear your lessons, XP, streak, achievements, quizzes and
-          learning history. Your account, profile, preferences and saved
+          This will clear your lessons, XP, streak, achievements and learning
+          history. Your account, profile, preferences and saved
           conversations will be kept.
         </p>
         <p className="mt-2 text-xs text-text-muted">This action cannot be undone.</p>

@@ -54,13 +54,17 @@ export const lessonGitCherryPick: ContentLesson = {
       "echo 'const fix = true;' > fix-login.js",
       "git add .",
       'git commit -m "Fix login bug"',
-      "git switch main",
+      "git switch fix-branch",
     ],
     objectives: [
       {
         id: "spot-fix",
         label: "Spot the fix on the other branch",
-        checks: [{ kind: "branchExists", name: "fix-branch" }, { kind: "anyCommitMessage", message: "Fix login bug" }],
+        checks: [
+          { kind: "branchExists", name: "fix-branch" },
+          { kind: "anyCommitMessage", message: "Fix login bug" },
+          { kind: "ranCommand", contains: "git log" },
+        ],
       },
       {
         id: "to-main",
@@ -70,7 +74,11 @@ export const lessonGitCherryPick: ContentLesson = {
       {
         id: "copy-fix",
         label: "Copy just the fix onto main",
-        checks: [{ kind: "fileExists", path: "fix-login.js" }, { kind: "anyCommitMessage", message: "Fix login bug" }],
+        checks: [
+          { kind: "ranCommand", contains: "git cherry-pick" },
+          { kind: "fileExists", path: "fix-login.js" },
+          { kind: "anyCommitMessage", message: "Fix login bug" },
+        ],
       },
     ],
     hints: [
@@ -163,16 +171,26 @@ export const lessonGitCherryPick: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "git switch -c fix-branch",
+        "echo 'const fix = true;' > fix-login.js",
+        "git add .",
+        'git commit -m "Fix login bug"',
+        "git switch main",
+      ],
       steps: [
         {
           command: "git log --oneline fix-branch",
-          output: "534054b Fix login bug",
+          output: "534054b Fix login bug\n2271f37 (HEAD -> main) Start project",
           outputKind: "output",
           note: "Find the fix's hash on the other branch.",
         },
         {
           command: "git cherry-pick 534054b",
-          output: "[main 6822d1d] Fix login bug\nOne commit copied onto your branch.",
+          output: "[main 69b158a] Fix login bug\nOne commit copied onto your branch.",
           outputKind: "success",
           note: "The fix lands on main. The copied commit gets a new hash.",
         },

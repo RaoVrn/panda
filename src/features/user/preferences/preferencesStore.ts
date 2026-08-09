@@ -8,9 +8,10 @@
  */
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { Theme } from "@/contexts/themeContext";
 import type { UserPreferences } from "@/features/user/types";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 
 interface PreferencesState {
   theme?: Theme;
@@ -70,6 +71,7 @@ export const usePreferencesStore = create<PreferencesState>()(
     }),
     {
       name: "panda-preferences",
+      storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)),
     },
   ),
 );

@@ -92,8 +92,9 @@ function latchObjectives(
   engine: GitSimulation,
   objectives: ContentPlaygroundObjective[],
   completed: string[],
+  history: string[],
 ): string[] {
-  const statuses = objectiveStatuses(engine.getState(), objectives, engine.getRemote());
+  const statuses = objectiveStatuses(engine.getState(), objectives, engine.getRemote(), history);
   const next = new Set(completed);
   for (const status of statuses) {
     const objective = objectives.find((o) => o.id === status.objectiveId);
@@ -116,9 +117,9 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
   };
 
   const syncTasks = () => {
-    const { engine, config, completedObjectives } = get();
+    const { engine, config, completedObjectives, history } = get();
     if (!engine || !config) return;
-    const next = latchObjectives(engine, config.objectives, completedObjectives);
+    const next = latchObjectives(engine, config.objectives, completedObjectives, history);
     if (next.length !== completedObjectives.length) {
       set({ completedObjectives: next });
     }
@@ -205,7 +206,7 @@ export const usePlaygroundStore = create<PlaygroundState>()((set, get) => {
       // Subscribe to engine events → toasts + area highlights
       const unsub = subscribeEvents(engine);
 
-      const completed = latchObjectives(engine, lesson.playground.objectives, []);
+      const completed = latchObjectives(engine, lesson.playground.objectives, [], []);
       report(engine.getState());
       set({
         lessonId: lesson.id,

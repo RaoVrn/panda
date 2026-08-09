@@ -58,12 +58,16 @@ export const lessonGitRevert: ContentLesson = {
       {
         id: "see-bug",
         label: "See the bad change in the working tree",
-        checks: [{ kind: "fileContent", path: "app.js", contains: "BUG" }],
+        checks: [
+          { kind: "fileContent", path: "app.js", contains: "BUG" },
+          { kind: "ranCommand", contains: "cat app.js" },
+        ],
       },
       {
         id: "revert",
         label: "Undo it with git revert",
         checks: [
+          { kind: "ranCommand", contains: "git revert" },
           { kind: "latestCommitMessage", message: 'Revert "Add bug"' },
           { kind: "workingTreeClean" },
         ],
@@ -74,6 +78,7 @@ export const lessonGitRevert: ContentLesson = {
         checks: [
           { kind: "commitCountAtLeast", count: 3 },
           { kind: "anyCommitMessage", message: "Add bug" },
+          { kind: "ranCommand", contains: "git log" },
         ],
       },
     ],
@@ -162,9 +167,17 @@ export const lessonGitRevert: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "echo 'const bug = true; // BUG' >> app.js",
+        "git add .",
+        'git commit -m "Add bug"',
+      ],
       steps: [
         {
-          command: "git revert 8c84c0c",
+          command: "git revert HEAD",
           output: "[main 6ae3e1b] Revert \"Add bug\"\nA new commit undoes the old change. History stays intact.",
           outputKind: "success",
           note: "A brand-new commit appears that reverses the bad one.",

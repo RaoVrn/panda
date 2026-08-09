@@ -65,12 +65,16 @@ export const lessonGitStash: ContentLesson = {
       {
         id: "stash",
         label: "Set it aside with git stash",
-        checks: [{ kind: "stashCountAtLeast", count: 1 }],
+        checks: [{ kind: "stashCountAtLeast", count: 1 }, { kind: "ranCommand", contains: "git stash" }],
       },
       {
         id: "pop",
         label: "Switch branches and bring the work back",
-        checks: [{ kind: "stashEmpty" }, { kind: "fileContent", path: "app.js", contains: "WIP" }],
+        checks: [
+          { kind: "stashEmpty" },
+          { kind: "fileContent", path: "app.js", contains: "WIP" },
+          { kind: "ranCommand", contains: "git stash pop" },
+        ],
       },
     ],
     hints: [
@@ -158,6 +162,7 @@ export const lessonGitStash: ContentLesson = {
       id: "terminal-stash",
       title: "panda-shell",
       prompt: "$",
+      seedId: "stash-save",
       seed: {
         files: {
           "README.md": "My project\n",
@@ -166,10 +171,17 @@ export const lessonGitStash: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "echo '// wip' >> app.js",
+        "git add .",
+      ],
       steps: [
         {
           command: "git stash",
-          output: "Saved working directory and index state WIP on main\nWork is safely set aside.",
+          output: "Saved working directory and index state WIP on main: WIP on main\nWork is safely set aside.",
           outputKind: "success",
           note: "Your changes leave the working tree and sit on the shelf.",
         },
@@ -208,6 +220,7 @@ export const lessonGitStash: ContentLesson = {
       id: "terminal-pop",
       title: "panda-shell",
       prompt: "$",
+      seedId: "stash-pop",
       seed: {
         files: {
           "README.md": "My project\n",
@@ -216,6 +229,14 @@ export const lessonGitStash: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "echo '// wip' >> app.js",
+        "git add .",
+        "git stash",
+      ],
       steps: [
         {
           command: "git stash pop",

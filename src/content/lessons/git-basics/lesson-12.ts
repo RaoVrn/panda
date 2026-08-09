@@ -84,7 +84,7 @@ export const lesson12: ContentLesson = {
       "hints": [
         "Commit the landing page first.",
         "Then commit the login module with its own message.",
-        "Read your diary: git log --oneline \u2014 newest first, HEAD marks where you are."
+        "Read your diary: git log --oneline: newest first, HEAD marks where you are."
       ],
       "solution": [
         "git add index.html",
@@ -100,7 +100,7 @@ export const lesson12: ContentLesson = {
       ],
       "visualizer": {
         "highlight": "head",
-        "banner": "Your history \u2014 read it like a book"
+        "banner": "Your history, read it like a book"
       },
       "shell": {
         "primaryCommand": "git log",
@@ -169,15 +169,15 @@ export const lesson12: ContentLesson = {
           filesChanged: ["login.js", "index.html"],
         },
         {
-          id: "c3",
-          x: 162,
-          y: 24,
-          lane: 0,
-          message: "Fix search crash",
-          branch: "main",
-          timestamp: "day 3",
-          filesChanged: ["search.js"],
-          accent: true,
+          "id": "c3",
+          "x": 162,
+          "y": 24,
+          "lane": 0,
+          "message": "Fix login crash",
+          "branch": "main",
+          "timestamp": "day 3",
+          "filesChanged": ["login.js"],
+          "accent": true,
         },
       ],
       lines: [
@@ -234,7 +234,7 @@ export const lesson12: ContentLesson = {
         },
         {
           command: 'git commit -m "Add landing page"',
-          output: "[main (root-commit) 9c2d1a7] Add landing page\n 1 file changed",
+          output: "[main (root-commit) 207fea4] Add landing page\n 1 file changed",
           outputKind: "success",
         },
         {
@@ -244,12 +244,12 @@ export const lesson12: ContentLesson = {
         },
         {
           command: 'git commit -m "Add user login"',
-          output: "[main 5b8e20c] Add user login\n 1 file changed",
+          output: "[main 4d781dc] Add user login\n 1 file changed",
           outputKind: "success",
         },
         {
           command: "git log --oneline",
-          output: "5b8e20c (HEAD -> main) Add user login\n9c2d1a7 Add landing page",
+          output: "4d781dc (HEAD -> main) Add user login\n207fea4 Add landing page",
           outputKind: "output",
           note: "One line per snapshot, newest first. HEAD -> main marks where you are.",
         },

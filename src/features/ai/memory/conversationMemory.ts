@@ -9,8 +9,9 @@
  */
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { LessonContext } from "@/lib/ai/types";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 
 const STOP_WORDS = new Set(
   "about after again also answer based can could explain give have help how just like lesson me need please question that the this what when where why with would".split(
@@ -72,7 +73,7 @@ export const useMemoryStore = create<MemoryState>()(
       },
       reset: () => set({ topics: {}, struggles: [], explained: [] }),
     }),
-    { name: "panda-ai-memory" },
+    { name: "panda-ai-memory", storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)) },
   ),
 );
 

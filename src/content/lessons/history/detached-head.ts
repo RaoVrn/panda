@@ -71,7 +71,7 @@ export const lessonDetachedHead: ContentLesson = {
       {
         id: "return",
         label: "Return safely to main",
-        checks: [{ kind: "branch", name: "main" }, { kind: "reflogHas", text: "checkout: moving to 2271f37" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git switch main" }],
       },
     ],
     hints: [
@@ -133,8 +133,8 @@ export const lessonDetachedHead: ContentLesson = {
       type: "callout",
       id: "what-connect",
       tone: "success",
-      title: "You are safe",
-      text: "Read that again: you are safe. Your commits and files are all still there. HEAD just isn't sitting on a branch right now. That's all detached means.",
+      title: "Two pictures of HEAD",
+      text: "Normally: HEAD points to a branch, and the branch points to the latest commit. Detached: HEAD points straight at one specific commit, with no branch in between. That's the only difference. Your commits and files are all still there, and you are safe.",
     },
 
     // ---------------------------------------------------------------
@@ -164,6 +164,17 @@ export const lessonDetachedHead: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "<h1>home</h1>" > index.html',
+        "git add .",
+        'git commit -m "Add homepage"',
+        "touch login.js",
+        "git add login.js",
+        'git commit -m "Add login"',
+      ],
       steps: [
         {
           command: "git checkout 2271f37",

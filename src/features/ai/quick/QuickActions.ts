@@ -45,7 +45,7 @@ export function buildQuickActions(
   if (ctx.terminalState) {
     items.push({ label: "What did I do wrong?", prompt: "What did I do wrong?" });
   }
-  if (ctx.quiz && ctx.quiz.includes("not answered")) {
+  if (ctx.practice && ctx.practice.includes("not answered yet")) {
     items.push({ label: "Hint", prompt: "Hint" });
   }
   if (ctx.lessonTitle) {
@@ -99,19 +99,19 @@ export function buildNotice(ctx: LessonContext): string | null {
   if (
     ctx.timeOnSectionSeconds &&
     ctx.timeOnSectionSeconds >= 300 &&
-    ctx.quiz &&
-    ctx.quiz.includes("not answered")
+    ctx.practice &&
+    ctx.practice.includes("not answered yet")
   ) {
-    return "You've been on this section for a bit. Want a different explanation?";
+    return "You've been on this section for a bit. Want to work through this checkpoint together?";
   }
   if (
     ctx.lessonProgress &&
     ctx.lessonProgress.includes("read") &&
     ctx.scrollPercent &&
     ctx.scrollPercent > 75 &&
-    !ctx.quiz
+    !ctx.practice
   ) {
-    return "You're almost at the end. There's a quiz waiting when you're ready.";
+    return "You're almost at the end. There's a checkpoint waiting when you're ready.";
   }
   return null;
 }

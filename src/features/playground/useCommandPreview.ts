@@ -22,6 +22,8 @@ export function useCommandPreview(lesson: ContentLesson, commandIndex = 0): Comm
 
     const engine = createGitSimulation(playground.seed);
     for (const cmd of playground.setup ?? []) engine.run(cmd);
+    // Seed the remote too, so previews of fetch/pull/push show the real result.
+    for (const cmd of playground.remoteSetup ?? []) engine.runRemote(cmd);
     const { output } = engine.run(command);
     return { command, output: output.text, kind: output.kind };
   }, [lesson, commandIndex]);

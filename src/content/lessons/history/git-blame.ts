@@ -3,7 +3,7 @@ import type { ContentLesson } from "@/content/schema";
 /**
  * Lesson · git blame
  *
- * git blame shows who last changed each line of a file, and when. Despite
+ * git blame shows which commit last changed a file, and when. Despite
  * the name, it's not about blaming anyone. It's about understanding a file's
  * story line by line.
  */
@@ -12,7 +12,7 @@ export const lessonGitBlame: ContentLesson = {
   slug: "git-blame",
   title: "git blame",
   description:
-    "git blame shows who last changed each line and when. It's not about blaming anyone. It's how you understand why a file looks the way it does.",
+    "git blame shows which commit last changed a file and when. It's not about blaming anyone. It's how you understand why a file looks the way it does.",
   meta: {
     module: "history",
     order: 5,
@@ -20,19 +20,19 @@ export const lessonGitBlame: ContentLesson = {
     durationMinutes: 8,
     tags: ["history", "blame"],
     summary: [
-      "git blame shows who changed each line.",
-      "It also shows when the line changed.",
+      "git blame shows which commit last changed a file.",
+      "It also shows when that commit was made.",
       "It's for understanding, not blaming.",
       "Great for tracing a mysterious line.",
     ],
     whyItMatters:
-      "Every line of code has a story. git blame tells you who wrote it and when, so you can ask the right questions and understand the file.",
+      "Every line of code has a story. git blame tells you which commit last touched it and when, so you can ask the right questions and understand the file.",
     motivation:
-      "You can trace any line back to its author now. Next, Git's safety net for recovering lost work: git reflog.",
+      "You can trace any line back to its last change now. Next, Git's safety net for recovering lost work: git reflog.",
   },
   learningGoals: [
     "Run git blame on a file",
-    "Read who changed each line",
+    "See which commit last changed a file",
     "Understand it's for tracing, not blaming",
   ],
   xpReward: 50,
@@ -58,14 +58,14 @@ export const lessonGitBlame: ContentLesson = {
       },
       {
         id: "blame",
-        label: "Trace who changed each line with git blame",
-        checks: [{ kind: "fileExists", path: "app.js" }],
+        label: "Trace who changed the file with git blame",
+        checks: [{ kind: "ranCommand", contains: "git blame" }],
       },
     ],
     hints: [
       "Add a line to app.js, for example: echo 'const user = getName();' >> app.js",
       "Stage and commit it: git add . then git commit -m \"Add welcome line\"",
-      "Then run git blame app.js to see who changed each line and when.",
+      "Then run git blame app.js to see which commit last changed it, and when.",
     ],
     solution: [
       "echo 'const user = getName();' >> app.js",
@@ -80,14 +80,14 @@ export const lessonGitBlame: ContentLesson = {
       placeholder: "git blame",
       quickActions: ["git blame app.js", "git add .", "git log --oneline"],
       welcomeText: "Trace the lines.",
-      helperText: "Add a line to app.js, commit it, then git blame to see who changed each line.",
+      helperText: "Add a line to app.js, commit it, then git blame to see which commit last changed it.",
     },
   },
   blocks: [
     {
       type: "learningGoal",
       id: "goal",
-      text: "By the end of this lesson you'll trace any line back to who wrote it and when, without any blamey feelings.",
+      text: "By the end of this lesson you'll trace any line back to the commit that last changed it, without any blamey feelings.",
     },
     {
       type: "paragraph",
@@ -114,7 +114,7 @@ export const lessonGitBlame: ContentLesson = {
     {
       type: "paragraph",
       id: "run-question",
-      text: "Point git blame at a file and it shows every line, tagged with who changed it last and when.",
+      text: "Point git blame at a file and it shows which commit last changed it, and when. Panda uses a simplified blame model: it shows the last commit that touched the file.",
     },
     {
       type: "terminalSteps",
@@ -129,12 +129,13 @@ export const lessonGitBlame: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git init", "git add .", 'git commit -m "Start project"'],
       steps: [
         {
           command: "git blame app.js",
-          output: "3f2ab71 (Panda 2026-08-08) console.log('hi');",
+          output: "2271f37 (Git Learner 8/9/2026) console.log('hi');",
           outputKind: "muted",
-          note: "Each line shows the commit hash, the author, and the date it changed.",
+          note: "Each line shows the commit that last changed it, the author, and the date.",
         },
       ],
     },
@@ -222,7 +223,7 @@ export const lessonGitBlame: ContentLesson = {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
-        "git blame shows who changed each line.",
+        "git blame shows which commit last changed a file.",
         "It shows when, with a commit hash.",
         "It's for understanding, not blaming.",
         "Pair it with git show to read the full change.",

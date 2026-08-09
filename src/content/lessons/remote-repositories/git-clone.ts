@@ -52,6 +52,7 @@ export const lessonGitClone: ContentLesson = {
         },
       },
     },
+    remoteSetup: ["git init", "git add .", 'git commit -m "Start"'],
     objectives: [
       {
         id: "clone",
@@ -66,16 +67,16 @@ export const lessonGitClone: ContentLesson = {
       {
         id: "explore",
         label: "Look at the files with ls",
-        checks: [{ kind: "fileExists", path: "README.md" }],
+        checks: [{ kind: "ranCommand", contains: "ls" }],
       },
     ],
     hints: [
       "Copy the whole project with git clone github/my-project my-project.",
       "A clone sets up the remote automatically, usually named origin.",
-      "Run ls to see the files that came with it.",
+      "Run ls to see the files that came with it, and git log --oneline to see the history.",
     ],
-    solution: ["git clone github/my-project my-project", "ls"],
-    suggestions: ["git clone github/my-project my-project", "ls"],
+    solution: ["git clone github/my-project my-project", "ls", "git log --oneline"],
+    suggestions: ["git clone github/my-project my-project", "ls", "git log --oneline"],
     visualizer: { highlight: "head", banner: "git clone copies the whole project, history included" },
     shell: {
       primaryCommand: "git clone github/my-project my-project",
@@ -151,7 +152,17 @@ export const lessonGitClone: ContentLesson = {
         },
         pwd: "~/project",
         initialized: true,
+        remote: {
+          pwd: "github/my-project",
+          initialized: true,
+          files: {
+            "README.md": "My project\n",
+            "index.html": "<h1>hi</h1>\n",
+            "src/main.js": "console.log('hi');\n",
+          },
+        },
       },
+      remoteSetup: ["git init", "git add .", 'git commit -m "Start"'],
       steps: [
         {
           command: "git clone github/my-project my-project",
@@ -161,9 +172,15 @@ export const lessonGitClone: ContentLesson = {
         },
         {
           command: "ls",
-          output: "README.md  index.html  src",
+          output: "README.md  index.html  src/main.js",
           outputKind: "output",
           note: "All the remote's files are here, ready to work on.",
+        },
+        {
+          command: "git log --oneline",
+          output: "52ec047 (HEAD -> main) Start",
+          outputKind: "output",
+          note: "The history came with it. A ZIP download could never show you this.",
         },
       ],
     },

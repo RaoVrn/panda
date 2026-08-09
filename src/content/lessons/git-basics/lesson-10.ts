@@ -99,7 +99,7 @@ export const lesson10: ContentLesson = {
         "Point at one file: git add README.md.",
         "Git accepts a list: git add src/main.js src/utils.js.",
         "The dot means everything: git add . picks up notes.txt too.",
-        "Glance at git status before you sweep \u2014 never add secrets by accident."
+        "Glance at git status before you sweep; never add secrets by accident."
       ],
       "solution": [
         "git add README.md",
@@ -180,7 +180,7 @@ export const lesson10: ContentLesson = {
         },
         {
           command: "git add .",
-          output: "1 file is now staged and ready for its snapshot.",
+          output: "4 files are now staged and ready for their snapshot.",
           outputKind: "success",
           note: "The dot means: everything in this folder. notes.txt joins in.",
         },

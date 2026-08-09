@@ -61,29 +61,26 @@ export const lessonMergeConflicts: ContentLesson = {
     objectives: [
       {
         id: "see-branches",
-        label: "See both branches have moved apart",
-        checks: [{ kind: "branchExists", name: "redesign" }, { kind: "commitCountAtLeast", count: 2 }],
+        label: "Read the history to see both branches moved",
+        checks: [{ kind: "ranCommand", contains: "git log" }, { kind: "branchExists", name: "redesign" }],
       },
       {
-        id: "see-diverged",
-        label: "See the same file changed on both branches",
-        checks: [
-          { kind: "anyCommitMessage", message: "Redesign the page" },
-          { kind: "anyCommitMessage", message: "Update homepage" },
-        ],
+        id: "visit-redesign",
+        label: "Visit the redesign branch",
+        checks: [{ kind: "ranCommand", contains: "git switch redesign" }],
       },
       {
         id: "return",
         label: "Come back to main",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git switch main" }],
       },
     ],
     hints: [
       "Run git log --oneline to see that main and redesign both moved.",
-      "Notice both branches changed index.html. That's where conflicts come from.",
-      "Come back to main with git switch main.",
+      "Both branches changed index.html. That's where conflicts come from in real Git.",
+      "Visit redesign with git switch redesign, then come back to main with git switch main.",
     ],
-    solution: ["git log --oneline", "git switch main"],
+    solution: ["git log --oneline", "git switch redesign", "git switch main"],
     suggestions: ["git log --oneline", "git switch redesign", "git switch main"],
     visualizer: { highlight: "head", banner: "Two branches changed the same file. That's where conflicts come from" },
     shell: {
@@ -125,14 +122,14 @@ export const lessonMergeConflicts: ContentLesson = {
     {
       type: "paragraph",
       id: "why-question",
-      text: "Most merges are automatic. Git combines changes that touch different files or different lines. But when two branches edit the SAME line in different ways, Git can't pick.",
+      text: "In real Git, most merges are automatic. Git combines changes that touch different files or different lines. But when two branches edit the SAME line in different ways, Git can't pick.",
     },
     {
       type: "callout",
       id: "why-connect",
       tone: "info",
       title: "Git stops and asks",
-      text: "Git doesn't guess. It stops, shows you both versions, and asks which to keep. That's the conflict. It's Git being careful, not broken.",
+      text: "Real Git doesn't guess. It stops, shows you both versions, and asks which to keep. That's the conflict. It's Git being careful, not broken.",
     },
 
     // ---------------------------------------------------------------
@@ -147,7 +144,7 @@ export const lessonMergeConflicts: ContentLesson = {
     {
       type: "paragraph",
       id: "see-question",
-      text: "When a file conflicts, Git marks the spot inside the file. It shows your version and the other branch's version, separated by markers.",
+      text: "In real Git, when a file conflicts, Git marks the spot inside the file. It shows your version and the incoming branch's version, separated by markers. Here's an example.",
     },
     {
       type: "code",
@@ -161,7 +158,7 @@ export const lessonMergeConflicts: ContentLesson = {
       id: "see-connect",
       tone: "success",
       title: "Reading the markers",
-      text: "The top section is your current version. The bottom is the other branch's. You delete the markers, keep the version you want, and save the file.",
+      text: "Three markers do all the work: <<<<<<< HEAD starts your current branch's version, ======= is the separator between the two versions, and >>>>>>> feature/redesign marks the incoming branch's version. You delete the markers, keep the version you want, and save the file.",
     },
 
     // ---------------------------------------------------------------
@@ -176,18 +173,29 @@ export const lessonMergeConflicts: ContentLesson = {
     {
       type: "paragraph",
       id: "fix-question",
-      text: "Fixing a conflict is four small steps: open the file, choose a version, remove the markers, then commit the merge.",
+      text: "In real Git, fixing a conflict is a small set of steps: open the file, choose a version, remove the markers, then commit the merge.",
     },
     {
       type: "callout",
       id: "fix-connect",
       tone: "tip",
       title: "The calm recipe",
-      text: "1. Open the file and find the markers. 2. Pick which lines to keep. 3. Delete the <<<<<<<, =======, and >>>>>>> markers. 4. Stage the file and commit. Done.",
+      text: "1. Open the conflicted file. 2. Decide what the final content should be. 3. Remove the <<<<<<<, =======, and >>>>>>> markers. 4. Save the file. 5. Stage the resolved file. 6. Commit the resolution.",
     },
 
     // ---------------------------------------------------------------
-    // 4 · Common mistake.
+    // 4 · Panda note.
+    // ---------------------------------------------------------------
+    {
+      type: "callout",
+      id: "panda-note",
+      tone: "info",
+      title: "In Panda's simulator",
+      text: "Panda's current simulator does not create real merge conflicts yet, so this lesson uses a small illustrative example instead of a live conflict. In Panda you can practice the fast-forward merge, which never conflicts. In real Git, conflicts are normal and fixable.",
+    },
+
+    // ---------------------------------------------------------------
+    // 5 · Common mistake.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -199,11 +207,11 @@ export const lessonMergeConflicts: ContentLesson = {
       type: "warning",
       id: "mistake-warning",
       title: "Leaving the markers behind",
-      text: "A common slip is choosing the right lines but forgetting to delete the <<<<<<<, =======, and >>>>>>> markers. Your file won't work until they're gone. Always double-check.",
+      text: "In real Git, a common slip is choosing the right lines but forgetting to delete the <<<<<<<, =======, and >>>>>>> markers. Your file won't work until they're gone. Always double-check.",
     },
 
     // ---------------------------------------------------------------
-    // 5 · Mini challenge.
+    // 6 · Mini challenge.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -215,14 +223,14 @@ export const lessonMergeConflicts: ContentLesson = {
       type: "practice",
       id: "practice-mission",
       description:
-        "Two branches changed the same line of a file. What does Git do during the merge?",
+        "Two branches changed the same line of a file in real Git. What does Git do during the merge?",
       hint: "Does Git guess, or does it ask?",
       exampleAnswer:
-        "Git doesn't guess. It stops the merge, marks the spot in the file, and asks me to choose which version to keep.",
+        "Real Git doesn't guess. It stops the merge, marks the spot in the file, and asks me to choose which version to keep.",
     },
 
     // ---------------------------------------------------------------
-    // 6 · What to remember.
+    // 7 · What to remember.
     // ---------------------------------------------------------------
     {
       type: "heading",
@@ -234,17 +242,17 @@ export const lessonMergeConflicts: ContentLesson = {
       type: "tip",
       id: "tip-conflict",
       title: "Quick tip",
-      text: "Conflicts are a sign you and someone else both care about the same code. That's not a failure, it's teamwork showing up.",
+      text: "In real Git, conflicts are a sign you and someone else both care about the same code. That's not a failure, it's teamwork showing up.",
     },
     {
       type: "keyTakeaways",
       id: "takeaways",
       items: [
         "A conflict happens when two branches change the same line.",
-        "Git shows both versions and asks you to choose.",
+        "Real Git shows both versions and asks you to choose.",
         "Delete the markers and keep the version you want.",
         "Then commit the merge.",
-        "Conflicts are normal and fixable.",
+        "Panda's simulator doesn't create live conflicts yet.",
       ],
     },
     {

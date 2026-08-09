@@ -97,7 +97,7 @@ export const lesson01: ContentLesson = {
       ],
       "visualizer": {
         "highlight": "repository",
-        "banner": "Make your very first snapshot \u2014 just like saving a game"
+        "banner": "Make your very first snapshot, just like saving a game"
       },
       "shell": {
         "primaryCommand": "git init",
@@ -388,27 +388,33 @@ export const lesson01: ContentLesson = {
       id: "terminal-init",
       title: "panda-shell",
       prompt: "$",
+      seed: {
+        files: {
+          "README.md": "Hello Panda\n",
+        },
+        pwd: "~/project",
+      },
       steps: [
         {
           command: "git init",
-          output: "Initialized an empty Git repository in ~/project/.git/",
+          output: "Initialized empty Git repository in ~/project/.git/",
           outputKind: "success",
           note: "This creates the hidden .git folder you just met.",
         },
         {
           command: "git status",
-          output: "On branch main\n\nNo commits yet\n\nUntracked files:\n  README.md",
+          output: 'On branch main\n\nNo commits yet\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tREADME.md',
           outputKind: "muted",
           note: "Git sees README.md but isn’t watching it yet.",
         },
         {
           command: "git add README.md",
-          output: "README.md is now staged and ready for its first snapshot.",
+          output: "README.md is now staged and ready for its snapshot.",
           outputKind: "success",
         },
         {
           command: "git commit -m \"hello world\"",
-          output: "[main (root-commit) a1b2c3d] hello world\n 1 file changed, 1 insertion(+)",
+          output: "[main (root-commit) 1e3f6d8] hello world\n 1 file changed",
           outputKind: "success",
           note: "That’s the snapshot. Saved.",
         },

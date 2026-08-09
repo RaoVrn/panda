@@ -59,7 +59,10 @@ export const lessonGithub: ContentLesson = {
       {
         id: "inspect",
         label: "Inspect the remote with git remote -v",
-        checks: [{ kind: "remoteExists", name: "origin" }],
+        checks: [
+          { kind: "remoteExists", name: "origin" },
+          { kind: "ranCommand", contains: "git remote -v" },
+        ],
       },
     ],
     hints: [

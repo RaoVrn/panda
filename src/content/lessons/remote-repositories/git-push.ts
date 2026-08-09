@@ -60,12 +60,15 @@ export const lessonGitPush: ContentLesson = {
       {
         id: "push",
         label: "Push your commit to the remote",
-        checks: [{ kind: "pushSucceeded" }],
+        checks: [
+          { kind: "ranCommand", contains: "git push" },
+          { kind: "pushSucceeded" },
+        ],
       },
       {
         id: "synced",
         label: "Remote now has your work",
-        checks: [{ kind: "anyCommitMessage", message: "Add the cart" }],
+        checks: [{ kind: "remoteHasCommit", message: "Add the cart" }],
       },
     ],
     hints: [
@@ -155,19 +158,36 @@ export const lessonGitPush: ContentLesson = {
         },
         pwd: "~/project",
         initialized: true,
+        remote: {
+          pwd: "github/my-project",
+          initialized: true,
+          files: {
+            "README.md": "My project\n",
+          },
+        },
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start"',
+        "git remote add origin github/my-project",
+        "touch cart.js",
+        "git add .",
+        'git commit -m "Add the cart"',
+      ],
+      remoteSetup: ["git init", "git add .", 'git commit -m "Start"'],
       steps: [
         {
-          command: "git commit -m \"Add the cart\"",
-          output: "[main 79048ff] Add the cart\n 1 file changed",
-          outputKind: "success",
-          note: "The commit is saved locally. The remote doesn't know yet.",
-        },
-        {
           command: "git push",
-          output: "To the remote\n   ..79048ff  main -> main\n  1 commit pushed.",
+          output: "To the remote\n   52ec047..6a52c52  main -> main\n  1 commit pushed.",
           outputKind: "success",
           note: "Your commit reached the remote. Now the team can see it.",
+        },
+        {
+          command: "git log --oneline",
+          output: "6a52c52 (HEAD -> main) Add the cart\n52ec047 Start",
+          outputKind: "output",
+          note: "Both commits live in your history now, and the remote has them too.",
         },
       ],
     },

@@ -1,7 +1,7 @@
 import type { ContentLesson } from "@/content/schema";
 
 /**
- * Lesson · git rm
+ * Lesson · rm (deleting files)
  *
  * Removing a file from your project. The working tree and repository both
  * need to know when a file leaves. In the playground you use `rm` to delete
@@ -10,9 +10,9 @@ import type { ContentLesson } from "@/content/schema";
 export const lessonGitRm: ContentLesson = {
   id: "git-rm",
   slug: "git-rm",
-  title: "Deleting Files (git rm)",
+  title: "Deleting Files (rm)",
   description:
-    "Files leave projects too. Learn how to remove a file the Git way, so your history knows it's gone.",
+    "Files leave projects too. Remove a file with rm, and Git notices the deletion so your history knows it's gone.",
   meta: {
     module: "core-commands",
     order: 8,
@@ -125,6 +125,7 @@ export const lessonGitRm: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git add .", 'git commit -m "Start"'],
       steps: [
         {
           command: "rm old-notes.txt",
@@ -134,7 +135,7 @@ export const lessonGitRm: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\nChanges not staged for commit:\n\tdeleted:   old-notes.txt",
+          output: "On branch main\n\nChanges not staged for commit:\n\tdeleted:   old-notes.txt",
           outputKind: "muted",
           note: "Git noticed the file left. A deletion is just another change.",
         },
@@ -175,6 +176,7 @@ export const lessonGitRm: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git add .", 'git commit -m "Start"', "rm old-notes.txt"],
       steps: [
         {
           command: "git add old-notes.txt",
@@ -184,7 +186,7 @@ export const lessonGitRm: ContentLesson = {
         },
         {
           command: 'git commit -m "Remove old notes"',
-          output: "[main 3f2ab71] Remove old notes\n 1 file changed, 1 deletion(-)",
+          output: "[main 7b3b735] Remove old notes\n 1 file changed",
           outputKind: "success",
           note: "Your history now records the file's last goodbye.",
         },
@@ -261,8 +263,8 @@ export const lessonGitRm: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: Renaming Files (git mv)",
-      text: "Renaming a file with Git keeps its history attached, so you never lose track of what it was.",
+      title: "Continue to: Renaming Files (mv)",
+      text: "Renaming a file keeps its history attached, so you never lose track of what it was.",
     },
   ],
 };

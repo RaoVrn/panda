@@ -40,11 +40,11 @@ export const lesson05: ContentLesson = {
     playground: {
       seed: {"files": {"README.md": "My first project\n", "package.json": "{ \"name\": \"panda\" }\n", "src/main.js": "console.log('hi');\n"}, "pwd": "~/project", "initialized": true},
       objectives: [{"id": "stage-readme", "label": "Stage README.md", "checks": [{"kind": "fileStaged", "path": "README.md"}]}, {"id": "stage-main", "label": "Stage src/main.js", "checks": [{"kind": "fileStaged", "path": "src/main.js"}]}, {"id": "leave-out", "label": "Leave package.json out of this snapshot", "persist": false, "checks": [{"kind": "fileNotStaged", "path": "package.json"}]}, {"id": "commit", "label": "Commit \"Start the Panda project\"", "checks": [{"kind": "anyCommitMessage", "message": "Start the Panda project"}]}],
-      hints: ["Git never saves by itself \u2014 you pick what goes in with git add.", "Add exactly the two files that belong in this snapshot.", "package.json should stay behind. That's the whole point of the staging area.", "Zip the bag: git commit -m \"Start the Panda project\"."],
+      hints: ["Git never saves by itself; you pick what goes in with git add.", "Add exactly the two files that belong in this snapshot.", "package.json should stay behind. That's the whole point of the staging area.", "Zip the bag: git commit -m \"Start the Panda project\"."],
       solution: ["git add README.md src/main.js", "git commit -m \"Start the Panda project\"", "git status"],
-      suggestions: ["git add README.md", "git add src/main.js", "git commit -m", "git status"],
+      suggestions: ["git add README.md", "git add src/main.js", "git commit -m \"Start the Panda project\"", "git status"],
       visualizer: {"highlight": "staging", "banner": "Pick files, then save a snapshot"},
-      shell: {"primaryCommand": "git add", "placeholder": "git add README.md", "quickActions": ["git add README.md", "git commit -m", "git status"], "welcomeText": "Save your first snapshot.", "helperText": "Pick the files you want to save with git add, then commit them with git commit -m."},
+      shell: {"primaryCommand": "git add", "placeholder": "git add README.md", "quickActions": ["git add README.md", "git commit -m \"Start the Panda project\"", "git status"], "welcomeText": "Save your first snapshot.", "helperText": "Pick the files you want to save with git add, then commit them with git commit -m."},
     },
 
   blocks: [
@@ -97,7 +97,7 @@ export const lesson05: ContentLesson = {
       readFiles: [
         { name: "README.md", status: "new" },
         { name: "src/main.js", status: "new" },
-        { name: "style.css", status: "new" },
+        { name: "package.json", status: "new" },
       ],
     },
     {
@@ -141,19 +141,19 @@ export const lesson05: ContentLesson = {
           command: "git add README.md src/main.js",
           output: "2 files are now staged and ready for their snapshot.",
           outputKind: "success",
-          note: "Only these two go into the next snapshot. style.css stays behind.",
+          note: "Only these two go into the next snapshot. package.json stays behind.",
         },
         {
           command: 'git commit -m "Start the Panda project"',
-          output: '[main (root-commit) 3f2ab71] Start the Panda project\n 2 files changed',
+          output: '[main (root-commit) 64ec9b9] Start the Panda project\n 2 files changed',
           outputKind: "success",
           note: "ZIP. A permanent snapshot is born, named with a short message.",
         },
         {
           command: "git status",
-          output: "On branch main\nnothing to commit, working tree clean",
+          output: 'On branch main\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpackage.json',
           outputKind: "muted",
-          note: "\"Working tree clean\" = everything worth saving is saved.",
+          note: "package.json stays behind on purpose. Git only saved the two files you picked. That's the staging area as a filter.",
         },
       ],
     },
@@ -279,8 +279,8 @@ export const lesson05: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: Repository",
-      text: "Time for Git Basics. First up: what's actually inside a repository, and why it's not as mysterious as it sounds.",
+      title: "Continue to: git status",
+      text: "Time for Git Basics proper. First command: git status, Git's dashboard that tells you what's happening in your project.",
     },
   ],
 };

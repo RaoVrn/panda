@@ -39,7 +39,7 @@ export const lesson04: ContentLesson = {
     playground: {
       seed: {"files": {"README.md": "My first project\n", "src/main.js": "console.log('hi');\n"}, "pwd": "~/project"},
       objectives: [{"id": "init", "label": "Run git init to turn this folder into a repository", "checks": [{"kind": "initialized"}]}, {"id": "stage", "label": "Stage a file with git add", "checks": [{"kind": "fileStaged", "path": "README.md"}]}, {"id": "commit", "label": "Commit your first snapshot", "checks": [{"kind": "commitCountAtLeast", "count": 1}]}, {"id": "clean", "label": "Save everything so the working tree is clean", "checks": [{"kind": "workingTreeClean"}]}],
-      hints: ["This folder isn't a repository yet. One command starts it.", "Git never grabs files on its own \u2014 point at one with git add.", "Take the snapshot with git commit -m \"\u2026\". The message is how you'll find it later.", "A clean tree means every file is saved. Stage and commit src/main.js too."],
+      hints: ["This folder isn't a repository yet. One command starts it.", "Git never grabs files on its own; point at one with git add.", "Take the snapshot with git commit -m \"\u2026\". The message is how you'll find it later.", "A clean tree means every file is saved. Stage and commit src/main.js too."],
       solution: ["git init", "git add README.md", "git commit -m \"My first commit\"", "git add src/main.js", "git commit -m \"Add main.js\""],
       suggestions: ["git init", "git status", "help", "ls"],
       visualizer: {"highlight": "repository", "banner": "Turn this folder into a Git repository"},
@@ -163,7 +163,7 @@ export const lesson04: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\n\nNo commits yet\n\nUntracked files:\n  README.md\n  src/main.js\n\nnothing added to commit but untracked files present",
+          output: 'On branch main\n\nNo commits yet\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tREADME.md\n\tsrc/main.js',
           outputKind: "muted",
           note: "Git can see your files, but hasn't saved them yet.",
         },

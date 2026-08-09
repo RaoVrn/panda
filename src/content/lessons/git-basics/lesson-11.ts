@@ -77,7 +77,7 @@ export const lesson11: ContentLesson = {
       ],
       "hints": [
         "Choose what goes in the snapshot: git add index.html.",
-        "Take the picture: git commit -m \"\u2026\" \u2014 say what you did in one clear line.",
+        "Take the picture: git commit -m \"Add landing page\", one clear line that says what you did.",
         "Read your diary back: git log (or git log --oneline)."
       ],
       "solution": [
@@ -86,20 +86,21 @@ export const lesson11: ContentLesson = {
         "git log"
       ],
       "suggestions": [
-        "git commit -m \"\"",
+        "git add index.html",
+        "git commit -m \"Add landing page\"",
         "git log",
         "git log --oneline",
         "git status"
       ],
       "visualizer": {
         "highlight": "repository",
-        "banner": "Take the snapshot \u2014 make it permanent"
+        "banner": "Take the snapshot, make it permanent"
       },
       "shell": {
         "primaryCommand": "git commit",
-        "placeholder": "git commit -m \"\"",
+        "placeholder": "git commit -m \"Add landing page\"",
         "quickActions": [
-          "git commit -m",
+          "git commit -m \"Add landing page\"",
           "git status",
           "git log"
         ],
@@ -161,15 +162,15 @@ export const lesson11: ContentLesson = {
         },
         {
           command: 'git commit -m "Add landing page"',
-          output: '[main (root-commit) 9c2d1a7] Add landing page\n 1 file changed',
+          output: "[main (root-commit) 207fea4] Add landing page\n 1 file changed",
           outputKind: "success",
-          note: "main = branch, 9c2d1a7 = this snapshot's ID, and the message is on the right.",
+          note: "\"root-commit\" means this is the first commit in the repository. main = branch, 207fea4 = this snapshot's ID, and the message is on the right.",
         },
         {
           command: "git log",
-          output: "commit 9c2d1a7f3e8b4c9d0a1f2e3d4c5b6a7f8e9d0c1b\n    Add landing page",
+          output: "commit 207fea4\nAuthor: Git Learner <learner@example.com>\nDate:   Aug 09, 05:30 AM\n\n    Add landing page\n",
           outputKind: "output",
-          note: "git log reads your history back. That ID is how you'll refer to this snapshot forever.",
+          note: "git log reads your history back. That short ID is how you'll refer to this snapshot forever.",
         },
       ],
     },

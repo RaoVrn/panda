@@ -1,17 +1,18 @@
 import type { ContentLesson } from "@/content/schema";
 
 /**
- * Lesson · git mv
+ * Lesson · mv (renaming files)
  *
- * Renaming a file. The engine's `mv` command moves a file and keeps its
- * history, so a rename doesn't look like "delete + new file".
+ * Renaming a file. The engine's `mv` command moves a file in the working
+ * tree. Git sees the old name disappear and the new one appear; once you
+ * commit, Git can recognize the change as a rename.
  */
 export const lessonGitMv: ContentLesson = {
   id: "git-mv",
   slug: "git-mv",
-  title: "Renaming Files (git mv)",
+  title: "Renaming Files (mv)",
   description:
-    "Renaming a file is like moving it to a new home. Git keeps the file's history attached, so you never lose track of what it used to be.",
+    "Renaming a file is like moving it to a new home. Do it with mv, commit it, and Git keeps the file's story intact.",
   meta: {
     module: "core-commands",
     order: 9,
@@ -21,7 +22,7 @@ export const lessonGitMv: ContentLesson = {
     summary: [
       "mv renames a file in the working tree.",
       "A rename keeps the file's history.",
-      "Git sees it as a move, not a delete plus add.",
+      "Git sees the old name disappear and the new one appear.",
       "Staged files stay staged after a rename.",
     ],
     whyItMatters:
@@ -62,13 +63,13 @@ export const lessonGitMv: ContentLesson = {
       "Check git status to see Git noticed the old name is gone and a new one appeared.",
       "Stage and commit the move so your history records it.",
     ],
-    solution: ["mv notes.txt ideas.txt", "git status", "git add .", 'git commit -m "Rename notes to ideas"'],
-    suggestions: ["mv notes.txt ideas.txt", "git status", "git add ."],
+    solution: ["mv notes.txt ideas.txt", "git status", "git add notes.txt ideas.txt", 'git commit -m "Rename notes to ideas"'],
+    suggestions: ["mv notes.txt ideas.txt", "git status", "git add notes.txt ideas.txt"],
     visualizer: { highlight: "working-tree", banner: "Renaming a file keeps its history attached" },
     shell: {
       primaryCommand: "mv notes.txt ideas.txt",
       placeholder: "mv notes.txt ideas.txt",
-      quickActions: ["mv notes.txt ideas.txt", "git status", "git add ."],
+      quickActions: ["mv notes.txt ideas.txt", "git status", "git add notes.txt ideas.txt"],
       welcomeText: "Give a file a new name.",
       helperText: "notes.txt is tracked. Move it to ideas.txt with mv, then stage and commit the rename.",
     },
@@ -119,6 +120,7 @@ export const lessonGitMv: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git add .", 'git commit -m "Start"'],
       steps: [
         {
           command: "mv notes.txt ideas.txt",
@@ -128,9 +130,9 @@ export const lessonGitMv: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\nChanges not staged for commit:\n\tdeleted:   notes.txt\n\nUntracked files:\n\tideas.txt",
+          output: 'On branch main\n\nChanges not staged for commit:\n\tdeleted:   notes.txt\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tideas.txt',
           outputKind: "muted",
-          note: "Git sees the old name is gone and a new one appeared. Commit to record the move.",
+          note: "Git sees the old name is gone and a new one appeared. Stage and commit to record the move.",
         },
       ],
     },
@@ -139,7 +141,7 @@ export const lessonGitMv: ContentLesson = {
       id: "rename-connect",
       tone: "success",
       title: "Same file, new name",
-      text: "The file kept its contents and its history. Git just needs a commit to remember the rename. After that, your history shows the move, not a mystery delete-and-create.",
+      text: "After the rename, Git sees the old path as deleted and the new path as a new file. Once you commit, Git can recognize that the change looks like a rename, so the file keeps its history instead of looking like a fresh copy.",
     },
 
     // ---------------------------------------------------------------
@@ -169,18 +171,19 @@ export const lessonGitMv: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git add .", 'git commit -m "Start"', "mv notes.txt ideas.txt"],
       steps: [
         {
-          command: "git add .",
+          command: "git add notes.txt ideas.txt",
           output: "2 files are now staged and ready for their snapshot.",
           outputKind: "success",
           note: "Staging the old name and the new name records the move.",
         },
         {
           command: 'git commit -m "Rename notes to ideas"',
-          output: "[main 5b8e20c] Rename notes to ideas\n 1 file changed",
+          output: "[main 42c3d09] Rename notes to ideas\n 2 files changed",
           outputKind: "success",
-          note: "Your history now shows a clean rename, not a delete and an add.",
+          note: "Committed, Git can recognize the change as a clean rename instead of a delete and an add.",
         },
       ],
     },
@@ -241,7 +244,7 @@ export const lessonGitMv: ContentLesson = {
       items: [
         "mv renames a file in the working tree.",
         "A rename keeps the file's history.",
-        "Git records it as a move, not delete plus add.",
+        "Git recognizes the committed change as a rename.",
         "Commit the move so history stays clean.",
         "Never copy-and-delete when you can mv.",
       ],

@@ -58,17 +58,21 @@ export const lessonMerge: ContentLesson = {
       {
         id: "on-main",
         label: "Stand on main",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git switch main" }],
       },
       {
         id: "merge",
         label: "Merge add-cart into main",
-        checks: [{ kind: "commitCountAtLeast", count: 2 }, { kind: "branch", name: "main" }],
+        checks: [
+          { kind: "commitCountAtLeast", count: 2 },
+          { kind: "branch", name: "main" },
+          { kind: "ranCommand", contains: "git merge add-cart" },
+        ],
       },
       {
         id: "see-merged",
         label: "Find the feature in main's history",
-        checks: [{ kind: "anyCommitMessage", message: "Add the cart" }],
+        checks: [{ kind: "anyCommitMessage", message: "Add the cart" }, { kind: "ranCommand", contains: "git merge add-cart" }],
       },
     ],
     hints: [
@@ -133,6 +137,16 @@ export const lessonMerge: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        "git switch -c add-cart",
+        "touch cart.js",
+        "git add .",
+        'git commit -m "Add the cart"',
+        "git switch main",
+      ],
       steps: [
         {
           command: "git switch main",
@@ -142,13 +156,13 @@ export const lessonMerge: ContentLesson = {
         },
         {
           command: "git merge add-cart",
-          output: "Updating 4a65329..79048ff\nFast-forward",
+          output: "Updating 2271f37..6a52c52\nFast-forward",
           outputKind: "success",
-          note: "The feature's snapshots joined main. The work is now on your safe branch.",
+          note: "Main hadn't moved, so Git slid it forward. The feature's snapshots joined main.",
         },
         {
           command: "git log --oneline",
-          output: "79048ff (HEAD -> main) Add the cart\n4a65329 Start project",
+          output: "6a52c52 (HEAD -> main) Add the cart\n2271f37 Start project",
           outputKind: "output",
           note: "The feature's commit is now part of main's history.",
         },
@@ -160,6 +174,11 @@ export const lessonMerge: ContentLesson = {
       tone: "success",
       title: "What just happened",
       text: "Main now has everything the feature branch had. The cart feature is part of your main line of work. That's a merge.",
+    },
+    {
+      type: "paragraph",
+      id: "merge-fastforward-note",
+      text: "That was a fast-forward merge, the kind Panda demonstrates: when main hasn't moved, Git simply slides it forward. Real Git can also create a merge commit when both branches have moved, but Panda doesn't simulate that case yet.",
     },
 
     // ---------------------------------------------------------------

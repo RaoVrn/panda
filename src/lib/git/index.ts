@@ -165,6 +165,8 @@ export {
   shortHash,
   buildCommit,
   isIgnored,
+  headCommit,
+  logCommits,
 } from "./repository";
 export { runCommand } from "./commands";
 export type { CreateRepositoryOptions };

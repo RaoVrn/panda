@@ -67,7 +67,7 @@ export const modules: CourseModule[] = [
   {
     id: "history",
     title: "History",
-    description: "Read, compare and time-travel through your snapshots",
+    description: "Read, inspect and recover your Git history",
     order: 3,
     icon: "history",
     course: "git",

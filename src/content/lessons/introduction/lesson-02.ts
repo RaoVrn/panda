@@ -51,7 +51,7 @@ export const lesson02: ContentLesson = {
       {
         id: "wake-up",
         label: "Wake Git up",
-        checks: [{ kind: "initialized" }],
+        checks: [{ kind: "initialized" }, { kind: "ranCommand", contains: "git init" }],
       },
       {
         id: "snapshot",

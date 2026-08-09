@@ -4,15 +4,15 @@ import type { ContentLesson } from "@/content/schema";
  * Lesson · git reflog
  *
  * git reflog is Git's memory of everywhere HEAD has been. Even after a
- * branch is deleted or a reset goes wrong, the reflog knows the commit
- * still exists. It's how you recover work that looks gone forever.
+ * branch is deleted, the reflog knows the commit still exists. It's how you
+ * recover work that looks gone forever.
  */
 export const lessonGitReflog: ContentLesson = {
   id: "git-reflog",
   slug: "git-reflog",
   title: "git reflog",
   description:
-    "git reflog remembers everywhere HEAD has been. Deleted a branch? Reset too far? The reflog can lead you back to the work you thought was gone.",
+    "git reflog remembers everywhere HEAD has been. Deleted a branch by accident? The reflog can lead you back to the work you thought was gone.",
   meta: {
     module: "history",
     order: 6,
@@ -63,7 +63,7 @@ export const lessonGitReflog: ContentLesson = {
       {
         id: "find",
         label: "Spot the old-feature branch",
-        checks: [{ kind: "branchExists", name: "old-feature" }],
+        checks: [{ kind: "branchExists", name: "old-feature" }, { kind: "ranCommand", contains: "git branch" }],
       },
       {
         id: "delete",
@@ -118,7 +118,7 @@ export const lessonGitReflog: ContentLesson = {
       id: "story",
       tone: "info",
       title: "A trail of breadcrumbs",
-      text: "Think of the reflog as breadcrumbs left behind as you walk. Every time HEAD moves, Git drops a crumb. Lose a branch or reset too far? Follow the crumbs back to where your work still lives.",
+      text: "Think of the reflog as breadcrumbs left behind as you walk. Every time HEAD moves, Git drops a crumb. Lose a branch? Follow the crumbs back to where your work still lives.",
     },
 
     // ---------------------------------------------------------------
@@ -143,15 +143,28 @@ export const lessonGitReflog: ContentLesson = {
       seed: {
         files: {
           "README.md": "My project\n",
-          "index.html": "<h1>hi</h1>\n",
+          "app.js": "line one\nline two\nline three\n",
         },
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "const user = getName();" >> app.js',
+        "git add .",
+        'git commit -m "Add app"',
+        "git switch -c old-feature",
+        "echo 'feature work' > feature.txt",
+        "git add .",
+        'git commit -m "Old feature work"',
+        "git switch main",
+      ],
       steps: [
         {
           command: "git reflog",
-          output: "79048ff HEAD@{0}: commit: Add login\n3f2ab71 HEAD@{1}: checkout: moving from main to login\n3f2ab71 HEAD@{2}: commit: Add homepage",
+          output: "8c847b9 HEAD@{4}: switch: moving to main\n7f2ef9b HEAD@{3}: commit: Old feature work\n8c847b9 HEAD@{2}: switch: creating branch 'old-feature'\n8c847b9 HEAD@{1}: commit: Add app\n2271f37 HEAD@{0}: commit: Start project",
           outputKind: "output",
           note: "Each line is a crumb: a commit hash and what HEAD was doing at the time.",
         },
@@ -280,7 +293,7 @@ export const lessonGitReflog: ContentLesson = {
       id: "next-lesson",
       tone: "tip",
       title: "Continue to: Branching",
-      text: "You can explore history without fear. Now learn how to work on several paths at once with branches.",
+      text: "You've mastered reading and recovering history, and you understand HEAD. Next, use that mental model to work on several paths at once with branches.",
     },
   ],
 };

@@ -46,7 +46,6 @@ export const lesson13: ContentLesson = {
         "initialized": true
       },
       "setup": [
-        "git init",
         "git add .",
         "git commit -m \"Start\"",
         "echo \"<h1>hello</h1>\" > index.html"
@@ -105,12 +104,12 @@ export const lesson13: ContentLesson = {
       "suggestions": [
         "git diff",
         "git diff --staged",
-        "echo \"\" > README.md",
+        "echo \"Run with: npm run dev\" > README.md",
         "git add README.md"
       ],
       "visualizer": {
         "highlight": "working-tree",
-        "banner": "See exactly what changed \u2014 line by line"
+        "banner": "See exactly what changed, line by line"
       },
       "shell": {
         "primaryCommand": "git diff",
@@ -208,6 +207,12 @@ export const lesson13: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git add .",
+        'git commit -m "Start"',
+        'echo "Run with: npm run dev" > README.md',
+        'echo "<h1>hello</h1>" > index.html',
+      ],
       steps: [
         {
           command: "git add README.md",
@@ -216,13 +221,13 @@ export const lesson13: ContentLesson = {
         },
         {
           command: "git diff",
-          output: "diff --git a/index.html b/index.html\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-<h1>hi</h1>\n+<h1>hello</h1>",
+          output: "diff --git a/index.html b/index.html\n--- a/index.html\n+++ b/index.html\n@@ -1,1 +1,1 @@\n-<h1>hi</h1>\n+<h1>hello</h1>",
           outputKind: "muted",
           note: "git diff shows unstaged changes, the ones not in the staging area yet.",
         },
         {
           command: "git diff --staged",
-          output: "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-Run with: npm start\n+Run with: npm run dev",
+          output: "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1,1 +1,1 @@\n-Run with: npm start\n+Run with: npm run dev",
           outputKind: "muted",
           note: "git diff --staged shows exactly what's waiting to be committed.",
         },

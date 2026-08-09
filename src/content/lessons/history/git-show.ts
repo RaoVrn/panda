@@ -57,28 +57,31 @@ export const lessonGitShow: ContentLesson = {
       {
         id: "inspect",
         label: "Make a commit, then inspect it with git show",
-        checks: [{ kind: "latestCommitMessage", message: "Add profile" }],
+        checks: [
+          { kind: "latestCommitMessage", message: "Add login" },
+          { kind: "ranCommand", contains: "git show" },
+        ],
       },
     ],
     hints: [
-      "Add a file or change, then commit it: git add . then git commit -m \"Add profile\"",
+      "Add a file and stage it by name: touch login.js, then git add login.js.",
+      "Commit it with a clear message: git commit -m \"Add login\".",
       "Run git show to open your newest commit and read what changed.",
-      "The output shows the author, the date, the message, and the files.",
     ],
     solution: [
-      "touch profile.js",
-      "git add .",
-      'git commit -m "Add profile"',
+      "touch login.js",
+      "git add login.js",
+      'git commit -m "Add login"',
       "git show",
     ],
-    suggestions: ["touch profile.js", "git add .", "git show"],
+    suggestions: ["touch login.js", "git add login.js", "git show"],
     visualizer: { highlight: "head", banner: "git show opens a snapshot and shows what changed" },
     shell: {
       primaryCommand: "git show",
       placeholder: "git show",
-      quickActions: ["git show", "git add .", "git log --oneline"],
+      quickActions: ["git show", "git add login.js", "git log --oneline"],
       welcomeText: "Open a snapshot.",
-      helperText: "Make a commit, then run git show to see exactly what it changed.",
+      helperText: "Add login.js, commit it with a clear message, then run git show to see exactly what changed.",
     },
   },
   blocks: [
@@ -127,10 +130,21 @@ export const lessonGitShow: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: [
+        "git init",
+        "git add .",
+        'git commit -m "Start project"',
+        'echo "<h1>home</h1>" > index.html',
+        "git add .",
+        'git commit -m "Add homepage"',
+        "touch login.js",
+        "git add login.js",
+        'git commit -m "Add login"',
+      ],
       steps: [
         {
-          command: "git show 79048ff",
-          output: "commit 79048ff\nAuthor: Panda <panda@example.com>\nDate:   Aug 08, 02:37 AM\n\n    Add login\n\n A  login.js",
+          command: "git show 72ab963",
+          output: "commit 72ab963\nAuthor: Git Learner <learner@example.com>\nDate:   Aug 09, 05:32 AM\n\n    Add login\n\n A  login.js",
           outputKind: "output",
           note: "The author, the date, the message, and the file that changed.",
         },
@@ -141,7 +155,7 @@ export const lessonGitShow: ContentLesson = {
       id: "show-connect",
       tone: "success",
       title: "Reading the label",
-      text: "The top tells you who and when. The message explains what. The A in \"A login.js\" means the file was added in this snapshot. That's the whole story of one commit.",
+      text: "The top tells you who and when. The message explains what. The letter A means the file was added in this snapshot (M would mean modified). That's the whole story of one commit.",
     },
 
     // ---------------------------------------------------------------

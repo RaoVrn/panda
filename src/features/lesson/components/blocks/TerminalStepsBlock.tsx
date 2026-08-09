@@ -30,6 +30,8 @@ export function TerminalStepsBlock({
       mode={mode}
       seed={block.seed}
       seedId={block.seedId}
+      setup={block.setup}
+      remoteSetup={block.remoteSetup}
     />
   );
 }

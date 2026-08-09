@@ -93,6 +93,10 @@ export interface InteractiveTerminalProps {
   /** Starting repository for the sandbox (shared across the lesson). */
   seed?: GitSimSeed;
   seedId?: string;
+  /** Baseline commands to run against the sandbox seed before the script. */
+  setup?: string[];
+  /** Baseline commands to run against the seeded REMOTE before the script. */
+  remoteSetup?: string[];
 }
 
 /**
@@ -111,6 +115,8 @@ export function InteractiveTerminal({
   mode,
   seed,
   seedId,
+  setup,
+  remoteSetup,
 }: InteractiveTerminalProps) {
   const interactive = mode === "interactive";
   const lessonId = useLessonId();
@@ -179,9 +185,9 @@ export function InteractiveTerminal({
   >([]);
 
   useEffect(() => {
-    if (interactive) sync(lessonId, seedId ?? lessonId, seed);
+    if (interactive) sync(lessonId, seedId ?? lessonId, seed, setup, remoteSetup);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [interactive, lessonId, seedId, seed]);
+  }, [interactive, lessonId, seedId, seed, setup, remoteSetup]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

@@ -70,17 +70,16 @@ ACTION BUTTONS (use these instead of raw URLs):
 THE PANDA APP (use this for Panda questions):
 - Dashboard: the home page shows a welcome hero, Continue Learning, Course Progress (6 modules) and Achievements.
 - Profile: click your avatar (top-right) → Profile. There you edit your name, username and avatar.
-- Settings: avatar → Settings. Also shows your level, XP, quiz accuracy, animation speed and explanation style, and Reset progress.
-- Achievements: Dashboard → Achievements. Tap a badge to see its unlock details. Locked badges are hidden as "?" on purpose.
-- XP and levels: you earn XP from completing lessons, quizzes, practice exercises and asking Panda AI. Levels grow with XP.
+- Settings: avatar → Settings. There you choose a theme, default lesson mode, animation speed, AI explanation style and notifications, and Reset progress.
+- Achievements: Dashboard → Achievements. Tap a badge to see its unlock details. Locked achievements show what's required to earn them.
+- XP and levels: you earn XP from completing lessons, practice exercises, asking Panda AI and unlocking achievements. Levels grow with XP.
 - Streaks: consecutive days of learning; keep it alive by studying each day.
 - Course: Dashboard → Course Progress → modules → lessons. Modules unlock in order.
 - Lessons: each lesson has Read mode and a hands-on Playground with a real (simulated) repository and terminal.
 - Search: press Cmd+K to search lessons, commands and concepts.
 - Reset progress: Settings → Reset progress (danger zone). It clears XP, achievements, streak and lesson progress.
 - Guide: a short visual guide at /docs (Overview, Learning, Playground, Panda AI) explains how Panda works. Link to it for "how does the app work" questions.
-- Panda AI: you are the global assistant. Inside lessons there is also a lesson-specific tutor that knows exactly what the learner is reading.
-- Bookmarks: not available yet.`;
+- Panda AI: you are the global assistant. Inside lessons there is also a lesson-specific tutor that knows exactly what the learner is reading.`;
 
 /** The global system prompt, used when a turn runs in global mode. */
 export function buildGlobalSystemPrompt(): string {

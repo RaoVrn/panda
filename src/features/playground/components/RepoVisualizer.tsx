@@ -11,7 +11,7 @@ import {
   FolderTree,
   Star,
 } from "lucide-react";
-import { isIgnored, statusRows } from "@/lib/git";
+import { isIgnored, logCommits, statusRows } from "@/lib/git";
 import { usePlaygroundRepository } from "../usePlayground";
 import { usePlaygroundStore } from "../playgroundStore";
 import { PlaygroundPanel } from "./Panel";
@@ -188,6 +188,10 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
   const [message, setMessage] = useState("Save my work");
 
   const rows = useMemo(() => (repo ? statusRows(repo) : []), [repo]);
+  // Show the history HEAD can actually see (like `git log`), so switch, reset
+  // and detached checkouts keep the HEAD card in sync with the terminal.
+  const commits = useMemo(() => (repo ? logCommits(repo) : []), [repo]);
+  const latest = commits[0];
 
   if (!repo) return null;
 
@@ -198,8 +202,6 @@ export function RepoVisualizer({ className }: RepoVisualizerProps) {
       !isIgnored(repo, row.path),
   );
   const staged = rows.filter((row) => row.staged);
-  const commits = [...repo.commits].reverse();
-  const latest = repo.commits[repo.commits.length - 1];
 
   const stage = (path: string) => run(`git add ${path}`);
   const unstage = (path: string) => run(`git restore --staged ${path}`);

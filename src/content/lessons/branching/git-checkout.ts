@@ -55,17 +55,21 @@ export const lessonGitCheckout: ContentLesson = {
       {
         id: "branches-ready",
         label: "Have add-cart and fix-nav ready",
-        checks: [{ kind: "branchExists", name: "add-cart" }, { kind: "branchExists", name: "fix-nav" }],
+        checks: [
+          { kind: "branchExists", name: "add-cart" },
+          { kind: "branchExists", name: "fix-nav" },
+          { kind: "ranCommand", contains: "git checkout" },
+        ],
       },
       {
         id: "commit-fix",
         label: "Make a commit on fix-nav",
-        checks: [{ kind: "anyCommitMessage", message: "Fix the nav" }],
+        checks: [{ kind: "anyCommitMessage", message: "Fix the nav" }, { kind: "ranCommand", contains: "git checkout fix-nav" }],
       },
       {
         id: "return",
         label: "Return to main",
-        checks: [{ kind: "branch", name: "main" }],
+        checks: [{ kind: "branch", name: "main" }, { kind: "ranCommand", contains: "git checkout main" }],
       },
     ],
     hints: [
@@ -137,6 +141,7 @@ export const lessonGitCheckout: ContentLesson = {
         pwd: "~/project",
         initialized: true,
       },
+      setup: ["git init", "git add .", 'git commit -m "Start project"', "git branch add-cart"],
       steps: [
         {
           command: "git checkout add-cart",
@@ -146,7 +151,7 @@ export const lessonGitCheckout: ContentLesson = {
         },
         {
           command: "git branch",
-          output: "* add-cart\n  main",
+          output: "  main\n* add-cart",
           outputKind: "output",
           note: "The star moved to add-cart.",
         },

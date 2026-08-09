@@ -59,6 +59,7 @@ export function evaluateCheck(
   repo: GitRepository,
   check: PlaygroundCheck,
   remote?: GitRepository | null,
+  history?: string[],
 ): boolean {
   switch (check.kind) {
     case "initialized":
@@ -110,12 +111,12 @@ export function evaluateCheck(
       return reachableCommits(repo).length === check.count;
 
     case "commitTouchesFile":
-      return repo.commits.some((commit) =>
+      return reachableCommits(repo).some((commit) =>
         commit.changedFiles.some((file) => file.path === check.path),
       );
 
     case "commitDoesNotTouchFile":
-      return !repo.commits.some((commit) =>
+      return !reachableCommits(repo).some((commit) =>
         commit.changedFiles.some((file) => file.path === check.path),
       );
 
@@ -127,10 +128,12 @@ export function evaluateCheck(
     }
 
     case "anyCommitMessage":
-      return repo.commits.some((commit) => commit.message === check.message);
+      // Only commits HEAD can actually see count, so setup commits on other
+      // branches never satisfy a "commit X" objective before the learner acts.
+      return reachableCommits(repo).some((commit) => commit.message === check.message);
 
     case "anyCommitMessageContains":
-      return repo.commits.some((commit) => commit.message.includes(check.text));
+      return reachableCommits(repo).some((commit) => commit.message.includes(check.text));
 
     case "branch":
       return repo.branch === check.name;
@@ -184,6 +187,12 @@ export function evaluateCheck(
       if (!remote) return false;
       // The remote's current branch head must match the local head: the push landed.
       return remote.branches.get(repo.branch) === (repo.branches.get(repo.branch) ?? repo.head);
+
+    case "ranCommand":
+      // Verifies the learner actually ran a command (e.g. `git log`) rather
+      // than reaching the state some other way. Matches a substring so both
+      // `git log` and `git log --oneline` count.
+      return (history ?? []).some((command) => command.includes(check.contains));
   }
 }
 
@@ -197,22 +206,10 @@ export function objectiveStatuses(
   repo: GitRepository,
   objectives: ReadonlyArray<{ id: string; checks: PlaygroundCheck[] }>,
   remote?: GitRepository | null,
+  history?: string[],
 ): PlaygroundObjectiveStatus[] {
   return objectives.map((objective) => ({
     objectiveId: objective.id,
-    done: objective.checks.every((check) => evaluateCheck(repo, check, remote)),
+    done: objective.checks.every((check) => evaluateCheck(repo, check, remote, history)),
   }));
-}
-
-/** Number of objectives complete, out of the total. */
-export function playgroundProgress(
-  repo: GitRepository,
-  objectives: ReadonlyArray<{ id: string; checks: PlaygroundCheck[] }>,
-  remote?: GitRepository | null,
-): { done: number; total: number } {
-  const statuses = objectiveStatuses(repo, objectives, remote);
-  return {
-    done: statuses.filter((status) => status.done).length,
-    total: statuses.length,
-  };
 }

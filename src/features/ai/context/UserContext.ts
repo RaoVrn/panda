@@ -10,6 +10,7 @@ import { allLessons } from "@/content/lessons";
 import { levelInfo } from "@/features/progress/xp";
 import { useProgressStore } from "@/features/progress/progressStore";
 import { usePreferencesStore } from "@/features/user/preferences/preferencesStore";
+import { useLessonModeStore } from "@/stores/lessonModeStore";
 
 export interface UserContextData {
   xp: number;
@@ -36,7 +37,8 @@ export function collectUserContext(snapshot?: {
     totalLessons: allLessons().length,
     explanationStyle: prefs.aiExplanationStyle,
     theme: prefs.theme,
-    lessonMode: prefs.defaultMode,
+    // The preference holds the default; fall back to the mode actually in use.
+    lessonMode: prefs.defaultMode ?? useLessonModeStore.getState().mode,
     animationSpeed: prefs.animationSpeed,
   };
 }

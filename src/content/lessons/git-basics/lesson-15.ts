@@ -28,7 +28,7 @@ export const lesson15: ContentLesson = {
     whyItMatters:
       "A clean history starts here. .gitignore is how professionals keep secrets out and repos tidy, and it's the last piece of the Git Basics foundation.",
     motivation:
-      "Git Basics complete! You know the whole core flow now. Next stop: branching, where Git gets genuinely magical.",
+      "Git Basics complete! You know the whole core flow now. Next stop: history, where you'll learn to read and travel through every snapshot you've ever saved.",
   },
   learningGoals: [
     "Explain what .gitignore is for",
@@ -83,10 +83,10 @@ export const lesson15: ContentLesson = {
         }
       ],
       "hints": [
-        "Create a .gitignore file \u2014 echo works, or use the file editor.",
+        "Create a .gitignore file; echo works, or use the file editor.",
         "One line is enough: *.env matches every .env file.",
         "Run git status and watch Git stop noticing secret.env.",
-        "Stage and commit \u2014 the secret never makes it into history."
+        "Stage and commit; the secret never makes it into history."
       ],
       "solution": [
         "echo \"*.env\" > .gitignore",
@@ -96,7 +96,7 @@ export const lesson15: ContentLesson = {
       ],
       "suggestions": [
         "cat .gitignore",
-        "echo \"\" > .gitignore",
+        "echo \"*.env\" > .gitignore",
         "git status",
         "git add ."
       ],
@@ -113,7 +113,7 @@ export const lesson15: ContentLesson = {
           "touch .gitignore"
         ],
         "welcomeText": "Tell Git what to ignore.",
-        "helperText": ".gitignore lists files Git must never track. Secret files, build junk, logs \u2014 they stay out of history."
+        "helperText": ".gitignore lists files Git must never track. Secret files, build junk, logs; they stay out of history."
       }
     },
 
@@ -241,7 +241,7 @@ export const lesson15: ContentLesson = {
         },
         {
           command: "git status",
-          output: "On branch main\n\nUntracked files:\n  .gitignore\n  README.md",
+          output: 'On branch main\n\nNo commits yet\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\t.gitignore\n\tREADME.md',
           outputKind: "muted",
           note: "Notice: secret.env is NOT listed. Git can't see it anymore.",
         },
@@ -252,7 +252,7 @@ export const lesson15: ContentLesson = {
         },
         {
           command: 'git commit -m "Add .gitignore"',
-          output: "[main 8e2f0aa] Add .gitignore\n 2 files changed",
+          output: "[main (root-commit) 5d016ac] Add .gitignore\n 2 files changed",
           outputKind: "success",
           note: "The secret never made it into history. Exactly what we wanted.",
         },
@@ -321,8 +321,8 @@ export const lesson15: ContentLesson = {
       type: "callout",
       id: "next-lesson",
       tone: "tip",
-      title: "Continue to: Branches",
-      text: "The branching module unlocks next. Branches are Git's superpower, parallel timelines you can create, merge and switch between freely.",
+      title: "Continue to: Commit History",
+      text: "The History module unlocks next. Learn to read your whole timeline with git log, understand HEAD, and travel through your snapshots.",
     },
   ],
 };

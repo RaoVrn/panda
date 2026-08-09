@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { toZustandStorage, userScopedAdapter } from "@/features/progress/localStorage";
 
 export type LessonMode = "read" | "interactive";
 
@@ -41,6 +42,6 @@ export const useLessonModeStore = create<LessonModeState>()(
       toggleMode: () =>
         set((state) => ({ mode: state.mode === "read" ? "interactive" : "read" })),
     }),
-    { name: "panda-lesson-mode", partialize: (state) => ({ mode: state.mode }) },
+    { name: "panda-lesson-mode", storage: createJSONStorage(() => toZustandStorage(userScopedAdapter)), partialize: (state) => ({ mode: state.mode }) },
   ),
 );

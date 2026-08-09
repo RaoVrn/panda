@@ -72,7 +72,7 @@ export function buildContextSnippet(context: LessonContext): string {
     context.terminal && `Last command: ${context.terminal}`,
     context.terminalState && `Terminal state:\n${context.terminalState}`,
     context.sandbox && `Sandbox:\n${context.sandbox}`,
-    context.quiz && `Quiz state: ${context.quiz}`,
+    context.practice && `Practice checkpoint: ${context.practice}`,
     context.scrollPercent !== undefined && `Scroll: ${context.scrollPercent}%`,
     context.lessonProgress && `Lesson progress: ${context.lessonProgress}`,
     context.quizProgress && `Quiz progress: ${context.quizProgress}`,

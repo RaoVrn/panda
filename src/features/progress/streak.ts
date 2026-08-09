@@ -60,3 +60,8 @@ export function recordActivity(adapter: {
   adapter.set(STREAK_KEY, JSON.stringify(stored));
   return { current: next, lastStudyDate: today, studiedToday: true };
 }
+
+/** Forgets the stored streak (used when the learner resets their progress). */
+export function clearStreak(adapter: { remove: (key: string) => void }): void {
+  adapter.remove(STREAK_KEY);
+}

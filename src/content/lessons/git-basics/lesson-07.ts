@@ -39,11 +39,11 @@ export const lesson07: ContentLesson = {
     playground: {
       seed: {"files": {"README.md": "Hello\n", "src/main.js": "console.log('hi');\n", "notes.txt": "draft\n"}, "pwd": "~/project", "initialized": true},
       setup: ["git init", "git add README.md src/main.js", "git commit -m \"Start\""],
-      objectives: [{"id": "stage-two", "label": "Stage README.md and src/main.js", "checks": [{"kind": "fileStaged", "path": "README.md"}, {"kind": "fileStaged", "path": "src/main.js"}]}, {"id": "leave-untracked", "label": "Leave notes.txt untracked", "persist": false, "checks": [{"kind": "fileUntracked", "path": "notes.txt"}]}, {"id": "commit", "label": "Commit the tracked files", "checks": [{"kind": "commitCountAtLeast", "count": 1}]}],
-      hints: ["git status shows the working tree through Git's eyes \u2014 untracked files are the brand-new ones.", "Point at the two files you want: git add README.md src/main.js.", "notes.txt stays out on purpose. Git only saves what you stage.", "Save the snapshot and notice notes.txt is still untouched."],
+      objectives: [{"id": "stage-two", "label": "Stage README.md and src/main.js", "checks": [{"kind": "fileStaged", "path": "README.md"}, {"kind": "fileStaged", "path": "src/main.js"}]}, {"id": "leave-untracked", "label": "Leave notes.txt untracked", "persist": false, "checks": [{"kind": "fileUntracked", "path": "notes.txt"}]}, {"id": "commit", "label": "Commit the tracked files", "checks": [{"kind": "commitCountAtLeast", "count": 2}]}],
+      hints: ["git status shows the working tree through Git's eyes; untracked files are the brand-new ones.", "Point at the two files you want: git add README.md src/main.js.", "notes.txt stays out on purpose. Git only saves what you stage.", "Save the snapshot and notice notes.txt is still untouched."],
       solution: ["git status", "git add README.md src/main.js", "git commit -m \"Start tracking\""],
       suggestions: ["ls", "git status", "git add README.md", "cat README.md"],
-      visualizer: {"highlight": "working-tree", "banner": "The working tree \u2014 where you edit files"},
+      visualizer: {"highlight": "working-tree", "banner": "The working tree: where you edit files"},
       shell: {"primaryCommand": "git status", "placeholder": "git status", "quickActions": ["ls", "git status", "help"], "welcomeText": "Explore your working directory.", "helperText": "The working tree is the folder you edit. ls shows what's here; git status shows what Git notices."},
     },
 
@@ -136,7 +136,7 @@ export const lesson07: ContentLesson = {
       steps: [
         {
           command: "git status",
-          output: "On branch main\n\nNo commits yet\n\nUntracked files:\n  README.md\n  src/main.js\n  notes.txt\n\nnothing added to commit but untracked files present",
+          output: 'On branch main\n\nNo commits yet\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tREADME.md\n\tnotes.txt\n\tsrc/main.js',
           outputKind: "muted",
           note: "\"Untracked files\" = Git sees them on the counter but has never snapped them.",
         },
