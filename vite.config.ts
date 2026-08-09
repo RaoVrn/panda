@@ -18,7 +18,6 @@ export default defineConfig({
           motion: ["framer-motion"],
           icons: ["lucide-react"],
           ai: [
-            "groq-sdk",
             "react-markdown",
             "remark-gfm",
             "rehype-highlight",

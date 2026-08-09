@@ -5,32 +5,20 @@
  * problem is surfaced as a structured warning and the system keeps running
  * with whatever can work (fail gracefully):
  *
- *   · no Groq API key          → warn; the UI shows a setup hint
- *   · unknown provider         → warn; it's ignored
- *   · configured model that
- *     the account can't use    → warn; the fallback chain still covers it
+ *   · no Supabase project     → warn; the AI transport is unavailable
+ *   · unknown provider        → warn; it's ignored
+ *
+ * The Groq API key is server-side only (an Edge Function secret) and is never
+ * validated here.
  */
 
 import { aiConfig } from "./config";
-import {
-  groqModelAvailable,
-  prefetchGroqModels,
-} from "./GroqProvider";
+import { getSupabase } from "@/lib/supabase/client";
 import { aiLogger } from "./logger";
 
 const IMPLEMENTED_PROVIDERS = new Set(["groq"]);
 
 export function validateAiConfig(): void {
-  const apiKey = import.meta.env.VITE_GROQ_API_KEY?.trim() ?? "";
-
-  if (!apiKey) {
-    aiLogger.warn({
-      event: "ai.config.invalid",
-      detail: "VITE_GROQ_API_KEY is not set. Panda AI will show a setup hint until it is.",
-    });
-    return;
-  }
-
   const enabled = aiConfig.provider
     .split(",")
     .map((provider) => provider.trim())
@@ -44,19 +32,18 @@ export function validateAiConfig(): void {
     });
   }
 
-  void prefetchGroqModels().then(() => {
-    for (const model of aiConfig.groqModels) {
-      if (groqModelAvailable(model) === false) {
-        aiLogger.warn({
-          event: "ai.config.model-unavailable",
-          model,
-          detail: "Configured model is not available on this account. The fallback chain will be used.",
-        });
-      }
-    }
-    aiLogger.info({
-      event: "ai.config.validated",
-      detail: `providers=${enabled.join(",") || "none"} models=${aiConfig.groqModels.join(",")}`,
+  // The AI transport requires a configured Supabase project (the ai-chat Edge
+  // Function is deployed there). The Groq key lives server-side.
+  if (!getSupabase()) {
+    aiLogger.warn({
+      event: "ai.config.unconfigured",
+      detail: "Supabase is not configured. Panda AI will show a setup hint until it is.",
     });
+    return;
+  }
+
+  aiLogger.info({
+    event: "ai.config.validated",
+    detail: `providers=${enabled.join(",") || "none"} models=${aiConfig.groqModels.join(",")} transport=supabase-functions`,
   });
 }

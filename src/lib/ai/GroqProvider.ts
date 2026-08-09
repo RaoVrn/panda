@@ -1,16 +1,18 @@
 /**
- * Groq provider.
+ * Groq provider - via the Supabase `ai-chat` Edge Function.
  *
- * The single active AI provider for Panda AI. Uses the official `groq-sdk`
- * (OpenAI-compatible chat completions) with streaming. Failures are classified
- * into typed `AiError`s so no raw vendor error ever reaches the UI.
+ * The Groq API key is server-side only (a Supabase Edge Function secret). The
+ * browser sends the prompt + context to the Edge Function, which forwards to
+ * Groq and streams the reply back. This file never reads an API key and never
+ * uses the Groq SDK client-side.
  *
- * Model availability is checked against Groq's live model list (prefetched at
- * startup by `validation.ts`); unknown models are skipped before any call.
+ * The orchestration (model fallback, retries, timeouts, health) in
+ * `ai-service.ts` / `fallback-provider.ts` is unchanged; only the transport
+ * differs.
  */
 
-import Groq from "groq-sdk";
-import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
+import { getSupabase } from "@/lib/supabase/client";
+import { readSupabaseEnv } from "@/lib/supabase/config";
 import { aiConfig } from "./config";
 import {
   AiError,
@@ -23,127 +25,32 @@ import {
   TimeoutError,
   UnknownAIError,
 } from "./errors";
-import { aiLogger, estimatePayloadBytes } from "./logger";
 import type { AIProvider, AIRequest, AIStreamCallbacks } from "./types";
 
-function apiKey(): string {
-  return import.meta.env.VITE_GROQ_API_KEY?.trim() ?? "";
-}
+/** The Edge Function route, relative to the Supabase Functions gateway. */
+const EDGE_FUNCTION_PATH = "/functions/v1/ai-chat";
 
-/* ------------------------------------------------------------------ */
-/* Model availability (prefetched, shared)                             */
-/* ------------------------------------------------------------------ */
-
-let availableModels: Set<string> | null = null;
-
-/** Fetches and caches Groq's model list. Called at startup; non-blocking. */
-export async function prefetchGroqModels(): Promise<void> {
-  const key = apiKey();
-  if (!key) {
-    availableModels = null;
-    return;
-  }
-  try {
-    const client = new Groq({ apiKey: key, dangerouslyAllowBrowser: true });
-    const page = await client.models.list();
-    const ids = page.data.map((model) => model.id);
-    availableModels = new Set(ids);
-    aiLogger.info({
-      event: "ai.groq.models",
-      detail: `${ids.length} models available`,
-    });
-  } catch (error) {
-    availableModels = null;
-    aiLogger.warn({
-      event: "ai.groq.models-failed",
-      detail: error instanceof Error ? error.message : String(error),
-    });
-  }
-}
-
-/** Advisory: false when a model is known to not exist; undefined when unknown. */
-export function groqModelAvailable(model: string): boolean | undefined {
-  if (availableModels === null) return undefined;
-  return availableModels.has(model);
-}
-
-/* ------------------------------------------------------------------ */
-/* Error classification                                                */
-/* ------------------------------------------------------------------ */
-
-interface GroqFailure {
-  status?: number;
-  message?: string;
-  error?: { message?: string; type?: string };
-}
-
-/** Best-effort parse of Groq's "Please retry after N seconds" hint. */
-function parseRetryAfterSeconds(failure: GroqFailure): number | undefined {
-  const text = `${failure.error?.message ?? ""} ${failure.message ?? ""}`;
-  const match = /(?:retry after|try again in|wait)\s+(\d+(?:\.\d+)?)\s*s/i.exec(
-    text,
-  );
-  return match ? Number(match[1]) : undefined;
-}
-
-function classify(failure: GroqFailure): AiError {
-  const status = failure.status;
-  const message = failure.error?.message ?? failure.message ?? "";
-  const text = `${status ?? ""} ${message}`;
-  const base = { statusCode: status, cause: failure } as const;
-
-  if (/quota|limit:\s*0|You exceeded your current quota/i.test(text)) {
-    return new QuotaUnavailableError(message || "Groq quota is exhausted.", base);
-  }
-  if (status === 429 || /rate.?limit|too many requests/i.test(text)) {
-    return new RateLimitError(message || "Rate limited by Groq.", {
-      ...base,
-      retryAfterSeconds: parseRetryAfterSeconds(failure),
-    });
-  }
-  if (status === 401 || status === 403 || /invalid api key|authentication/i.test(text)) {
-    return new ConfigError("The Groq API key was rejected.", base);
-  }
-  if (status === 404 || /model.*not found/i.test(text)) {
-    return new ModelUnavailableError(message || "Groq model not found.", base);
-  }
-  if (status === 500 || status === 502 || status === 503 || status === 504) {
-    return new UnknownAIError("The Groq service is having trouble.", base);
-  }
-  if (/network|fetch failed|ECONNRESET|ECONNREFUSED|load failed|socket|timed out/i.test(text)) {
-    return new NetworkError(message || "Network failure reaching Groq.", base);
-  }
-  return new UnknownAIError(message || "Unexpected Groq error.", base);
-}
-
-function throwIfAborted(signal?: AbortSignal): void {
-  if (signal?.aborted) {
-    throw new TimeoutError("The Groq request was aborted.");
-  }
-}
+/** SSE line separator used by the Edge Function stream. */
+const SSE_SEPARATOR = "\n\n";
 
 export class GroqProvider implements AIProvider {
   readonly name = "groq";
+  /** Models to try, in priority order (non-sensitive client-side config).
+   *  The Edge Function validates and forwards whichever model is attempted. */
   readonly models: string[] = aiConfig.groqModels;
 
-  private clientInstance: Groq | null = null;
+  constructor() {
+    // No client-side setup needed: the Groq key is server-side only.
+  }
 
+  /** Configured when a Supabase project can reach the ai-chat function. */
   isConfigured(): boolean {
-    return apiKey().length > 0;
+    return getSupabase() !== null;
   }
 
-  isModelAvailable(model: string): boolean | undefined {
-    return groqModelAvailable(model);
-  }
-
-  private client(): Groq {
-    if (!this.clientInstance) {
-      this.clientInstance = new Groq({
-        apiKey: apiKey(),
-        dangerouslyAllowBrowser: true,
-      });
-    }
-    return this.clientInstance;
+  /** Model availability is unknown client-side (resolved by the function). */
+  isModelAvailable(): boolean | undefined {
+    return undefined;
   }
 
   async stream(
@@ -152,92 +59,135 @@ export class GroqProvider implements AIProvider {
     { onToken, signal }: AIStreamCallbacks,
   ): Promise<string> {
     if (!this.isConfigured()) {
-      throw new ConfigError("No Groq API key is configured.", {
+      throw new ConfigError("No AI provider is configured.", {
         provider: this.name,
         model,
       });
     }
-    if (groqModelAvailable(model) === false) {
-      throw new ModelUnavailableError(`Model "${model}" is not available.`, {
+
+    const supabase = getSupabase()!;
+    const supabaseUrl = readSupabaseEnv().url;
+    if (!supabaseUrl) {
+      throw new ConfigError("No AI provider is configured.", {
         provider: this.name,
         model,
-        statusCode: 404,
       });
     }
+    const { data: sessionData } = await supabase.auth.getSession();
+    // Send the user's JWT when signed in (the function requires it); fall
+    // back to the anon key so anonymous requests still reach the function's
+    // auth gate and fail gracefully with a clear 401.
+    const auth = sessionData.session?.access_token ?? readSupabaseEnv().anonKey ?? "";
 
-    const endpoint = "https://api.groq.com/openai/v1/chat/completions";
-    const started = performance.now();
-
-    aiLogger.info({
-      event: "ai.groq.request",
-      requestId: request.requestId,
-      provider: this.name,
-      model,
-      endpoint,
-      payloadBytes: estimatePayloadBytes(request),
-      detail: "headers: authorization=[redacted] content-type=application/json",
-    });
-
-    const messages: ChatCompletionMessageParam[] = [
-      { role: "system", content: request.systemPrompt },
-      ...request.history.map((message) => ({
-        role: message.role,
-        content: message.content,
-      })),
-      { role: "user", content: request.prompt },
-    ];
-
-    let full = "";
-
+    let response: Response;
     try {
-      const stream = await this.client().chat.completions.create(
-        { model, messages, stream: true },
-        { signal },
-      );
-
-      for await (const chunk of stream) {
-        throwIfAborted(signal);
-        const delta = chunk.choices?.[0]?.delta?.content;
-        if (delta) {
-          full += delta;
-          onToken(full);
-        }
-      }
-    } catch (error) {
+      response = await fetch(`${supabaseUrl}${EDGE_FUNCTION_PATH}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${auth}`,
+        },
+        body: JSON.stringify({
+          requestId: request.requestId,
+          systemPrompt: request.systemPrompt,
+          history: request.history,
+          prompt: request.prompt,
+          model,
+        }),
+        signal,
+      });
+    } catch {
       if (signal?.aborted) {
-        throw new TimeoutError("The Groq request was aborted.", {
+        throw new TimeoutError("The AI request was aborted.", {
           provider: this.name,
           model,
         });
       }
-      const classified =
-        error instanceof AiError ? error : classify(error as GroqFailure);
-      aiLogger.error({
-        event: "ai.groq.failed",
-        requestId: request.requestId,
+      throw new NetworkError("Network failure reaching Panda AI.", {
         provider: this.name,
         model,
-        statusCode: classified.statusCode,
-        failureReason: classified.kind,
-        latencyMs: Math.round(performance.now() - started),
-        detail: "Groq request failed; see structured status and failureReason fields.",
       });
-      throw classified;
     }
 
-    throwIfAborted(signal);
+    if (!response.ok) {
+      let message = "";
+      try {
+        const payload = (await response.json()) as { error?: { message?: string } };
+        message = payload.error?.message ?? "";
+      } catch {
+        // Non-JSON error body; use the status only.
+      }
+      throw classify({ status: response.status, message });
+    }
 
-    aiLogger.info({
-      event: "ai.groq.done",
-      requestId: request.requestId,
-      provider: this.name,
-      model,
-      latencyMs: Math.round(performance.now() - started),
-      payloadBytes: full.length,
-    });
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new InvalidResponseError("Panda AI returned no response body.", {
+        retryable: false,
+        provider: this.name,
+        model,
+      });
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let full = "";
+
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let boundary = buffer.indexOf(SSE_SEPARATOR);
+        while (boundary >= 0) {
+          const event = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + SSE_SEPARATOR.length);
+          const dataLine = event
+            .split("\n")
+            .find((line) => line.startsWith("data:"));
+          if (dataLine) {
+            const data = dataLine.slice(5).trim();
+            if (data === "[DONE]") {
+              boundary = -1;
+              continue;
+            }
+            try {
+              const parsed = JSON.parse(data) as { token?: string };
+              if (typeof parsed.token === "string" && parsed.token.length > 0) {
+                full += parsed.token;
+                onToken(full);
+              }
+            } catch {
+              // Ignore malformed events; keep the rest of the stream.
+            }
+          }
+          boundary = buffer.indexOf(SSE_SEPARATOR);
+        }
+      }
+    } catch {
+      if (signal?.aborted) {
+        throw new TimeoutError("The AI request was aborted.", {
+          provider: this.name,
+          model,
+        });
+      }
+      if (full.length > 0) {
+        throw new UnknownAIError("Panda AI stopped mid-answer.", {
+          retryable: false,
+          provider: this.name,
+          model,
+        });
+      }
+      throw new NetworkError("Network failure reaching Panda AI.", {
+        provider: this.name,
+        model,
+      });
+    }
 
     if (full.trim().length === 0) {
-      throw new InvalidResponseError("Groq returned an empty response.", {
+      throw new InvalidResponseError("Panda AI returned an empty response.", {
         retryable: true,
         provider: this.name,
         model,
@@ -246,4 +196,51 @@ export class GroqProvider implements AIProvider {
 
     return full;
   }
+}
+
+/** Map an Edge Function HTTP failure into a typed Panda AI error. */
+function classify(failure: { status: number; message: string }): AiError {
+  const status = failure.status;
+  const message = failure.message;
+  const text = `${status} ${message}`;
+
+  if (/quota|limit:\s*0|You exceeded your current quota/i.test(text)) {
+    return new QuotaUnavailableError(message || "The AI quota is exhausted.", {
+      statusCode: status,
+    });
+  }
+  if (status === 429 || /rate.?limit|too many requests/i.test(text)) {
+    return new RateLimitError(message || "Rate limited by Panda AI.", {
+      statusCode: status,
+    });
+  }
+  if (status === 401 || status === 403) {
+    return new ConfigError(message || "Panda AI requires a signed-in account.", {
+      statusCode: status,
+    });
+  }
+  if (status === 404 || /model.*not available|not found/i.test(text)) {
+    return new ModelUnavailableError(message || "The AI model is not available.", {
+      statusCode: status,
+    });
+  }
+  if (status === 400) {
+    return new InvalidResponseError(message || "Panda AI rejected the request.", {
+      retryable: false,
+      statusCode: status,
+    });
+  }
+  if (status === 408 || /abort|timed out/i.test(text)) {
+    return new TimeoutError(message || "Panda AI timed out.", {
+      statusCode: status,
+    });
+  }
+  if (status === 502 || status === 503 || status === 504) {
+    return new UnknownAIError(message || "Panda AI is unavailable.", {
+      statusCode: status,
+    });
+  }
+  return new UnknownAIError(message || "Unexpected Panda AI error.", {
+    statusCode: status,
+  });
 }

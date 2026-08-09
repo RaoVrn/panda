@@ -40,11 +40,35 @@ optional — the app degrades gracefully when they are missing.
 
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — user accounts and cloud
   progress sync. When unset, the app runs in anonymous/device-local mode.
-- `VITE_GROQ_API_KEY` — the AI mentor's provider key.
 - `VITE_AI_PROVIDER`, `VITE_GROQ_MODEL`, `VITE_GROQ_FALLBACK_MODELS` — AI
-  provider and model selection.
+  provider and model selection (client-side, non-sensitive).
 - `VITE_AI_TIMEOUT`, `VITE_AI_MAX_RETRIES`, `VITE_AI_MAX_TOTAL_MS`,
   `VITE_AI_CACHE_TTL` — AI request tuning.
+
+## AI configuration
+
+Panda AI calls Groq through a thin server-side proxy: a Supabase Edge Function
+at `supabase/functions/ai-chat`. The Groq API key is **server-side only** and
+must never be exposed to the browser:
+
+1. Set the Groq key as a Supabase Edge Function secret (never with a `VITE_`
+   prefix, which would embed it in the client bundle):
+
+   ```bash
+   supabase secrets set GROQ_API_KEY=gsk_...
+   ```
+
+2. Deploy the function:
+
+   ```bash
+   supabase functions deploy ai-chat
+   ```
+
+The Edge Function verifies the caller is a signed-in Panda user (Supabase JWT),
+forwards the prompt to Groq, and streams the reply back. The client never sees
+or sends the key. Without Supabase configured, Panda AI shows a setup notice
+and the rest of the app keeps working.
+
 
 ## Development
 

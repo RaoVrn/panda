@@ -1,9 +1,12 @@
 /**
  * AI configuration, read once from `import.meta.env` at module load.
  *
+ * Only non-sensitive tuning is read client-side. The Groq API key is
+ * server-side only (a Supabase Edge Function secret named `GROQ_API_KEY`) and
+ * never appears here.
+ *
  * Environment variables:
  *   VITE_AI_PROVIDER             which providers to enable (default "groq")
- *   VITE_GROQ_API_KEY            Groq API key
  *   VITE_GROQ_MODEL              primary Groq model
  *   VITE_GROQ_FALLBACK_MODELS    comma-separated fallback models
  *   VITE_AI_TIMEOUT              per-call deadline in ms (default 45000)

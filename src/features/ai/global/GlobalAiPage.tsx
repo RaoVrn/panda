@@ -367,9 +367,9 @@ export function GlobalAiPage() {
           <div className="mx-auto w-full max-w-3xl">
             {!apiConfigured && (
               <p className="mb-2 rounded-lg border border-warning/30 bg-warning-soft/40 px-3 py-2 text-xs text-text-secondary">
-                Panda needs a Groq API key. Add{" "}
-                <code className="font-mono">VITE_GROQ_API_KEY</code> to{" "}
-                <code className="font-mono">.env</code> and restart the dev server.
+                Panda AI isn't connected yet. It needs a Supabase project with the{" "}
+                <code className="font-mono">ai-chat</code> Edge Function deployed and a
+                server-side <code className="font-mono">GROQ_API_KEY</code> secret set. See the README.
               </p>
             )}
             <form

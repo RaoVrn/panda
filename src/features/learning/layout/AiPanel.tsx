@@ -327,10 +327,10 @@ export function AiPanel({ onClose }: AiPanelProps) {
         <div className="mx-4 mb-2 flex items-start gap-2 rounded-xl border border-warning/30 bg-warning-soft/40 px-3 py-2.5">
           <KeyRound className="mt-0.5 size-3.5 shrink-0 text-warning" aria-hidden="true" />
           <p className="text-[11px] leading-relaxed text-text-secondary">
-            Panda AI needs a Groq API key. Copy <code className="font-mono">.env.example</code>{" "}
-            to <code className="font-mono">.env</code>, add{" "}
-            <code className="font-mono">VITE_GROQ_API_KEY</code>, then restart the
-            dev server.
+            Panda AI isn't connected yet. It needs a Supabase project with the{" "}
+            <code className="font-mono">ai-chat</code> Edge Function deployed and a
+            server-side{" "}
+            <code className="font-mono">GROQ_API_KEY</code> secret set. See the README.
           </p>
         </div>
       )}
